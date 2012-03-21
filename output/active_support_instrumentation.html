@@ -1,0 +1,853 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Ruby on Rails Guides: Active Support Instrumentation</title>
+
+<link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
+<link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+<link rel="stylesheet" type="text/css" href="stylesheets/syntaxhighlighter/shCore.css" />
+<link rel="stylesheet" type="text/css" href="stylesheets/syntaxhighlighter/shThemeRailsGuides.css" />
+
+<link rel="stylesheet" type="text/css" href="stylesheets/fixes.css" />
+</head>
+<body class="guide">
+  <div id="topNav">
+    <div class="wrapper">
+      <strong>More at <a href="http://rubyonrails.org/">rubyonrails.org:</a> </strong>
+      <a href="http://rubyonrails.org/">Overview</a> |
+      <a href="http://rubyonrails.org/download">Download</a> |
+      <a href="http://rubyonrails.org/deploy">Deploy</a> |
+      <a href="https://github.com/rails/rails">Code</a> |
+      <a href="http://rubyonrails.org/screencasts">Screencasts</a> |
+      <a href="http://rubyonrails.org/documentation">Documentation</a> |
+      <a href="http://rubyonrails.org/ecosystem">Ecosystem</a> |
+      <a href="http://rubyonrails.org/community">Community</a> |
+      <a href="http://weblog.rubyonrails.org/">Blog</a>
+    </div>
+  </div>
+  <div id="header">
+    <div class="wrapper clearfix">
+      <h1><a href="index.html" title="Return to home page">Guides.rubyonrails.org</a></h1>
+      <ul class="nav">
+        <li><a href="index.html">Home</a></li>
+        <li class="index"><a href="index.html" onclick="guideMenu(); return false;" id="guidesMenu">Guides Index</a>
+          <div id="guides" class="clearfix" style="display: none;">
+            <hr />
+              <dl class="L">
+                <dt>Start Here</dt>
+                <dd><a href="getting_started.html">Getting Started with Rails</a></dd>
+                <dt>Models</dt>
+                <dd><a href="migrations.html">Rails Database Migrations</a></dd>
+                <dd><a href="active_record_validations_callbacks.html">Active Record Validations and Callbacks</a></dd>
+                <dd><a href="association_basics.html">Active Record Associations</a></dd>
+                <dd><a href="active_record_querying.html">Active Record Query Interface</a></dd>
+                <dt>Views</dt>
+                <dd><a href="layouts_and_rendering.html">Layouts and Rendering in Rails</a></dd>
+                <dd><a href="form_helpers.html">Action View Form Helpers</a></dd>
+                <dt>Controllers</dt>
+                <dd><a href="action_controller_overview.html">Action Controller Overview</a></dd>
+                <dd><a href="routing.html">Rails Routing from the Outside In</a></dd>
+              </dl>
+              <dl class="R">
+                <dt>Digging Deeper</dt>
+                <dd><a href="active_support_core_extensions.html">Active Support Core Extensions</a></dd>
+                <dd><a href="i18n.html">Rails Internationalization API</a></dd>
+                <dd><a href="security.html">Securing Rails Applications</a></dd>
+                <dd><a href="debugging_rails_applications.html">Debugging Rails Applications</a></dd>
+                <dd><a href="performance_testing.html">Performance Testing Rails Applications</a></dd>
+                <dd><a href="configuring.html">Configuring Rails Applications</a></dd>
+                <dd><a href="command_line.html">Rails Command Line Tools and Rake Tasks</a></dd>
+                <dd><a href="asset_pipeline.html">Asset Pipeline</a></dd>
+                <dt>Extending Rails</dt>
+                <dd><a href="rails_on_rack.html">Rails on Rack</a></dd>
+                <dd><a href="generators.html">Creating and Customizing Rails Generators</a></dd>
+                <dt>Contributing to Ruby on Rails</dt>
+                <dd><a href="contributing_to_ruby_on_rails.html">Contributing to Ruby on Rails</a></dd>
+                <dd><a href="api_documentation_guidelines.html">API Documentation Guidelines</a></dd>
+                <dd><a href="ruby_on_rails_guides_guidelines.html">Ruby on Rails Guides Guidelines</a></dd>
+                <dt>Release Notes</dt>
+                <dd><a href="3_2_release_notes.html">Ruby on Rails 3.2 Release Notes</a></dd>
+                <dd><a href="3_1_release_notes.html">Ruby on Rails 3.1 Release Notes</a></dd>
+                <dd><a href="3_0_release_notes.html">Ruby on Rails 3.0 Release Notes</a></dd>
+                <dd><a href="2_3_release_notes.html">Ruby on Rails 2.3 Release Notes</a></dd>
+                <dd><a href="2_2_release_notes.html">Ruby on Rails 2.2 Release Notes</a></dd>
+              </dl>
+          </div>
+        </li>
+        <li><a href="contributing_to_ruby_on_rails.html">Contribute</a></li>
+        <li><a href="credits.html">Credits</a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="hide" />
+
+  <div id="feature">
+    <div class="wrapper">
+      <h2>Active Support Instrumentation</h2>
+<p>Active Support is a part of core Rails that provides Ruby language extensions, utilities and other things. One of the things it includes is an instrumentation <span class="caps">API</span> that can be used inside an application to measure certain actions that occur within Ruby code, such as that inside a Rails application or the framework itself. It is not limited to Rails, however. It can be used independently in other Ruby scripts if it is so desired.</p>
+<p>In this guide, you will learn how to use the instrumentation <span class="caps">API</span> inside of ActiveSupport to measure events inside of Rails and other Ruby code. We cover:</p>
+<ul>
+	<li>What instrumentation can provide</li>
+	<li>The hooks inside the Rails framework for instrumentation</li>
+	<li>Adding a subscriber to a hook</li>
+	<li>Building a custom instrumentation implementation</li>
+</ul>
+
+            <div id="subCol">
+        <h3 class="chapter"><img src="images/chapters_icon.gif" alt="" />Chapters</h3>
+        <ol class="chapters">
+<li><a href="#introduction-to-instrumentation">Introduction to instrumentation</a></li><li><a href="#rails-framework-hooks">Rails framework hooks</a></li><li><a href="#actioncontroller">ActionController</a><ul><li><a href="#write_fragment-action_controller">write_fragment.action_controller</a></li> <li><a href="#read_fragment-action_controller">read_fragment.action_controller</a></li> <li><a href="#expire_fragment-action_controller">expire_fragment.action_controller</a></li> <li><a href="#exist_fragment-action_controller">exist_fragment?.action_controller</a></li> <li><a href="#write_page-action_controller">write_page.action_controller</a></li> <li><a href="#expire_page-action_controller">expire_page.action_controller</a></li> <li><a href="#start_processing-action_controller">start_processing.action_controller</a></li> <li><a href="#process_action-action_controller">process_action.action_controller</a></li> <li><a href="#send_file-action_controller">send_file.action_controller</a></li> <li><a href="#send_data-action_controller">send_data.action_controller</a></li> <li><a href="#redirect_to-action_controller">redirect_to.action_controller</a></li> <li><a href="#halted_callback-action_controller">halted_callback.action_controller</a></li></ul></li><li><a href="#actionview">ActionView</a><ul><li><a href="#render_template-action_view">render_template.action_view</a></li> <li><a href="#render_partial-action_view">render_partial.action_view</a></li></ul></li><li><a href="#activerecord">ActiveRecord</a><ul><li><a href="#sql-active_record">sql.active_record</a></li> <li><a href="#identity-active_record">identity.active_record</a></li></ul></li><li><a href="#actionmailer">ActionMailer</a><ul><li><a href="#receive-action_mailer">receive.action_mailer</a></li> <li><a href="#deliver-action_mailer">deliver.action_mailer</a></li></ul></li><li><a href="#activeresource">ActiveResource</a><ul><li><a href="#request-active_resource">request.active_resource</a></li></ul></li><li><a href="#activesupport">ActiveSupport</a><ul><li><a href="#cache_read-active_support">cache_read.active_support</a></li> <li><a href="#cache_generate-active_support">cache_generate.active_support</a></li> <li><a href="#cache_fetch_hit-active_support">cache_fetch_hit.active_support</a></li> <li><a href="#cache_write-active_support">cache_write.active_support</a></li> <li><a href="#cache_delete-active_support">cache_delete.active_support</a></li> <li><a href="#cache_exist-active_support">cache_exist?.active_support</a></li></ul></li><li><a href="#rails">Rails</a><ul><li><a href="#deprecation-rails">deprecation.rails</a></li></ul></li><li><a href="#subscribing-to-an-event">Subscribing to an event</a></li><li><a href="#creating-custom-events">Creating custom events</a></li></ol></div>
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+        <h3 id="introduction-to-instrumentation">1 Introduction to instrumentation</h3>
+<p>The instrumentation <span class="caps">API</span> provided by ActiveSupport allows developers to provide hooks which other developers may hook into. There are several of these within the Rails framework, as described below in <TODO: link to section detailing each hook point>. With this <span class="caps">API</span>, developers can choose to be notified when certain events occur inside their application or another piece of Ruby code.</p>
+<p>For example, there is a hook provided within Active Record that is called every time Active Record uses a <span class="caps">SQL</span> query on a database. This hook could be <strong>subscribed</strong> to, and used to track the number of queries during a certain action. There&#8217;s another hook around the processing of an action of a controller. This could be used, for instance, to track how long a specific action has taken.</p>
+<p>You are even able to create your own events inside your application which you can later subscribe to.</p>
+<h3 id="rails-framework-hooks">2 Rails framework hooks</h3>
+<p>Within the Ruby on Rails framework, there are a number of hooks provided for common events. These are detailed below.</p>
+<h3 id="actioncontroller">3 ActionController</h3>
+<h4 id="write_fragment-action_controller">3.1 write_fragment.action_controller</h4>
+<table>
+	<tr>
+		<th>Key         </th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td><tt>:key</tt>        </td>
+		<td>The complete key</td>
+	</tr>
+</table>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :key =&gt; 'posts/1-dasboard-view'
+}
+</pre>
+</div>
+<h4 id="read_fragment-action_controller">3.2 read_fragment.action_controller</h4>
+<table>
+	<tr>
+		<th>Key         </th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td><tt>:key</tt>        </td>
+		<td>The complete key</td>
+	</tr>
+</table>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :key =&gt; 'posts/1-dasboard-view'
+}
+</pre>
+</div>
+<h4 id="expire_fragment-action_controller">3.3 expire_fragment.action_controller</h4>
+<table>
+	<tr>
+		<th>Key         </th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td><tt>:key</tt>        </td>
+		<td>The complete key</td>
+	</tr>
+</table>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :key =&gt; 'posts/1-dasboard-view'
+}
+</pre>
+</div>
+<h4 id="exist_fragment-action_controller">3.4 exist_fragment?.action_controller</h4>
+<table>
+	<tr>
+		<th>Key         </th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td><tt>:key</tt>        </td>
+		<td>The complete key</td>
+	</tr>
+</table>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :key =&gt; 'posts/1-dasboard-view'
+}
+</pre>
+</div>
+<h4 id="write_page-action_controller">3.5 write_page.action_controller</h4>
+<table>
+	<tr>
+		<th>Key     </th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td><tt>:path</tt>   </td>
+		<td>The complete path</td>
+	</tr>
+</table>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :path =&gt; '/users/1'
+}
+</pre>
+</div>
+<h4 id="expire_page-action_controller">3.6 expire_page.action_controller</h4>
+<table>
+	<tr>
+		<th>Key     </th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td><tt>:path</tt>   </td>
+		<td>The complete path</td>
+	</tr>
+</table>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :path =&gt; '/users/1'
+}
+</pre>
+</div>
+<h4 id="start_processing-action_controller">3.7 start_processing.action_controller</h4>
+<table>
+	<tr>
+		<th>Key          </th>
+		<th>Value </th>
+	</tr>
+	<tr>
+		<td><tt>:controller</tt>  </td>
+		<td>The controller name</td>
+	</tr>
+	<tr>
+		<td><tt>:action</tt>      </td>
+		<td>The action</td>
+	</tr>
+	<tr>
+		<td><tt>:params</tt>      </td>
+		<td>Hash of request parameters without any filtered parameter</td>
+	</tr>
+	<tr>
+		<td><tt>:format</tt>      </td>
+		<td>html/js/json/xml etc</td>
+	</tr>
+	<tr>
+		<td><tt>:method</tt>      </td>
+		<td><span class="caps">HTTP</span> request verb</td>
+	</tr>
+	<tr>
+		<td><tt>:path</tt>        </td>
+		<td>Request path</td>
+	</tr>
+</table>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :controller =&gt; &quot;PostsController&quot;,
+  :action =&gt; &quot;new&quot;,
+  :params =&gt; { &quot;action&quot; =&gt; &quot;new&quot;, &quot;controller&quot; =&gt; &quot;posts&quot; },
+  :format =&gt; :html,
+  :method =&gt; &quot;GET&quot;,
+  :path =&gt; &quot;/posts/new&quot;
+}
+</pre>
+</div>
+<h4 id="process_action-action_controller">3.8 process_action.action_controller</h4>
+<table>
+	<tr>
+		<th>Key             </th>
+		<th>Value </th>
+	</tr>
+	<tr>
+		<td><tt>:controller</tt>     </td>
+		<td>The controller name</td>
+	</tr>
+	<tr>
+		<td><tt>:action</tt>         </td>
+		<td>The action</td>
+	</tr>
+	<tr>
+		<td><tt>:params</tt>         </td>
+		<td>Hash of request parameters without any filtered parameter</td>
+	</tr>
+	<tr>
+		<td><tt>:format</tt>         </td>
+		<td>html/js/json/xml etc</td>
+	</tr>
+	<tr>
+		<td><tt>:method</tt>         </td>
+		<td><span class="caps">HTTP</span> request verb</td>
+	</tr>
+	<tr>
+		<td><tt>:path</tt>           </td>
+		<td>Request path</td>
+	</tr>
+	<tr>
+		<td><tt>:view_runtime</tt>   </td>
+		<td>Amount spent in view in ms</td>
+	</tr>
+</table>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :controller =&gt; &quot;PostsController&quot;,
+  :action =&gt; &quot;index&quot;,
+  :params =&gt; {&quot;action&quot; =&gt; &quot;index&quot;, &quot;controller&quot; =&gt; &quot;posts&quot;},
+  :format =&gt; :html,
+  :method =&gt; &quot;GET&quot;,
+  :path =&gt; &quot;/posts&quot;,
+  :status =&gt; 200,
+  :view_runtime =&gt; 46.848,
+  :db_runtime =&gt; 0.157
+}
+</pre>
+</div>
+<h4 id="send_file-action_controller">3.9 send_file.action_controller</h4>
+<table>
+	<tr>
+		<th>Key        </th>
+		<th>Value </th>
+	</tr>
+	<tr>
+		<td><tt>:path</tt>      </td>
+		<td>Complete path to the file</td>
+	</tr>
+</table>
+<div class="info"><p>Additional keys may be added by the caller.</p></div>
+<h4 id="send_data-action_controller">3.10 send_data.action_controller</h4>
+<p><tt>ActionController</tt> does not had any specific information to the payload. All options are passed through to the payload.</p>
+<h4 id="redirect_to-action_controller">3.11 redirect_to.action_controller</h4>
+<table>
+	<tr>
+		<th>Key         </th>
+		<th>Value </th>
+	</tr>
+	<tr>
+		<td><tt>:status</tt>     </td>
+		<td><span class="caps">HTTP</span> response code</td>
+	</tr>
+	<tr>
+		<td><tt>:location</tt>   </td>
+		<td><span class="caps">URL</span> to redirect to</td>
+	</tr>
+</table>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :status =&gt; 302,
+  :location =&gt; &quot;http://localhost:3000/posts/new&quot;
+}
+</pre>
+</div>
+<h4 id="halted_callback-action_controller">3.12 halted_callback.action_controller</h4>
+<table>
+	<tr>
+		<th>Key       </th>
+		<th>Value </th>
+	</tr>
+	<tr>
+		<td><tt>:filter</tt>   </td>
+		<td>Filter that halted the action</td>
+	</tr>
+</table>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :filter =&gt; &quot;:halting_filter&quot;
+}
+</pre>
+</div>
+<h3 id="actionview">4 ActionView</h3>
+<h4 id="render_template-action_view">4.1 render_template.action_view</h4>
+<table>
+	<tr>
+		<th>Key          </th>
+		<th>Value </th>
+	</tr>
+	<tr>
+		<td><tt>:identifier</tt>  </td>
+		<td>Full path to template</td>
+	</tr>
+	<tr>
+		<td><tt>:layout</tt>      </td>
+		<td>Applicable layout</td>
+	</tr>
+</table>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :identifier =&gt; &quot;/Users/adam/projects/notifications/app/views/posts/index.html.erb&quot;,
+  :layout =&gt; &quot;layouts/application&quot;
+}
+</pre>
+</div>
+<h4 id="render_partial-action_view">4.2 render_partial.action_view</h4>
+<table>
+	<tr>
+		<th>Key           </th>
+		<th>Value </th>
+	</tr>
+	<tr>
+		<td><tt>:identifier</tt>   </td>
+		<td>Full path to template</td>
+	</tr>
+</table>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :identifier =&gt; &quot;/Users/adam/projects/notifications/app/views/posts/_form.html.erb&quot;,
+}
+</pre>
+</div>
+<h3 id="activerecord">5 ActiveRecord</h3>
+<h4 id="sql-active_record">5.1 sql.active_record</h4>
+<table>
+	<tr>
+		<th>Key          </th>
+		<th>Value </th>
+	</tr>
+	<tr>
+		<td><tt>:sql</tt>         </td>
+		<td><span class="caps">SQL</span> statement</td>
+	</tr>
+	<tr>
+		<td><tt>:name</tt>        </td>
+		<td>Name of the operation</td>
+	</tr>
+	<tr>
+		<td><tt>:object_id</tt>   </td>
+		<td><tt>self.object_id</tt></td>
+	</tr>
+</table>
+<div class="info"><p>The adapters will add their own data as well.</p></div>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :sql =&gt; &quot;SELECT \&quot;posts\&quot;.* FROM \&quot;posts\&quot; &quot;,
+  :name =&gt; &quot;Post Load&quot;,
+  :connection_id =&gt; 70307250813140,
+  :binds =&gt; []
+}
+</pre>
+</div>
+<h4 id="identity-active_record">5.2 identity.active_record</h4>
+<table>
+	<tr>
+		<th>Key            </th>
+		<th>Value </th>
+	</tr>
+	<tr>
+		<td><tt>:line</tt>          </td>
+		<td>Primary Key of object in the identity map</td>
+	</tr>
+	<tr>
+		<td><tt>:name</tt>          </td>
+		<td>Record&#8217;s class</td>
+	</tr>
+	<tr>
+		<td><tt>:connection_id</tt> </td>
+		<td><tt>self.object_id</tt></td>
+	</tr>
+</table>
+<h3 id="actionmailer">6 ActionMailer</h3>
+<h4 id="receive-action_mailer">6.1 receive.action_mailer</h4>
+<table>
+	<tr>
+		<th>Key          </th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td><tt>:mailer</tt>      </td>
+		<td>Name of the mailer class</td>
+	</tr>
+	<tr>
+		<td><tt>:message_id</tt>  </td>
+		<td>ID of the message, generated by the Mail gem</td>
+	</tr>
+	<tr>
+		<td><tt>:subject</tt>     </td>
+		<td>Subject of the mail</td>
+	</tr>
+	<tr>
+		<td><tt>:to</tt>          </td>
+		<td>To address(es) of the mail</td>
+	</tr>
+	<tr>
+		<td><tt>:from</tt>        </td>
+		<td>From address of the mail</td>
+	</tr>
+	<tr>
+		<td><tt>:bcc</tt>         </td>
+		<td><span class="caps">BCC</span> addresses of the mail</td>
+	</tr>
+	<tr>
+		<td><tt>:cc</tt>          </td>
+		<td>CC addresses of the mail</td>
+	</tr>
+	<tr>
+		<td><tt>:date</tt>        </td>
+		<td>Date of the mail</td>
+	</tr>
+	<tr>
+		<td><tt>:mail</tt>        </td>
+		<td>The encoded form of the mail</td>
+	</tr>
+</table>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :mailer =&gt; &quot;Notification&quot;,
+  :message_id =&gt; &quot;4f5b5491f1774_181b23fc3d4434d38138e5@mba.local.mail&quot;,
+  :subject =&gt; &quot;Rails Guides&quot;,
+  :to =&gt; [&quot;users@rails.com&quot;, &quot;ddh@rails.com&quot;],
+  :from =&gt; [&quot;me@rails.com&quot;],
+  :date =&gt; Sat, 10 Mar 2012 14:18:09 +0100,
+  :mail=&gt; &quot;...&quot; # ommitted for beverity
+}
+</pre>
+</div>
+<h4 id="deliver-action_mailer">6.2 deliver.action_mailer</h4>
+<table>
+	<tr>
+		<th>Key          </th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td><tt>:mailer</tt>      </td>
+		<td>Name of the mailer class</td>
+	</tr>
+	<tr>
+		<td><tt>:message_id</tt>  </td>
+		<td>ID of the message, generated by the Mail gem</td>
+	</tr>
+	<tr>
+		<td><tt>:subject</tt>     </td>
+		<td>Subject of the mail</td>
+	</tr>
+	<tr>
+		<td><tt>:to</tt>          </td>
+		<td>To address(es) of the mail</td>
+	</tr>
+	<tr>
+		<td><tt>:from</tt>        </td>
+		<td>From address of the mail</td>
+	</tr>
+	<tr>
+		<td><tt>:bcc</tt>         </td>
+		<td><span class="caps">BCC</span> addresses of the mail</td>
+	</tr>
+	<tr>
+		<td><tt>:cc</tt>          </td>
+		<td>CC addresses of the mail</td>
+	</tr>
+	<tr>
+		<td><tt>:date</tt>        </td>
+		<td>Date of the mail</td>
+	</tr>
+	<tr>
+		<td><tt>:mail</tt>        </td>
+		<td>The encoded form of the mail</td>
+	</tr>
+</table>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :mailer =&gt; &quot;Notification&quot;,
+  :message_id =&gt; &quot;4f5b5491f1774_181b23fc3d4434d38138e5@mba.local.mail&quot;,
+  :subject =&gt; &quot;Rails Guides&quot;,
+  :to =&gt; [&quot;users@rails.com&quot;, &quot;ddh@rails.com&quot;],
+  :from =&gt; [&quot;me@rails.com&quot;],
+  :date =&gt; Sat, 10 Mar 2012 14:18:09 +0100,
+  :mail=&gt; &quot;...&quot; # ommitted for beverity
+}
+</pre>
+</div>
+<h3 id="activeresource">7 ActiveResource</h3>
+<h4 id="request-active_resource">7.1 request.active_resource</h4>
+<table>
+	<tr>
+		<th>Key           </th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td><tt>:method</tt>       </td>
+		<td><span class="caps">HTTP</span> method</td>
+	</tr>
+	<tr>
+		<td><tt>:request_uri</tt>  </td>
+		<td>Complete <span class="caps">URI</span></td>
+	</tr>
+	<tr>
+		<td><tt>:result</tt>       </td>
+		<td><span class="caps">HTTP</span> response object</td>
+	</tr>
+</table>
+<h3 id="activesupport">8 ActiveSupport</h3>
+<h4 id="cache_read-active_support">8.1 cache_read.active_support</h4>
+<table>
+	<tr>
+		<th>Key                </th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td><tt>:key</tt>               </td>
+		<td>Key used in the store</td>
+	</tr>
+	<tr>
+		<td><tt>:hit</tt>               </td>
+		<td>If this read is a hit</td>
+	</tr>
+	<tr>
+		<td><tt>:super_operation</tt>   </td>
+		<td>:fetch is added when a read is used with <tt>#fetch</tt></td>
+	</tr>
+</table>
+<h4 id="cache_generate-active_support">8.2 cache_generate.active_support</h4>
+<p>This event is only used when <tt>#fetch</tt> is called with a block.</p>
+<table>
+	<tr>
+		<th>Key   </th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td><tt>:key</tt>  </td>
+		<td>Key used in the store</td>
+	</tr>
+</table>
+<div class="info"><p>Options passed to fetch will be merged with the payload when writing to the store</p></div>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :key =&gt; 'name-of-complicated-computation'
+}
+</pre>
+</div>
+<h4 id="cache_fetch_hit-active_support">8.3 cache_fetch_hit.active_support</h4>
+<p>This event is only used when <tt>#fetch</tt> is called with a block.</p>
+<table>
+	<tr>
+		<th>Key   </th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td><tt>:key</tt>  </td>
+		<td>Key used in the store</td>
+	</tr>
+</table>
+<div class="info"><p>Options passed to fetch will be merged with the payload.</p></div>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :key =&gt; 'name-of-complicated-computation'
+}
+</pre>
+</div>
+<h4 id="cache_write-active_support">8.4 cache_write.active_support</h4>
+<table>
+	<tr>
+		<th>Key   </th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td><tt>:key</tt>  </td>
+		<td>Key used in the store</td>
+	</tr>
+</table>
+<div class="info"><p>Cache stores my add their own keys</p></div>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :key =&gt; 'name-of-complicated-computation'
+}
+</pre>
+</div>
+<h4 id="cache_delete-active_support">8.5 cache_delete.active_support</h4>
+<table>
+	<tr>
+		<th>Key   </th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td><tt>:key</tt>  </td>
+		<td>Key used in the store</td>
+	</tr>
+</table>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :key =&gt; 'name-of-complicated-computation'
+}
+</pre>
+</div>
+<h4 id="cache_exist-active_support">8.6 cache_exist?.active_support</h4>
+<table>
+	<tr>
+		<th>Key   </th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td><tt>:key</tt>  </td>
+		<td>Key used in the store</td>
+	</tr>
+</table>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+{
+  :key =&gt; 'name-of-complicated-computation'
+}
+</pre>
+</div>
+<h3 id="rails">9 Rails</h3>
+<h4 id="deprecation-rails">9.1 deprecation.rails</h4>
+<table>
+	<tr>
+		<th>Key           </th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td><tt>:message</tt>      </td>
+		<td>The deprecation warning</td>
+	</tr>
+	<tr>
+		<td><tt>:callstack</tt>    </td>
+		<td>Where the deprecation came from</td>
+	</tr>
+</table>
+<h3 id="subscribing-to-an-event">10 Subscribing to an event</h3>
+<p>Subscribing to an event is easy. Use <tt>ActiveSupport::Notifications.subscribe</tt> with a block to
+listen to any notification.</p>
+<p>The block receives the following arguments:</p>
+<ol>
+	<li>The name of the event</li>
+	<li>Time when is started</li>
+	<li>Time when it finished</li>
+	<li>An unique ID for this event</li>
+	<li>The payload (described in previous sections)</li>
+</ol>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+ActiveSupport::Notifications.subscribe &quot;process_action.action_controller&quot; do |name, started, finished, unique_id, data|
+  # your own custom stuff
+  Rails.logger.info &quot;#{name} Received!&quot;
+end
+</pre>
+</div>
+<p>Defining all those block arguments each time can be tedious. You can easily create an <tt>ActiveSupport::Notifications::Event</tt>
+from block args like this:</p>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+ActiveSupport::Notifications.subscribe &quot;process_action.action_controller&quot; do |*args|
+  event = ActiveSupport::Notification::Event.new args
+
+  event.name      # =&gt; &quot;process_action.action_controller&quot;
+  event.duration  # =&gt; 10 (in milliseconds)
+  event.payload   # =&gt; { :extra =&gt; :information }
+
+  Rails.logger.info &quot;#{event} Received!&quot;
+end
+</pre>
+</div>
+<p>Most times you only care about the data itself. Here is a shortuct to just get the data.</p>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+ActiveSupport::Notifications.subscribe &quot;process_action.action_controller&quot; do |*args|
+  data = args.extract_options!
+  data # { :extra =&gt; :information }
+</pre>
+</div>
+<p>You may also subscribe to events matching a regular expresssion. This enables you to subscribe to
+multiple events at once. Here&#8217;s you could subscribe to everything from <tt>ActionController</tt>.</p>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+ActiveSupport::Notifications.subscribe /action_controller/ do |*args|
+  # inspect all ActionController events
+end
+</pre>
+</div>
+<h3 id="creating-custom-events">11 Creating custom events</h3>
+<p>Adding your own events is easy as well. <tt>ActiveSupport::Notifications</tt> will take care of
+all the heavy lifting for you. Simply call <tt>instrument</tt> with a <tt>name</tt>, <tt>payload</tt> and a block.
+The notification will be sent after the block returns. <tt>ActiveSupport</tt> will generate the start and end times
+as well as the unique ID. All data passed into the <tt>insturment</tt> call will make it into the payload.</p>
+<p>Here&#8217;s an example:</p>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+ActiveSupport::Notifications.instrument &quot;my.custom.event&quot;, :this =&gt; :data do
+  # do your custom stuff here
+end
+</pre>
+</div>
+<p>Now you can listen to this event with:</p>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+ActiveSupport::Notifications.subscribe &quot;my.custom.event&quot; do |name, started, finished, unique_id, data|
+  puts data.inspect # { :this =&gt; :data }
+end
+</pre>
+</div>
+<p>You should follow Rails conventions when defining your own events. The format is: <tt>event.library</tt>.
+If you application is sending Tweets, you should create an event named <tt>tweet.twitter</tt>.</p>
+
+        <h3>Feedback</h3>
+        <p>
+          You're encouraged to help improve the quality of this guide.
+        </p>
+        <p>
+          If you see any typos or factual errors you are confident to
+          patch, please clone <a href="https://github.com/lifo/docrails">docrails</a>
+          and push the change yourself. That branch of Rails has public write access.
+          Commits are still reviewed, but that happens after you've submitted your
+          contribution. <a href="https://github.com/lifo/docrails">docrails</a> is
+          cross-merged with master periodically.
+        </p>
+        <p>
+          You may also find incomplete content, or stuff that is not up to date.
+          Please do add any missing documentation for master. Check the
+          <a href="ruby_on_rails_guides_guidelines.html">Ruby on Rails Guides Guidelines</a>
+          for style and conventions.
+        </p>
+        <p>
+          If for whatever reason you spot something to fix but cannot patch it yourself, please
+          <a href="https://github.com/rails/rails/issues">open an issue</a>.
+        </p>
+        <p>And last but not least, any kind of discussion regarding Ruby on Rails
+          documentation is very welcome in the <a href="http://groups.google.com/group/rubyonrails-docs">rubyonrails-docs mailing list</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+  <div id="footer">
+    <div class="wrapper">
+      <p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-Share Alike 3.0</a> License</p>
+<p>"Rails", "Ruby on Rails", and the Rails logo are trademarks of David Heinemeier Hansson. All rights reserved.</p>
+
+    </div>
+  </div>
+
+  <script type="text/javascript" src="javascripts/guides.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shCore.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushRuby.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushXml.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushSql.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushPlain.js"></script>
+  <script type="text/javascript">
+    SyntaxHighlighter.all()
+  </script>
+</body>
+</html>

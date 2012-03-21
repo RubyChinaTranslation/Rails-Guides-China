@@ -1,0 +1,310 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Ruby on Rails Guides: A Guide for Upgrading Ruby on Rails</title>
+
+<link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
+<link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+<link rel="stylesheet" type="text/css" href="stylesheets/syntaxhighlighter/shCore.css" />
+<link rel="stylesheet" type="text/css" href="stylesheets/syntaxhighlighter/shThemeRailsGuides.css" />
+
+<link rel="stylesheet" type="text/css" href="stylesheets/fixes.css" />
+</head>
+<body class="guide">
+  <div id="topNav">
+    <div class="wrapper">
+      <strong>More at <a href="http://rubyonrails.org/">rubyonrails.org:</a> </strong>
+      <a href="http://rubyonrails.org/">Overview</a> |
+      <a href="http://rubyonrails.org/download">Download</a> |
+      <a href="http://rubyonrails.org/deploy">Deploy</a> |
+      <a href="https://github.com/rails/rails">Code</a> |
+      <a href="http://rubyonrails.org/screencasts">Screencasts</a> |
+      <a href="http://rubyonrails.org/documentation">Documentation</a> |
+      <a href="http://rubyonrails.org/ecosystem">Ecosystem</a> |
+      <a href="http://rubyonrails.org/community">Community</a> |
+      <a href="http://weblog.rubyonrails.org/">Blog</a>
+    </div>
+  </div>
+  <div id="header">
+    <div class="wrapper clearfix">
+      <h1><a href="index.html" title="Return to home page">Guides.rubyonrails.org</a></h1>
+      <ul class="nav">
+        <li><a href="index.html">Home</a></li>
+        <li class="index"><a href="index.html" onclick="guideMenu(); return false;" id="guidesMenu">Guides Index</a>
+          <div id="guides" class="clearfix" style="display: none;">
+            <hr />
+              <dl class="L">
+                <dt>Start Here</dt>
+                <dd><a href="getting_started.html">Getting Started with Rails</a></dd>
+                <dt>Models</dt>
+                <dd><a href="migrations.html">Rails Database Migrations</a></dd>
+                <dd><a href="active_record_validations_callbacks.html">Active Record Validations and Callbacks</a></dd>
+                <dd><a href="association_basics.html">Active Record Associations</a></dd>
+                <dd><a href="active_record_querying.html">Active Record Query Interface</a></dd>
+                <dt>Views</dt>
+                <dd><a href="layouts_and_rendering.html">Layouts and Rendering in Rails</a></dd>
+                <dd><a href="form_helpers.html">Action View Form Helpers</a></dd>
+                <dt>Controllers</dt>
+                <dd><a href="action_controller_overview.html">Action Controller Overview</a></dd>
+                <dd><a href="routing.html">Rails Routing from the Outside In</a></dd>
+              </dl>
+              <dl class="R">
+                <dt>Digging Deeper</dt>
+                <dd><a href="active_support_core_extensions.html">Active Support Core Extensions</a></dd>
+                <dd><a href="i18n.html">Rails Internationalization API</a></dd>
+                <dd><a href="security.html">Securing Rails Applications</a></dd>
+                <dd><a href="debugging_rails_applications.html">Debugging Rails Applications</a></dd>
+                <dd><a href="performance_testing.html">Performance Testing Rails Applications</a></dd>
+                <dd><a href="configuring.html">Configuring Rails Applications</a></dd>
+                <dd><a href="command_line.html">Rails Command Line Tools and Rake Tasks</a></dd>
+                <dd><a href="asset_pipeline.html">Asset Pipeline</a></dd>
+                <dt>Extending Rails</dt>
+                <dd><a href="rails_on_rack.html">Rails on Rack</a></dd>
+                <dd><a href="generators.html">Creating and Customizing Rails Generators</a></dd>
+                <dt>Contributing to Ruby on Rails</dt>
+                <dd><a href="contributing_to_ruby_on_rails.html">Contributing to Ruby on Rails</a></dd>
+                <dd><a href="api_documentation_guidelines.html">API Documentation Guidelines</a></dd>
+                <dd><a href="ruby_on_rails_guides_guidelines.html">Ruby on Rails Guides Guidelines</a></dd>
+                <dt>Release Notes</dt>
+                <dd><a href="3_2_release_notes.html">Ruby on Rails 3.2 Release Notes</a></dd>
+                <dd><a href="3_1_release_notes.html">Ruby on Rails 3.1 Release Notes</a></dd>
+                <dd><a href="3_0_release_notes.html">Ruby on Rails 3.0 Release Notes</a></dd>
+                <dd><a href="2_3_release_notes.html">Ruby on Rails 2.3 Release Notes</a></dd>
+                <dd><a href="2_2_release_notes.html">Ruby on Rails 2.2 Release Notes</a></dd>
+              </dl>
+          </div>
+        </li>
+        <li><a href="contributing_to_ruby_on_rails.html">Contribute</a></li>
+        <li><a href="credits.html">Credits</a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="hide" />
+
+  <div id="feature">
+    <div class="wrapper">
+      <h2>A Guide for Upgrading Ruby on Rails</h2>
+<p>This guide provides steps to be followed when you upgrade your applications to a newer version of Ruby on Rails. These steps are also available in individual release guides.</p>
+
+            <div id="subCol">
+        <h3 class="chapter"><img src="images/chapters_icon.gif" alt="" />Chapters</h3>
+        <ol class="chapters">
+<li><a href="#general-advice">General Advice</a><ul><li><a href="#general_testing">Test Coverage</a></li> <li><a href="#general_ruby">Ruby Versions</a></li></ul></li><li><a href="#upgrading-from-rails-3-2-to-rails-4-0">Upgrading from Rails 3.2 to Rails 4.0</a><ul><li><a href="#plugins4_0">vendor/plugins</a></li> <li><a href="#identity_map4_0">IdentityMap</a></li></ul></li><li><a href="#upgrading-from-rails-3-1-to-rails-3-2">Upgrading from Rails 3.1 to Rails 3.2</a><ul><li><a href="#gemfile3_2">Gemfile</a></li> <li><a href="#config_dev3_2">config/environments/development.rb</a></li> <li><a href="#config_test3_2">config/environments/test.rb</a></li> <li><a href="#plugins3_2">vendor/plugins</a></li></ul></li><li><a href="#upgrading-from-rails-3-0-to-rails-3-1">Upgrading from Rails 3.0 to Rails 3.1</a><ul><li><a href="#gemfile3_1">Gemfile</a></li> <li><a href="#config_app3_1">config/application.rb</a></li> <li><a href="#config_dev3_1">config/environments/development.rb</a></li> <li><a href="#config_prod3_1">config/environments/production.rb</a></li> <li><a href="#config_test3_1">config/environments/test.rb</a></li> <li><a href="#config_wp3_1">config/initializers/wrap_parameters.rb</a></li></ul></li></ol></div>
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+        <h3 id="general-advice">1 General Advice</h3>
+<p>Before attempting to upgrade an existing application, you should be sure you have a good reason to upgrade. You need to balance out several factors: the need for new features, the increasing difficulty of finding support for old code, and your available time and skills, to name a few.</p>
+<h4 id="general_testing">1.1 Test Coverage</h4>
+<p>The best way to be sure that your application still works after upgrading is to have good test coverage before you start the process. If you don&#8217;t have automated tests that exercise the bulk of your application, you&#8217;ll need to spend time manually exercising all the parts that have changed. In the case of a Rails upgrade, that will mean every single piece of functionality in the application. Do yourself a favor and make sure your test coverage is good <em>before</em> you start an upgrade.</p>
+<h4 id="general_ruby">1.2 Ruby Versions</h4>
+<p>Rails generally stays close to the latest released Ruby version when it&#8217;s released:</p>
+<ul>
+	<li>Rails 3 and above requires Ruby 1.8.7 or higher. Support for all of the previous Ruby versions has been dropped officially and you should upgrade as early as possible.</li>
+	<li>Rails 3.2.x will be the last branch to support Ruby 1.8.7.</li>
+	<li>Rails 4 will support only Ruby 1.9.3.</li>
+</ul>
+<div class="info"><p>Ruby 1.8.7 p248 and p249 have marshaling bugs that crash Rails. Ruby Enterprise Edition has these fixed since the release of 1.8.7-2010.02. On the 1.9 front, Ruby 1.9.1 is not usable because it outright segfaults, so if you want to use 1.9.x, jump on to 1.9.2 or 1.9.3 for smooth sailing.</p></div>
+<h3 id="upgrading-from-rails-3-2-to-rails-4-0">2 Upgrading from Rails 3.2 to Rails 4.0</h3>
+<div class="note"><p>This section is a work in progress.</p></div>
+<p>If your application is currently on any version of Rails older than 3.2.x, you should upgrade to Rails 3.2 before attempting an update to Rails 4.0.</p>
+<p>The following changes are meant for upgrading your application to Rails 4.0.</p>
+<h4 id="plugins4_0">2.1 vendor/plugins</h4>
+<p>Rails 4.0 no longer supports loading plugins from <tt>vendor/plugins</tt>. You must replace any plugins by extracting them to gems and adding them to your Gemfile. If you choose not to make them gems, you can move them into, say, <tt>lib/my_plugin/*</tt> and add an appropriate initializer in <tt>config/initializers/my_plugin.rb</tt>.</p>
+<h4 id="identity_map4_0">2.2 IdentityMap</h4>
+<p>Rails 4.0 has removed <tt>IdentityMap</tt> from <tt>ActiveRecord</tt>, due to <a href="https://github.com/rails/rails/commit/302c912bf6bcd0fa200d964ec2dc4a44abe328a6">some inconsistencies with associations</a>. If you have manually enabled it in your application, you will have to remove the following config that has no effect anymore: <tt>config.active_record.identity_map</tt>.</p>
+<h3 id="upgrading-from-rails-3-1-to-rails-3-2">3 Upgrading from Rails 3.1 to Rails 3.2</h3>
+<p>If your application is currently on any version of Rails older than 3.1.x, you should upgrade to Rails 3.1 before attempting an update to Rails 3.2.</p>
+<p>The following changes are meant for upgrading your application to Rails 3.2.2, the latest 3.2.x version of Rails.</p>
+<h4 id="gemfile3_2">3.1 Gemfile</h4>
+<p>Make the following changes to your <tt>Gemfile</tt>.</p>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+gem 'rails', '= 3.2.2'
+
+group :assets do
+  gem 'sass-rails',   '~&gt; 3.2.3'
+  gem 'coffee-rails', '~&gt; 3.2.1'
+  gem 'uglifier',     '&gt;= 1.0.3'
+end
+</pre>
+</div>
+<h4 id="config_dev3_2">3.2 config/environments/development.rb</h4>
+<p>There are a couple of new configuration settings that you should add to your development environment:</p>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+# Raise exception on mass assignment protection for Active Record models
+config.active_record.mass_assignment_sanitizer = :strict
+
+# Log the query plan for queries taking more than this (works
+# with SQLite, MySQL, and PostgreSQL)
+config.active_record.auto_explain_threshold_in_seconds = 0.5
+</pre>
+</div>
+<h4 id="config_test3_2">3.3 config/environments/test.rb</h4>
+<p>The <tt>mass_assignment_sanitizer</tt> configuration setting should also be be added to <tt>config/environments/test.rb</tt>:</p>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+# Raise exception on mass assignment protection for Active Record models
+config.active_record.mass_assignment_sanitizer = :strict
+</pre>
+</div>
+<h4 id="plugins3_2">3.4 vendor/plugins</h4>
+<p>Rails 3.2 deprecates <tt>vendor/plugins</tt> and Rails 4.0 will remove them completely. While it&#8217;s not strictly necessary as part of a Rails 3.2 upgrade, you can start replacing any plugins by extracting them to gems and adding them to your Gemfile. If you choose not to make them gems, you can move them into, say, <tt>lib/my_plugin/*</tt> and add an appropriate initializer in <tt>config/initializers/my_plugin.rb</tt>.</p>
+<h3 id="upgrading-from-rails-3-0-to-rails-3-1">4 Upgrading from Rails 3.0 to Rails 3.1</h3>
+<p>If your application is currently on any version of Rails older than 3.0.x, you should upgrade to Rails 3.0 before attempting an update to Rails 3.1.</p>
+<p>The following changes are meant for upgrading your application to Rails 3.1.3, the latest 3.1.x version of Rails.</p>
+<h4 id="gemfile3_1">4.1 Gemfile</h4>
+<p>Make the following changes to your <tt>Gemfile</tt>.</p>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+gem 'rails', '= 3.1.3'
+gem 'mysql2'
+
+# Needed for the new asset pipeline
+group :assets do
+  gem 'sass-rails',   &quot;~&gt; 3.1.5&quot;
+  gem 'coffee-rails', &quot;~&gt; 3.1.1&quot;
+  gem 'uglifier',     &quot;&gt;= 1.0.3&quot;
+end
+
+# jQuery is the default JavaScript library in Rails 3.1
+gem 'jquery-rails'
+</pre>
+</div>
+<h4 id="config_app3_1">4.2 config/application.rb</h4>
+<p>The asset pipeline requires the following additions:</p>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+config.assets.enabled = true
+config.assets.version = '1.0'
+</pre>
+</div>
+<p>If your application is using an &#8220;/assets&#8221; route for a resource you may want change the prefix used for assets to avoid conflicts:</p>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+# Defaults to '/assets'
+config.assets.prefix = '/asset-files'
+</pre>
+</div>
+<h4 id="config_dev3_1">4.3 config/environments/development.rb</h4>
+<p>Remove the <span class="caps">RJS</span> setting <tt>config.action_view.debug_rjs = true</tt>.</p>
+<p>Add these settings if you enable the asset pipeline:</p>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+# Do not compress assets
+config.assets.compress = false
+
+# Expands the lines which load the assets
+config.assets.debug = true
+</pre>
+</div>
+<h4 id="config_prod3_1">4.4 config/environments/production.rb</h4>
+<p>Again, most of the changes below are for the asset pipeline. You can read more about these in the <a href="asset_pipeline.html">Asset Pipeline</a> guide.</p>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+# Compress JavaScripts and CSS
+config.assets.compress = true
+
+# Don't fallback to assets pipeline if a precompiled asset is missed
+config.assets.compile = false
+
+# Generate digests for assets URLs
+config.assets.digest = true
+
+# Defaults to Rails.root.join(&quot;public/assets&quot;)
+# config.assets.manifest = YOUR_PATH
+
+# Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
+# config.assets.precompile += %w( search.js )
+
+# Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
+# config.force_ssl = true
+</pre>
+</div>
+<h4 id="config_test3_1">4.5 config/environments/test.rb</h4>
+<p>You can help test performance with these additions to your test environment:</p>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+# Configure static asset server for tests with Cache-Control for performance
+config.serve_static_assets = true
+config.static_cache_control = &quot;public, max-age=3600&quot;
+</pre>
+</div>
+<h4 id="config_wp3_1">4.6 config/initializers/wrap_parameters.rb</h4>
+<p>Add this file with the following contents, if you wish to wrap parameters into a nested hash. This is on by default in new applications.</p>
+<div class="code_container">
+<pre class="brush: ruby; gutter: false; toolbar: false">
+# Be sure to restart your server when you modify this file.
+# This file contains settings for ActionController::ParamsWrapper which
+# is enabled by default.
+
+# Enable parameter wrapping for JSON. You can disable this by setting :format to an empty array.
+ActiveSupport.on_load(:action_controller) do
+  wrap_parameters :format =&gt; [:json]
+end
+
+# Disable root element in JSON by default.
+ActiveSupport.on_load(:active_record) do
+  self.include_root_in_json = false
+end
+</pre>
+</div>
+
+        <h3>Feedback</h3>
+        <p>
+          You're encouraged to help improve the quality of this guide.
+        </p>
+        <p>
+          If you see any typos or factual errors you are confident to
+          patch, please clone <a href="https://github.com/lifo/docrails">docrails</a>
+          and push the change yourself. That branch of Rails has public write access.
+          Commits are still reviewed, but that happens after you've submitted your
+          contribution. <a href="https://github.com/lifo/docrails">docrails</a> is
+          cross-merged with master periodically.
+        </p>
+        <p>
+          You may also find incomplete content, or stuff that is not up to date.
+          Please do add any missing documentation for master. Check the
+          <a href="ruby_on_rails_guides_guidelines.html">Ruby on Rails Guides Guidelines</a>
+          for style and conventions.
+        </p>
+        <p>
+          If for whatever reason you spot something to fix but cannot patch it yourself, please
+          <a href="https://github.com/rails/rails/issues">open an issue</a>.
+        </p>
+        <p>And last but not least, any kind of discussion regarding Ruby on Rails
+          documentation is very welcome in the <a href="http://groups.google.com/group/rubyonrails-docs">rubyonrails-docs mailing list</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+  <div id="footer">
+    <div class="wrapper">
+      <p>This work is licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-Share Alike 3.0</a> License</p>
+<p>"Rails", "Ruby on Rails", and the Rails logo are trademarks of David Heinemeier Hansson. All rights reserved.</p>
+
+    </div>
+  </div>
+
+  <script type="text/javascript" src="javascripts/guides.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shCore.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushRuby.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushXml.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushSql.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushPlain.js"></script>
+  <script type="text/javascript">
+    SyntaxHighlighter.all()
+  </script>
+</body>
+</html>
