@@ -1,4 +1,0 @@
-* dafdsafdas
-* adsfdsafdas
-* dafdsafdsa
-endprologue.
