@@ -57,6 +57,7 @@
 require 'set'
 require 'fileutils'
 
+require "rails_guides/text_process"
 require 'active_support/core_ext/string/output_safety'
 require 'active_support/core_ext/object/blank'
 require 'action_controller'
@@ -70,7 +71,7 @@ module RailsGuides
   class Generator
     attr_reader :guides_dir, :source_dir, :output_dir, :edge, :warnings, :all
 
-    GUIDES_RE = /\.(?:textile|erb)$/
+    GUIDES_RE = /\.(?:textile|erb|markdown)$/
 
     def initialize(output=nil)
       set_flags_from_environment
@@ -178,6 +179,8 @@ module RailsGuides
     def output_file_for(guide)
       if guide =~/\.textile$/
         guide.sub(/\.textile$/, '.html')
+      elsif guide=~/\.markdown$/
+        guide.sub(/\.markdown$/,'.html')
       else
         guide.sub(/\.erb$/, '')
       end
@@ -203,22 +206,31 @@ module RailsGuides
         view.extend(Helpers)
 
         if guide =~ /\.(\w+)\.erb$/
-          # Generate the special pages like the home.
-          # Passing a template handler in the template name is deprecated. So pass the file name without the extension.
-          result = view.render(:layout => layout, :formats => [$1], :file => $`)
+            result = view.render(:layout => layout, :formats => [$1], :file => $`)
         else
-          body = File.read(File.join(source_dir, guide))
-          body = set_header_section(body, view)
-          body = set_index(body, view)
-
-          result = view.render(:layout => layout, :text => textile(body))
-
+          body = File.read(File.join(source_dir,guide))
+          if guide =~ /(\w+)\.markdown$/
+            result = process_by_bluecloth(body,view,layout)
+          else
+            result = process_by_redcloth(body,view,layout)
+          end
           warn_about_broken_links(result) if @warnings
         end
 
         f.write(result)
       end
     end
+    
+    def process_by_redcloth(body,view,layout)
+      set_header_section(body,view)
+      body = set_index(body, view)
+      result = view.render(:layout => layout, :text => textile(body))
+    end
+    
+    def process_by_bluecloth(body,view)
+      
+    end
+
 
     def set_header_section(body, view)
       new_body = body.gsub(/(.*?)endprologue\./m, '').strip
@@ -233,6 +245,9 @@ module RailsGuides
       view.content_for(:header_section) { header.html_safe }
       new_body
     end
+
+
+
 
     def set_index(body, view)
       index = <<-INDEX
@@ -267,10 +282,16 @@ module RailsGuides
     end
 
     def textile(body, lite_mode=false)
+      body = TextProcess.new(body).process
       t = RedCloth.new(body)
       t.hard_breaks = false
       t.lite_mode = lite_mode
-      t.to_html(:notestuff, :plusplus, :code)
+      t.to_html
+    end
+    
+    def markdown(body)
+      body = TextProcess.new(body).process
+      BlueCloth.new(body).to_html
     end
 
     def warn_about_broken_links(html)
@@ -305,6 +326,11 @@ module RailsGuides
           puts "*** BROKEN LINK: ##{fragment_identifier}, perhaps you meant ##{guess}."
         end
       end
+    end
+
+    def text_preprocess(body) 
+
+      
     end
   end
 end

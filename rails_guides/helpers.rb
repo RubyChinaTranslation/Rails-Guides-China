@@ -1,3 +1,4 @@
+#coding: utf-8
 module RailsGuides
   module Helpers
     def guide(name, url, options = {}, &block)
@@ -5,7 +6,7 @@ module RailsGuides
       result = content_tag(:dt, link)
 
       if options[:work_in_progress]
-        result << content_tag(:dd, 'Work in progress', :class => 'work-in-progress')
+        result << content_tag(:dd, '正在翻译中', :class => 'work-in-progress')
       end
 
       result << content_tag(:dd, capture(&block))
@@ -13,7 +14,7 @@ module RailsGuides
     end
 
     def documents_by_section
-      @documents_by_section ||= YAML.load_file(File.expand_path('../../source/documents.yaml', __FILE__))
+      @documents_by_section ||= YAML.load_file(File.expand_path("../../source/documents_#{ENV['GUIDES_LANGUAGE']}.yaml", __FILE__))
     end
 
     def documents_flat
