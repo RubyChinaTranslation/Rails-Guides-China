@@ -53,6 +53,7 @@ PLATFORMS
 DEPENDENCIES
   RedCloth (~> 4.2)
   actionpack (>= 3.0)
+  activesupport
   bluecloth (~> 2.2.0)
   rake (>= 0.8.7)
   sdoc

@@ -1,5 +1,5 @@
 <% content_for :page_title do %>
-Ruby on Rails Guides
+Ruby on Rails Guides 中文
 <% end %>
 
 <% content_for :header_section do %>
@@ -22,8 +22,8 @@ iPhone, Mac, Android, etc. Download them from <%= link_to 'here', @mobi %>.
   <h3><%= section['name'] %></h3>
   <dl>
     <% section['documents'].each do |document| %>
-      <%= guide(document['name'], document['url'], :work_in_progress => document['work_in_progress']) do %>
-        <p><%= document['description'] %></p>
+      <%= guide(document['name'], document['url'], :contributor => document['contributor'], :no_translated => document['no_translated']) do %>
+                <p><%= document['description'] %></p>
       <% end %>
     <% end %>
   </dl>

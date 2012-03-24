@@ -1,3 +1,5 @@
+#coding: utf-8
+
 # ---------------------------------------------------------------------------
 #
 # This script generates the guides. It can be invoked either directly or via the
@@ -149,10 +151,9 @@ module RailsGuides
     def generate_guides
       guides_to_generate.each do |guide|
         output_file = output_file_for(guide)
-        generate_guide(guide, output_file) if generate?(guide, output_file)
+        generate_guide(guide, output_file)  if generate?(guide, output_file)
       end
     end
-
     def guides_to_generate
       guides = Dir.entries(source_dir).grep(GUIDES_RE)
 
@@ -193,7 +194,7 @@ module RailsGuides
     def generate?(source_file, output_file)
       fin  = File.join(source_dir, source_file)
       fout = output_path_for(output_file)
-      all || !File.exists?(fout) || File.mtime(fout) < File.mtime(fin)
+      all || !File.exist?(fout) || File.mtime(fout) < File.mtime(fin)
     end
 
     def generate_guide(guide, output_file)
@@ -252,7 +253,7 @@ module RailsGuides
     def set_index(body, view)
       index = <<-INDEX
       <div id="subCol">
-        <h3 class="chapter"><img src="images/chapters_icon.gif" alt="" />Chapters</h3>
+        <h3 class="chapter"><img src="images/chapters_icon.gif" alt="" />目录</h3>
         <ol class="chapters">
       INDEX
 
@@ -328,9 +329,5 @@ module RailsGuides
       end
     end
 
-    def text_preprocess(body) 
-
-      
-    end
-  end
+     end
 end

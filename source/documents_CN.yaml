@@ -4,6 +4,7 @@
     -
       name: Getting Started with Rails
       url: getting_started.html
+      contributor: Tassandar
       description: Everything you need to know to install Rails and create your first application.
 -
   name: Models
@@ -11,6 +12,7 @@
     -
       name: Rails Database Migrations
       url: migrations.html
+      no_translated: true
       description: This guide covers how you can use Active Record migrations to alter your database in a structured and organized manner.
     -
       name: Active Record Validations and Callbacks
@@ -61,6 +63,7 @@
       name: Action Mailer Basics
       url: action_mailer_basics.html
       work_in_progress: true
+      translate_in_progress: true
       description: This guide describes how to use Action Mailer to send and receive emails.
     - 
       name: Testing Rails Applications
