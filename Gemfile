@@ -1,5 +1,6 @@
 source 'http://ruby.taobao.org'
 
+gem "activesupport" , '>= 3.0' 
 gem "actionpack", '>= 3.0'
 
 group :doc do
@@ -10,4 +11,4 @@ group :doc do
 end
 
 gem 'rake', '>= 0.8.7'
-
+gem 'capistrano'

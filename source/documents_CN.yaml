@@ -1,16 +1,28 @@
+#coding: utf-8
 - 
   name: Start Here
   documents:
     -
       name: Getting Started with Rails
       url: getting_started.html
+      contributor: Tassandar
       description: Everything you need to know to install Rails and create your first application.
+-
+  name: Rails 中文翻译
+  documents:
+    -
+      name: Ruby on Rails Guides翻译规则
+      url: rails_guides_translate_rules.html
+      work_in_progress: 翻译中
+      contributor: Tassandar
+      
 -
   name: Models
   documents:
     -
       name: Rails Database Migrations
       url: migrations.html
+      work_in_progress: true
       description: This guide covers how you can use Active Record migrations to alter your database in a structured and organized manner.
     -
       name: Active Record Validations and Callbacks
@@ -61,6 +73,7 @@
       name: Action Mailer Basics
       url: action_mailer_basics.html
       work_in_progress: true
+      translate_in_progress: true
       description: This guide describes how to use Action Mailer to send and receive emails.
     - 
       name: Testing Rails Applications
@@ -128,7 +141,7 @@
     - 
       name: Contributing to Ruby on Rails
       url: contributing_to_ruby_on_rails.html
-      description: Rails is not 'somebody else's framework.' This guide covers a variety of ways that you can get involved in the ongoing development of Rails.
+      description: Rails is not 'somebody else's framework. This guide covers a variety of ways that you can get involved in the ongoing development of Rails.
     - 
       name: API Documentation Guidelines
       url: api_documentation_guidelines.html

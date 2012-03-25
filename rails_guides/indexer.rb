@@ -3,12 +3,12 @@ require 'active_support/core_ext/string/inflections'
 
 module RailsGuides
   class Indexer
-    attr_reader :body, :result, :warnings, :level_hash
+    attr_reader :body, :result,:level_hash,:markup
 
-    def initialize(body, warnings)
+    def initialize(body,markup)
       @body     = body
       @result   = @body.dup
-      @warnings = warnings
+      @markup = markup
     end
 
     def index
@@ -23,21 +23,31 @@ module RailsGuides
       level_hash = {}
 
       while !s.eos?
-        re = %r{^h(\d)(?:\((#.*?)\))?\s*\.\s*(.*)$}
-        s.match?(re)
-        if matched = s.matched
+        if markup == "markdown"
+          re = %r{^(#+)\s*(.*)$}
+          s.match?(re)
+          matched = s.matched
           matched =~ re
-          level, idx, title = $1.to_i, $2, $3.strip
-
-          if level < current_level
+          level, idx, title = $1.count('#'), nil, $2.strip if matched
+        else
+          re = %r{^h(\d)(?:\((#.*?)\))?\s*\.\s*(.*)$}
+          s.match?(re)
+          matched = s.matched
+          matched =~ re
+          level, idx, title = $1.to_i, $2, $3.strip if matched
+        end
+        if matched
+         if level < current_level
             # This is needed. Go figure.
             return level_hash
-          elsif level == current_level
-            index = counters.join(".")
-            idx ||= '#' + title_to_idx(title)
-
-            raise "Parsing Fail" unless @result.sub!(matched, "h#{level}(#{idx}). #{index} #{title}")
-
+         elsif level == current_level
+            index = counters.join("-")
+            idx ||= '#' + index
+            if markup == "markdown"
+              @result.sub!(matched,"<h#{level} id='#{index}'> #{index.gsub('-','.')}#{title} </h#{level}>")
+            else 
+              @result.sub!(matched, "h#{level}(#{idx}). #{index.gsub('-','.')} #{title}")
+            end
             key = {
               :title => title,
               :id => idx
@@ -55,14 +65,6 @@ module RailsGuides
         s.getch
       end
       level_hash
-    end
-
-    def title_to_idx(title)
-      idx = title.strip.parameterize.sub(/^\d+/, '')
-      if warnings && idx.blank?
-        puts "BLANK ID: please put an explicit ID for section #{title}, as in h5(#my-id)"
-      end
-      idx
     end
   end
 end
