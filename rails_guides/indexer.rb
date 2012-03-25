@@ -24,11 +24,11 @@ module RailsGuides
 
       while !s.eos?
         if markup == "markdown"
-          re = %r{/^(#+)\s*(.*)$/}
+          re = %r{^(#+)\s*(.*)$}
           s.match?(re)
           matched = s.matched
           matched =~ re
-          level, idx, title = $1.count('#'), nil, $2.strip
+          level, idx, title = $1.count('#'), nil, $2.strip if matched
         else
           re = %r{^h(\d)(?:\((#.*?)\))?\s*\.\s*(.*)$}
           s.match?(re)
@@ -44,9 +44,9 @@ module RailsGuides
             index = counters.join("-")
             idx ||= '#' + index
             if markup == "markdown"
-              @result.sub!(matched,"<h#{level} id='#{index}'> #{index}#{title} </h#{level}>")
+              @result.sub!(matched,"<h#{level} id='#{index}'> #{index.gsub('-','.')}#{title} </h#{level}>")
             else 
-              @result.sub!(matched, "h#{level}(#{idx}). #{index} #{title}")
+              @result.sub!(matched, "h#{level}(#{idx}). #{index.gsub('-','.')} #{title}")
             end
             key = {
               :title => title,

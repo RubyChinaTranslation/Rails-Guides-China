@@ -10,7 +10,7 @@ module RailsGuides
       @body = body
       @view = view
       if @markup == "markdown"
-        @header_capture = /##\.(.*)/
+        @header_capture = /##\s*(.*)/
         @lb = lambda { |text,void|  markdown(text) }
       else
         @header_capture = /h2\.(.*)/
@@ -29,7 +29,7 @@ module RailsGuides
       body.gsub!(/(.*?)endprologue\./m, '').strip!
       header = $1
       header =~ header_capture
-      page_title = "Ruby on Rails Guides: #{$1.strip}"
+      page_title = "Ruby on Rails Guides 中文: #{$1.strip}"
       header = lb.call(header,false)
       view.content_for(:page_title) { page_title.html_safe }
       view.content_for(:header_section) { header.html_safe }
