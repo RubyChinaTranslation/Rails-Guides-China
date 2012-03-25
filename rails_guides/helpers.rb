@@ -6,9 +6,13 @@ module RailsGuides
       result = content_tag(:dt, link)
 
       if options[:work_in_progress]
-        result << content_tag(:dd, '正在翻译中', :class => 'work-in-progress')
+        result << content_tag(:dd, "#{options[:work_in_progress]}，负责人: <a href='http://github.com/#{options[:contributor] || "匿名"}/".html_safe, :class => 'work-in-progress')
+      elsif !options[:contributor]
+        result << 
+        content_tag(:dd, :class => 'work-in-progress' ) do
+          "这篇还没有人翻译，我要<a href='rails_guides_translate_rules'>翻译本文</a>".html_safe
+        end
       end
-
       result << content_tag(:dd, capture(&block))
       result
     end
