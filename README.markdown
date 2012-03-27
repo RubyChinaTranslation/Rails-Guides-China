@@ -111,6 +111,6 @@ $> **rake generate_guides_CN**
 
 ### 协议
 
-本网站[fork from docrails](https://github.com/lifo/docrails), 协议同样使用，对于作者翻译坚持 [CC协议](http://creativecommons.org/licenses/by-sa/3.0/) 。
+本网站[fork from docrails](https://github.com/lifo/docrails), 对于内容使用 [CC协议](http://creativecommons.org/licenses/by-sa/3.0/) 。
 
 有什么问题可以联系我<mailto:cool.zhikai@gmail.com>.
