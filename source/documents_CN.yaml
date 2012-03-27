@@ -3,8 +3,10 @@
   name: Start Here
   documents:
     -
-      name: Getting Started with Rails
+      name: Rails 初上手指南 
       url: getting_started.html
+      work_in_progress: true
+      contributor: jhjguxin
       description: Everything you need to know to install Rails and create your first application.
       
 -
