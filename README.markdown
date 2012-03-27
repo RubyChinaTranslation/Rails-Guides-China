@@ -13,7 +13,7 @@ Rails Guides 中文是由 [docrails](https://github.com/lifo/docrails) 中的gui
 
 #### 认领制度
 
-不管你是要翻译原有文章，还是希望添加一些你觉得非常有用的译文，都应该在翻译之前进行翻译认领来保证没有人和你重复工作。很简单，只要在  source/documents_CN.yaml  中找到或者加入你想翻译的文章的资料，加入  **work_in_progress = true**  之后  push  过来就代表你成功的占到了一个坑，你可以开始慢慢的翻译自己的文章了。
+不管你是要翻译原有文章，还是希望添加一些你觉得非常有用的译文，都应该在翻译之前进行翻译认领来保证没有人和你重复工作。很简单，只要在  source/documents_CN.yaml  中找到或者加入你想翻译的文章的资料，加入  **work_in_progress: true**,**contributor: +your_github_acount+**  之后  push  过来就代表你成功的占到了一个坑，你可以开始慢慢的翻译自己的文章了。
 
 你可以在contributor一栏中加入 自己的github用户名，以便其他人可以联系到你。另外如果你占坑太久你的占位可能会被取消。尽量在半个月内完成你的工作。 
 
