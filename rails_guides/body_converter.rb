@@ -9,12 +9,12 @@ module RailsGuides
       @markup = markup
       @body = body
       @view = view
-      if @markup == "markdown"
-        @header_capture = /##\s*(.*)/
-        @lb = lambda { |text,void|  markdown(text) }
-      else
+      if  @markup == "textile"
         @header_capture = /h2\.(.*)/
         @lb = lambda { |text,lite_mode| textile(text,lite_mode) }
+      else
+        @header_capture = /##\s*(.*)/
+        @lb = lambda { |text,void|  markdown(text) }
       end
     end
     
@@ -26,7 +26,7 @@ module RailsGuides
     end
     
     def set_header_section
-      body.gsub!(/(.*?)endprologue\./m, '').strip!
+      body.sub!(/(.*?)endprologue\./m, '').strip!
       header = $1
       header =~ header_capture
       page_title = "Ruby on Rails Guides 中文: #{$1.strip}"
@@ -66,7 +66,7 @@ module RailsGuides
     end
 
     def textile(body, lite_mode)
-      body = TextProcess.new(body).process
+      body = TextProcess.new(body,markup).process
       t = RedCloth.new(body)
       t.hard_breaks = false
       t.lite_mode = lite_mode
@@ -74,7 +74,7 @@ module RailsGuides
     end
     
     def markdown(body)
-      body = TextProcess.new(body).process
+      body = TextProcess.new(body,markup).process
       BlueCloth.new(body).to_html
     end
 

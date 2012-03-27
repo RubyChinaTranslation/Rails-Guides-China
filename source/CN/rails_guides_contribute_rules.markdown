@@ -1,21 +1,26 @@
-# Ruby on Rails Guides 中文  
+## Rails Guides 中文 贡献指南
 如果你也想为 Ruby on Rails 社区出一份力就从这里开始吧！
- 
 
-## Rails Guides 中文
+* 在[github](https://github.com/RubyChinaTranslation/ruby-china-translation)上fork一份。
+* 开始写作，并把你的文章链到首页上。
+* 提交文章，批评建议，勘误。
+
+endprologue.
+
+### Rails Guides 中文
  
 Rails Guides 中文是由 [docrails](https://github.com/lifo/docrails) 中的guides修改而来，你可以在[这里](http://guides.rubyonrails.org) 找到官方的原版Ruby on Rails Guides.Rails Guides 中文目前开源的共享在 [github](https://github.com/RubyChinaTranslation/ruby-china-translation)上，你可以根据协议使用并且修改它,Rails Guides 中文希望能为任何热爱 Ruby on Rails 的朋友提供一个共享的文档平台，文章的作者对文章保有一切权利。  
 
 
 ### 加入翻译
 
-目前首页的文章大都是出自[Rails Guides](http://guides.rubyonrails.org)，尚未完全翻译，你可以按照以下的步骤进行认领提交。在认领之前，你需要先到我们的[github](https://github.com/RubyChinaTranslation/ruby-china-translation)上fork一份， 建议使用textile进行写作。 
+目前首页的文章大都是出自[rails guides](http://guides.rubyonrails.org)，尚未完全翻译，你可以按照以下的步骤进行认领提交。在认领之前，你需要先到我们的[github](https://github.com/RubyChinaTranslation/ruby-china-translation)上fork一份，建议使用textile进行写作。 
 
 #### 认领制度
 
-不管你是要翻译原有文章，还是希望添加一些你觉得非常有用的译文，都应该在翻译之前进行翻译认领来保证没有人和你重复工作。很简单，只要在  source/documents_CN.yaml  中找到或者加入你想翻译的文章的资料，加入  **work_in_progress = true**  之后  push  过来就代表你成功的占到了一个坑，你可以开始慢慢的翻译自己的文章了。
+不管你是要翻译原有文章，还是希望添加一些你觉得非常有用的译文，都应该在翻译之前进行翻译认领来保证没有人和你重复工作。很简单，只要在 ** source/documents_CN.yaml ** 中找到或者加入你想翻译的文章的资料，加入 ** +work_in_progress = true+ ** 之后 ** push ** 过来就代表你成功的占到了一个坑，你可以开始慢慢的翻译自己的文章了。
 
-你可以在contributor一栏中加入 自己的github用户名，以便其他人可以联系到你。另外如果你占坑太久你的占位可能会被取消。尽量在半个月内完成你的工作。 
+TIP: 你可以在contributor一栏中加入 自己的github用户名，以便其他人可以联系到你。另外如果你占坑太久你的占位可能会被取消。尽量在半个月内完成你的工作。
 
 #### 关于写作
 
@@ -29,7 +34,7 @@ Rails Guides 中文用了一些关键字来让你的文章生成更加便捷。
 
 * [textile语法](http://redcloth.org/textile)
 
-**由于markdown没有提供设置id的内建语法，生成的目录无法产生链接，我会尽快修复**。
+WARNING: 由于markdown没有提供设置id的内建语法，生成的目录无法产生链接，我会尽快修复。
 
 ##### 概要
 
@@ -42,11 +47,13 @@ Rails Guides 中文用了一些关键字来让你的文章生成更加便捷。
 ##### 标签
 
 除了提供的markdown或者textile语法支持，还有一些额外的处理，以这些词开头的段落（关键词后面要跟上一个冒号）将会处理成代标签的文本块
-
- 
+<plain>
  TIP|IMPORTANT|CAUTION|WARNING|NOTE|INFO
- 
- 
+</plain>
+
+会产生这样的效果
+
+TIP: 这是一个用 TIP: 所形成的标签。
 
 ##### 特殊字符
 
@@ -70,30 +77,31 @@ Rails Guides 中文用了一些关键字来让你的文章生成更加便捷。
 
 ##### 文章与链接
 
-在  source/  下面的 documents_CN.ymal  标注出了所有首页的文章和首页索引，当你写完了一篇文章你可以在那里加入自己的文章的介绍，工作进度，从属类别，标题等来让首页可以链接到你的文章。
-
+在 <code> source/ </code> 下面的** documents_CN.ymal ** 标注出了所有首页的文章和首页索引，当你写完了一篇文章你可以在那里加入自己的文章的介绍，工作进度，从属类别，标题等来让首页可以链接到你的文章。
 例如：
 
-
-  
-      name: 控制器
-      documents:   
+<yaml>
+-
+  name: 控制器
+  documents:
+    - 
       name: Action Controller Overview
       url: action_controller_overview.html（你的文件名）
-      work_in_progress: true #如果加入这一栏说明你正在更新或者对他进行写作
-      contributor: ME #这里可以写上你的 github 帐号名	
+      work_in_progress: 如果加入这一栏说明你正在更新或者对他进行写作
+      contributor: 这里可以写上你的 github 帐号名	
       description:  这里是描述
      
+</yaml>
 
 ##### 生成
 
 使用命令 
- 
-$> **rake generate_guides_CN**
- 
+<shell>
+rake generate_guides_CN
+</shell>
 
-就可以生成 **source/CN** 文件夹下的所有 **markdown**和**textile** 文档到 **output/CN** 下.
-后缀可以是 .markdown 或者 .md 或者 .textile.
+就可以生成 **source/CN** 文件夹下的所有 **markdown**和**textile** 文档到 **output/CN** 下。
+TIP: 支持三种后缀，可以是 .markdown 、 .md 或者 .textile.
 
 ### 建议与反馈
 
@@ -111,6 +119,6 @@ $> **rake generate_guides_CN**
 
 ### 协议
 
-本网站[fork from docrails](https://github.com/lifo/docrails), 对于内容使用 [CC协议](http://creativecommons.org/licenses/by-sa/3.0/) 。
+本网站[fork from docrails](https://github.com/lifo/docrails), 对于内容使用 [CC-SA协议](http://creativecommons.org/licenses/by-sa/3.0/) 。
 
 有什么问题可以联系我<mailto:cool.zhikai@gmail.com>.

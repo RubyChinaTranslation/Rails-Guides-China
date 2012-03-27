@@ -3,9 +3,10 @@ require 'active_support/core_ext/object/inclusion'
 
 module RailsGuides
    class TextProcess
-    attr_reader :body
-    def initialize(body)
+    attr_reader :body, :markup
+    def initialize(body,markup)
       @body     = body
+      @markup   = markup
     end
 
     def process
@@ -30,12 +31,19 @@ module RailsGuides
     end
 
     def plusplus
-      @body.gsub!(/\+(.*?)\+/) do |m|
-        "<notextile><tt>#{$1}</tt></notextile>"
-      end
+      if markup == "textile"
+        @body.gsub!(/\+(.*?)\+/) do |m|
+          "<notextile><tt>#{$1}</tt></notextile>"
+        end
+      else
+        @body.gsub!(/\+(.*?)\+/) do |m|
+          matched = $1
+          matched.gsub!(/[.!()?#`\\_*]/) { |s| "\\" + s[0] }
+          matched
+        end
 
-      # The real plus sign
-      @body.gsub!('<plus>', '+')
+      end
+        @body.gsub!('<plus>', '+') #this is real plus
     end
 
     def brush_for(code_type)

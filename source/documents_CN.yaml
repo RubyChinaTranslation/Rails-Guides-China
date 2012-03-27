@@ -5,24 +5,14 @@
     -
       name: Getting Started with Rails
       url: getting_started.html
-      contributor: Tassandar
       description: Everything you need to know to install Rails and create your first application.
--
-  name: Rails 中文翻译
-  documents:
-    -
-      name: Ruby on Rails Guides翻译规则
-      url: rails_guides_translate_rules.html
-      work_in_progress: 翻译中
-      contributor: Tassandar
       
 -
   name: Models
   documents:
     -
       name: Rails Database Migrations
-      url: migrations.html
-      work_in_progress: true
+      url: migrations.html 
       description: This guide covers how you can use Active Record migrations to alter your database in a structured and organized manner.
     -
       name: Active Record Validations and Callbacks
@@ -72,13 +62,11 @@
     - 
       name: Action Mailer Basics
       url: action_mailer_basics.html
-      work_in_progress: true
       translate_in_progress: true
       description: This guide describes how to use Action Mailer to send and receive emails.
     - 
       name: Testing Rails Applications
-      url: testing.html
-      work_in_progress: true
+      url: testing.html 
       description: This is a rather comprehensive guide to doing both unit and functional tests in Rails. It covers everything from 'What is a test?' to the testing APIs. Enjoy.
     - 
       name: Securing Rails Applications
@@ -89,9 +77,11 @@
       url: debugging_rails_applications.html
       description: This guide describes how to debug Rails applications. It covers the different ways of achieving this and how to understand what is happening "behind the scenes" of your code.
     - 
-      name: Performance Testing Rails Applications
+      name: Rails 应用与性能测试
       url: performance_testing.html
-      description: This guide covers the various ways of performance testing a Ruby on Rails application.
+      work_in_progress: true
+      contributor: Tassandar	
+      description: 这份文章介绍了几种对一个 Ruby on Rails 应用的测试方法。
     - 
       name: Configuring Rails Applications
       url: configuring.html
@@ -101,8 +91,7 @@
       url: command_line.html
       description: This guide covers the command line tools and rake tasks provided by Rails.
     - 
-      name: Caching with Rails
-      work_in_progress: true
+      name: Caching with Rails 
       url: caching_with_rails.html
       description: Various caching techniques provided by Rails.
     - 
@@ -112,11 +101,9 @@
     - 
       name: Getting Started with Engines
       url: engines.html
-      description: This guide explains how to write a mountable engine.
-      work_in_progress: true
+      description: This guide explains how to write a mountable engine.     
     - 
       name: The Rails Initialization Process
-      work_in_progress: true
       url: initialization.html
       description: This guide explains the internals of the Rails initialization process as of Rails 3.1
 -
@@ -124,7 +111,6 @@
   documents:
     - 
       name: The Basics of Creating Rails Plugins
-      work_in_progress: true
       url: plugins.html
       description: This guide covers how to build a plugin to extend the functionality of Rails.
     - 
@@ -136,10 +122,15 @@
       url: generators.html
       description: This guide covers the process of adding a brand new generator to your extension or providing an alternative to an element of a built-in Rails generator (such as providing alternative test stubs for the scaffold generator).
 -
-  name: Contributing to Ruby on Rails
-  documents:
+  name: 为 Ruby on Rails 社区做出贡献
+  documents: 
     - 
-      name: Contributing to Ruby on Rails
+      name: Rails Guides中文 贡献指南
+      url: rails_guides_contribute_rules.html
+      contributor: Tassandar	
+      description: 介绍了参与到本站的翻译或者写作工作的规则并介绍了如何为Rails Guides，也就是本站，进行翻译，写作。如何获取并生成一份 中文 Rails Guides .	
+    - 
+      name: Contributingaaa to Ruby on Rails
       url: contributing_to_ruby_on_rails.html
       description: Rails is not 'somebody else's framework. This guide covers a variety of ways that you can get involved in the ongoing development of Rails.
     - 
@@ -156,7 +147,6 @@
     - 
       name: Upgrading Ruby on Rails
       url: upgrading_ruby_on_rails.html
-      work_in_progress: true
       description: This guide helps in upgrading applications to latest Ruby on Rails versions.
     -
       name: Ruby on Rails 3.2 Release Notes

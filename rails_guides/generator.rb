@@ -16,7 +16,7 @@ module RailsGuides
     include CheckAnchors
     attr_reader :guides_dir, :source_dir, :output_dir, :edge, :all
 
-    GUIDES_RE = /\.(?:textile|erb|markdown)$/
+    GUIDES_RE = /\.(?:textile|erb|markdown|md)$/
 
     def initialize(output=nil)
       set_flags_from_environment
@@ -122,8 +122,8 @@ module RailsGuides
     def output_file_for(guide)
       if guide =~/\.textile$/
         guide.sub(/\.textile$/, '.html')
-      elsif guide=~/\.markdown$/
-        guide.sub(/\.markdown$/,'.html')
+      elsif guide=~/\.(markdown|md)$/
+        guide.sub(/\.markdown|md$/,'.html')
       else
         guide.sub(/\.erb$/, '')
       end
@@ -152,9 +152,9 @@ module RailsGuides
             result = view.render(:layout => layout, :formats => [$1], :file => $`)
         else
           body = File.read(File.join(source_dir,guide))
-          guide =~ /\w+\.(markdown|textile)$/
+          guide =~ /\w+\.(markdown|textile|md)$/
           result = process_body(body,view,layout,$1)
-          #warn_about_broken_links(result) 
+          warn_about_broken_links(result) 
         end
 
         f.write(result)

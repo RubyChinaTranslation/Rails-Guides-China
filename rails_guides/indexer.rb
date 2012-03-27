@@ -16,37 +16,35 @@ module RailsGuides
     end
 
     private
-
     def process(string, current_level=3, counters=[1])
       s = StringScanner.new(string)
 
       level_hash = {}
-
+      re = if markup == "textile"
+            %r{^h(\d)(?:\((#.*?)\))?\s*\.\s*(.*)$}
+           else
+            %r{^(###+)\s*(.*)$} 
+           end
       while !s.eos?
-        if markup == "markdown"
-          re = %r{^(#+)\s*(.*)$}
-          s.match?(re)
-          matched = s.matched
+        s.match?(re)
+        if matched = s.matched
           matched =~ re
-          level, idx, title = $1.count('#'), nil, $2.strip if matched
-        else
-          re = %r{^h(\d)(?:\((#.*?)\))?\s*\.\s*(.*)$}
-          s.match?(re)
-          matched = s.matched
-          matched =~ re
-          level, idx, title = $1.to_i, $2, $3.strip if matched
-        end
-        if matched
-         if level < current_level
+          if markup == "textile"
+           level, idx, title = $1.to_i, $2, $3.strip
+          else
+           level, idx, title = $1.count('#'), nil, $2.strip
+          end
+          if level < current_level
             # This is needed. Go figure.
             return level_hash
-         elsif level == current_level
+          elsif level == current_level
             index = counters.join("-")
-            idx ||= '#' + index
-            if markup == "markdown"
-              @result.sub!(matched,"<h#{level} id='#{index}'> #{index.gsub('-','.')}#{title} </h#{level}>")
-            else 
-              @result.sub!(matched, "h#{level}(#{idx}). #{index.gsub('-','.')} #{title}")
+            idx ||= '#' + index 
+            if markup == "textile" 
+              @result.sub!(matched, "h#{level}(#{idx}). #{index.gsub('-','.')} #{title}") 
+            else
+              @result.sub!(matched, "#{'#'*level} #{index.gsub('-','.')}#{title} ") 
+              s.pos += matched.size
             end
             key = {
               :title => title,
