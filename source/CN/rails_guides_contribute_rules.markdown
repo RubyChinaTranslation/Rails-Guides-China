@@ -1,7 +1,7 @@
 ## Rails Guides 中文 贡献指南
 如果你也想为 Ruby on Rails 社区出一份力就从这里开始吧！
 
-* 在[github](https://github.com/RubyChinaTranslation/ruby-china-translation)上fork一份。
+* 在[github](https://github.com/RubyChinaTranslation/rails-guides-china)上fork一份。
 * 开始写作，并把你的文章链到首页上。
 * 提交文章，批评建议，勘误。
 
@@ -14,7 +14,7 @@ Rails Guides 中文是由 [docrails](https://github.com/lifo/docrails) 中的gui
 
 ### 加入翻译
 
-目前首页的文章大都是出自[rails guides](http://guides.rubyonrails.org)，尚未完全翻译，你可以按照以下的步骤进行认领提交。在认领之前，你需要先到我们的[github](https://github.com/RubyChinaTranslation/ruby-china-translation)上fork一份，建议使用textile进行写作。 
+目前首页的文章大都是出自[rails guides](http://guides.rubyonrails.org)，尚未完全翻译，你可以按照以下的步骤进行认领提交。在认领之前，你需要先到我们的[github](https://github.com/RubyChinaTranslation/rails-guides-china)上fork一份，建议使用textile进行写作。 
 
 #### 认领制度
 
@@ -105,7 +105,7 @@ TIP: 支持三种后缀，可以是 .markdown 、 .md 或者 .textile.
 
 ### 建议与反馈
 
-欢迎任何建议！直接开一个 [github issue](https://github.com/RubyChinaTranslation/ruby-china-translation/issue)就可以了，当然你也可以跑到 [Ruby China](http://ruby-china.org) 社区上面去吐槽，我想这问题不大～
+欢迎任何建议！直接开一个 [github issue](https://github.com/RubyChinaTranslation/rails-guides-china/issues)就可以了，当然你也可以跑到 [Ruby China](http://ruby-china.org) 社区上面去吐槽，我想这问题不大～
 
 ### 勘误 
 
