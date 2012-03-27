@@ -74,16 +74,16 @@ Rails Guides 中文用了一些关键字来让你的文章生成更加便捷。
 
 例如：
 
->-
->  name: 控制器
->  documents:
->    - 
->      name: Action Controller Overview
->      url: action_controller_overview.html（你的文件名）
->      work_in_progress: 如果加入这一栏说明你正在更新或者对他进行写作
->      contributor: 这里可以写上你的 github 帐号名	
->      description:  这里是描述
->     
+
+  name: 控制器
+  documents:
+    
+      name: Action Controller Overview
+      url: action_controller_overview.html（你的文件名）
+      work_in_progress: true #如果加入这一栏说明你正在更新或者对他进行写作
+      contributor: ME #这里可以写上你的 github 帐号名	
+      description:  这里是描述
+     
 
 ##### 生成
 
