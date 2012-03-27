@@ -3,3 +3,6 @@
 /.rvmrc
 tags
 .lock
+/.git*
+/.gitignore
+
