@@ -53,12 +53,14 @@ WARNING: 由于markdown没有提供设置id的内建语法，生成的目录无�
 
 会产生这样的效果
 
-TIP: 这是一个用 tip: 所形成的文本块。
+TIP: 这是一个用 TIP: 所形成的标签。
 
 ##### 特殊字符
 
 你如果想要显示一些特殊字符，你可以在字符的两边分别加上一个加号‘+’，加号中间的部分将会被 textile或者markdown跳过处理。特殊字元参照markdown或者textile语法中的相应部分。
+
 * [markdown跳脱字元](http://markdown.tw/#backslash)
+
 * [textile内建安全输出](http://redcloth.org/textile/html-integration-and-escapement/#no-textile)
 
 ##### 代码
@@ -99,7 +101,7 @@ rake generate_guides_CN
 </shell>
 
 就可以生成 **source/CN** 文件夹下的所有 **markdown**和**textile** 文档到 **output/CN** 下。
-TIP: 支持三种后缀，可以是 **.markdown** 、** .md **或者** .textile**.
+TIP: 支持三种后缀，可以是 .markdown 、 .md 或者 .textile.
 
 ### 建议与反馈
 
@@ -117,6 +119,6 @@ TIP: 支持三种后缀，可以是 **.markdown** 、** .md **或者** .textile*
 
 ### 协议
 
-本网站[fork from docrails](https://github.com/lifo/docrails), 协议同样使用，对于作者翻译坚持 [CC协议](http://creativecommons.org/licenses/by-sa/3.0/) 。
+本网站[fork from docrails](https://github.com/lifo/docrails), 对于内容使用 [CC-SA协议](http://creativecommons.org/licenses/by-sa/3.0/) 。
 
 有什么问题可以联系我<mailto:cool.zhikai@gmail.com>.
