@@ -1,5 +1,8 @@
 /output
-.Gemfile
 /.bundle
 /.rvmrc
 tags
+.lock
+/.git*
+/.gitignore
+
