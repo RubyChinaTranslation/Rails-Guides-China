@@ -26,7 +26,7 @@ module RailsGuides
     end
     
     def set_header_section
-      body.gsub!(/(.*?)endprologue\./m, '').strip!
+      body.sub!(/(.*?)endprologue\./m, '').strip!
       header = $1
       header =~ header_capture
       page_title = "Ruby on Rails Guides 中文: #{$1.strip}"
