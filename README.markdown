@@ -4,12 +4,12 @@
 
 ## Rails Guides 中文
  
-Rails Guides 中文是由 [docrails](https://github.com/lifo/docrails) 中的guides修改而来，你可以在[这里](http://guides.rubyonrails.org) 找到官方的原版Ruby on Rails Guides.Rails Guides 中文目前开源的共享在 [github](https://github.com/RubyChinaTranslation/ruby-china-translation)上，你可以根据协议使用并且修改它,Rails Guides 中文希望能为任何热爱 Ruby on Rails 的朋友提供一个共享的文档平台，文章的作者对文章保有一切权利。  
+Rails Guides 中文是由 [docrails](https://github.com/lifo/docrails) 中的guides修改而来，你可以在[这里](http://guides.rubyonrails.org) 找到官方的原版Ruby on Rails Guides.Rails Guides 中文目前开源的共享在 [github](https://github.com/RubyChinaTranslation/rails-guides-china)上，你可以根据协议使用并且修改它,Rails Guides 中文希望能为任何热爱 Ruby on Rails 的朋友提供一个共享的文档平台，文章的作者对文章保有一切权利。  
 
 
 ### 加入翻译
 
-目前首页的文章大都是出自[Rails Guides](http://guides.rubyonrails.org)，尚未完全翻译，你可以按照以下的步骤进行认领提交。在认领之前，你需要先到我们的[github](https://github.com/RubyChinaTranslation/ruby-china-translation)上fork一份， 建议使用textile进行写作。 
+目前首页的文章大都是出自[Rails Guides](http://guides.rubyonrails.org)，尚未完全翻译，你可以按照以下的步骤进行认领提交。在认领之前，你需要先到我们的[github](https://github.com/RubyChinaTranslation/rails-guides-china)上fork一份， 建议使用textile进行写作。 
 
 #### 认领制度
 
@@ -97,11 +97,11 @@ $> **rake generate_guides_CN**
 
 ### 建议与反馈
 
-欢迎任何建议！直接开一个 [github issue](https://github.com/RubyChinaTranslation/ruby-china-translation/issue)就可以了，当然你也可以跑到 [Ruby China](http://ruby-china.org) 社区上面去吐槽，我想这问题不大～
+欢迎任何建议！直接开一个 [github issues](https://github.com/RubyChinaTranslation/rails-guides-china/issues)就可以了，当然你也可以跑到 [Ruby China](http://ruby-china.org) 社区上面去吐槽，我想这问题不大～
 
 ### 勘误 
 
-有翻译就有错误或者语义不清的情况，希望大家有爱一点，别太固执，在有错误或者认为翻译不周的时候你可以开一个 [issue](https://github.com/RubyChinaTranslation/ruby-china-translation/issue) 提出，当然更好的方法是直接密翻译者提醒其修改或者fork翻译者一份进行修改提交。除非是明显的错误（错别字或者语法错误），我们会坚持 **译者的权利**，请不要提交一份修改别人翻译的commit。 
+有翻译就有错误或者语义不清的情况，希望大家有爱一点，别太固执，在有错误或者认为翻译不周的时候你可以开一个 [issue](https://github.com/RubyChinaTranslation/rails-guides-china/issues) 提出，当然更好的方法是直接密翻译者提醒其修改或者fork翻译者一份进行修改提交。除非是明显的错误（错别字或者语法错误），我们会坚持 **译者的权利**，请不要提交一份修改别人翻译的commit。 
 
 如果你发现文档已经过时了，你也可以提出 **issue** 来修正，我们会提醒翻译者进行翻修，并对读者提出警告的。
 
