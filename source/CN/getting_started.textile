@@ -22,7 +22,7 @@ TIP: 注意 Ruby 1.8.7 p248 and p249 有 marshaling bugs 会与 Rails 3.0 发生
 
 * "RubyGems":http://rubyforge.org/frs/?group_id=126 包管理系统
   ** 如果你想了解更多关于RubyGems，请阅读 "RubyGems User Guide":http://docs.rubygems.org/read/book/1
-* 安装"SQLite3 Database":http://www.sqlite.org
+* 安装 "SQLite3 Database":http://www.sqlite.org
 
 Rails是一个基于Ruby程序语言的web程序框架。如果你没有预先的学习ruby，你会发现直接的入门Rails学习很有跨度。这里有一些学习ruby的免费互联网资源。
 
@@ -129,8 +129,11 @@ DELETE /photos/14
 如果你想要了解更多关于 REST 架构风格, 以下这些资源可能比 Fielding 的论文更平易近人一些。  
 
 * A Brief Introduction to REST by Stefan Tilkov 
+
 * An Introduction to REST (video tutorial) by Joe Gregorio 
+
 * Representational State Transfer article in Wikipedia 
+
 * How to GET a Cup of Coffee by Jim Webber, Savas Parastatidis & Ian Robinson 
 
 h3. 建立一个新的 Rails 应用程序
