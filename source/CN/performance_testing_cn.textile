@@ -1,0 +1,46 @@
+h2. Rails 应用中的性能测试
+
+这篇文章介绍了几种在 Ruby on Rails 应用中进行性能测试的方法。通过阅读这篇文章，你可以
+
+* Understand the various types of benchmarking and profiling metrics
+* 生成一个 benchmark 性能测试。 
+* 安装使用 Ruby的扩展GC类库来测试你的内存使用和分配情况。 
+* 通过 Rails 内置的日志功能来了解 benchmarking 信息。 
+* Learn about various tools facilitating benchmarking and profiling
+
+在开发中，性能测试是一个循序渐进的过程。让你的用户能够很快的完成加载并看到你的产品是非常重要的。确保用户在各类浏览器上的体验，降低硬件上不必要的消耗是每一个 web 程序都必须要做到的。
+
+endprologue.
+
+h3. 性能测试案例
+
+Rails 性能测试是包括 benchmark ， profiling 测试在内的一系列迭代测试。用上了性能测试，你可以发现你的应用程序中存在的内存或者速度问题，对存在的问题进行更深入的检测。
+
+在这里我们新建一个 Rails 应用程序， +test/performance/browsing_test.rb+ ，在这个文件里写入一个测试的例子：
+
+
+<ruby>
+require 'test_helper'
+require 'rails/performance_test_help'
+
+# Profiling results for each test method are written to tmp/performance.
+class BrowsingTest < ActionDispatch::PerformanceTest
+  def test_homepage
+    get '/'
+  end
+end
+</ruby>
+
+这是一个简单的性能测试例子，它会
+
+h4. 生成一个性能测试
+
+Rails 提供了一个+performance_test+生成器来新建一个性能测试
+现在假设你的应用程序有这些controller和model：
+
+
+
+
+
+
+

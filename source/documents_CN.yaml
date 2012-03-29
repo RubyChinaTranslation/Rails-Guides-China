@@ -3,9 +3,8 @@
   name: Start Here
   documents:
     -
-      name: Rails 初上手指南 
+      name: 与Rails的第一次接触 
       url: getting_started.html
-      work_in_progress: true
       contributor: jhjguxin
       description: Everything you need to know to install Rails and create your first application.
 
@@ -129,11 +128,6 @@
 -
   name: 为 Ruby on Rails 社区做出贡献
   documents: 
-    - 
-      name: Rails Guides中文 贡献指南
-      url: rails_guides_contribute_rules.html
-      contributor: Tassandar	
-      description: 介绍了参与到本站的翻译或者写作工作的规则并介绍了如何为Rails Guides，也就是本站，进行翻译，写作。如何获取并生成一份 中文 Rails Guides .	
     - 
       name: Contributingaaa to Ruby on Rails
       url: contributing_to_ruby_on_rails.html
