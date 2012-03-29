@@ -2,22 +2,9 @@
 require 'active_support/core_ext/object/inclusion'
 
 module RailsGuides
-   class TextProcess
-    attr_reader :body, :markup
-    def initialize(body,markup)
-      @body     = body
-      @markup   = markup
-    end
-
-    def process
-      notestuff
-      plusplus
-      code
-      body
-    end
-    
-    def notestuff
-     @body.gsub!(/^(TIP|IMPORTANT|CAUTION|WARNING|NOTE|INFO)[.:](.*?)(\n(?=\n)|\Z)/m) do |m|
+   module TextProcess
+    def notestuff(body)
+     body.gsub!(/^(TIP|IMPORTANT|CAUTION|WARNING|NOTE|INFO)[.:](.*?)(\n(?=\n)|\Z)/m) do |m|
         css_class = case $1
                     when 'CAUTION', 'IMPORTANT'
                       'warning'
@@ -28,22 +15,23 @@ module RailsGuides
                     end
         %Q(<div class="#{css_class}"><p>#{$2.strip}</p></div>)
       end
+     body
     end
 
-    def plusplus
-      if markup == "textile"
-        @body.gsub!(/\+(.*?)\+/) do |m|
-          "<notextile><tt>#{$1}</tt></notextile>"
-        end
-      else
-        @body.gsub!(/\+(.*?)\+/) do |m|
+    def plusplus_markdown(body)
+        body.gsub!(/\+(.*?)\+/) do |m|
           matched = $1
           matched.gsub!(/[.!()?#`\\_*]/) { |s| "\\" + s[0] }
           matched
         end
-
+        body.gsub!('<plus>', '+') #this is real plus
+        body
+    end
+    def plusplus_textile(body)
+      body.gsub!(/\+(.*?)\+/) do |m|
+        "<notextile><tt>#{$1}</tt></notextile>"
       end
-        @body.gsub!('<plus>', '+') #this is real plus
+      body.gsub!('<plus>', '+')
     end
 
     def brush_for(code_type)
@@ -59,8 +47,8 @@ module RailsGuides
       end
     end
 
-    def code
-      @body.gsub!(%r{<(yaml|shell|ruby|erb|html|sql|plain)>(.*?)</\1>}m) do |m|
+    def code(body)
+      body.gsub!(%r{<(yaml|shell|ruby|erb|html|sql|plain)>(.*?)</\1>}m) do |m|
         <<HTML
 <notextile>
 <div class="code_container">
@@ -71,6 +59,7 @@ module RailsGuides
 </notextile>
 HTML
       end
+      body
     end
 
    end
