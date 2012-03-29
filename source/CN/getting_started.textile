@@ -1,24 +1,24 @@
 h2. 与Rails的第一次接触
 
-本指导手册覆盖了入门和运行 ruby on rails，通过阅读本指导，你会了解到：
+本指导手册涉及了使用和运行 ruby on rails，通过阅读本指导，你会了解到：
 
 * （怎样）安装，创建一个新的 Rails 应用程序，并且将你的应用程序连接到数据库
 * Rails的一般（页面）布局
 * MVC的基本原则和 RESTful 设计（理念）
-* 怎样快捷的开始一个 Rails 应用
+* 怎样迅速地开始一个 Rails 应用
 
 endprologue.
 
-警告. 这个指导手册适用与 Rails 3.1，有些代码在 Rails 早期版本可能会不工作。
+WARNING. 这个指导手册适用与 Rails 3.1，有些代码在 Rails 早期版本可能会不工作。
 
 h3. 手册假设
 
-本指导设计给那些想大概的了解 Rails 应用创建的初学者。这里假设你对 Rails 没有任何预先的了解。不管怎样要得到（本手册的）知识，你需要预先安装：
+本指导设计给那些想大概的了解 Rails 应用创建的初学者。这里假设你对 Rails 没有任何预先的了解。要得到（本手册的）知识，你需要预先安装：
 
 * "Ruby":http://www.ruby-lang.org/en/downloads version 1.8.7 或者更高
 
-TIP: 注意 Ruby 1.8.7 p248 and p249 有 marshaling bugs 会与 Rails 3.0 发生冲突。Ruby 1.8.7 p248 and p249在 发行版1.8.7-2010.02 已经得到解决。Ruby 1.9 前提下，Ruby 1.9.1 不能使用因为它在 Rails 3.0上会出现segfaults错误，因此如果你希望使用 Rails 3 和 1.9.x 跳至 1.9.2 （就可以）平稳的驾驶 Rails。
-  A segmentation fault (aka segfault) is a common condition that causes programs to crash; they are often associated with a file named core . Segfaults are caused by a program trying to read or write an illegal memory location.
+TIP: 注意 Ruby 1.8.7 p248 and p249 有 marshaling bugs 会与 Rails 3.0 发生冲突。Ruby 1.8.7 p248 and p249在 发行版 1.8.7-2010.02 已经得到解决。Ruby 1.9 前提下，Ruby 1.9.1 不能使用因为它在 Rails 3.0 上会出现 segfaults 错误，因此如果你希望使用 Rails 3 和 1.9.x 跳至 1.9.2 （就可以）安全地使用 Rails。
+ 
 
 * "RubyGems":http://rubyforge.org/frs/?group_id=126 包管理系统
   ** 如果你想了解更多关于RubyGems，请阅读 "RubyGems User Guide":http://docs.rubygems.org/read/book/1
@@ -76,6 +76,7 @@ Rails关联着许多独立的组件。对这些组件在下面给出简要的解
 * Active Resource 
 * Active Support 
 * Railties 
+
 h4. Action Pack
 
 Action Pack是一个单独的包它包含了 Action Controller, Action View and Action Dispatch（传输调度）。是MVC的VC部分。
@@ -121,11 +122,11 @@ Rest作为具有代表性的状态传输是RESTful架构的基础。普遍认为
 
 例如，下面的HTTP请求：
 
-DELETE /photos/17
+DELETE /photos/14
 
-（系统）将会明白参照ID为14的phone资源，注明删除该资源。REST的自然风格去架构web应用程序， Rails 通过这样的钩子，使你避免了许多复杂的RESTful和浏览器之间的差异。
+（系统）将会明白参照 ID 为 14 的 phone 资源，注明删除该资源。 REST 的自然风格去架构 web 应用程序， Rails 通过这样的钩子，使你避免了许多复杂的 RESTful 和浏览器之间的差异。
 
-If you’d like more details on REST as an architectural#架构风格 style, these resources are more approachable平易近人 than Fielding’s thesis:如果你希望得到很多的关于REST架构风格的介绍，下面的资源是这个领域里面通俗论文。
+如果你想要了解更多关于 REST 架构风格, 以下这些资源可能比 Fielding 的论文更平易近人一些。  
 
 * A Brief Introduction to REST by Stefan Tilkov 
 * An Introduction to REST (video tutorial) by Joe Gregorio 
@@ -137,8 +138,7 @@ h3. 建立一个新的 Rails 应用程序
 学习（使用）本指导的最好方式是跟随这里描述的每一步，不写代码或者没有例子所需的步骤会使得这个例子被冷落，你可以根据文字描述的步骤一步接着一步的操作。如果你需要完整的代码你可以从这里下载 "Getting Started Code":https://github.com/mikel/getting-started-code 。
 
 如果你跟随这个指导，你将会创建一个叫做 blog 的 Rails 项目——一个非常简单的网络博客。当你准备开始构建这个项目之前你需要确保Rails已经完全安装。
-
-TIP: The examples below use # and $ to denote terminal prompts. If you are using Windows, your prompt will look something like c:\source_code>
+ 
 TIP: 下面例子中使用 `#` 和 `$` 来表示 终端提示。如果你正在使用 Windows提示可能会这样 `c:\source_code>`
 
 h4. 安装Rails
@@ -146,7 +146,7 @@ h4. 安装Rails
 通过方便的 RubyGems提供的 +gem install+，安装 Rails：
 
 <shell>
-# gem install rails
+$ gem install rails
 </shell>
 
 TIP. 如果你在Window下面工作，你可以使用 "Rails Installer":http://railsinstaller.org 快速安装Ruby and Rails。
@@ -169,9 +169,8 @@ $ rails new blog #--skip-bundle    # Don't run bundle install这样在国内就�
 
 这里将创建一个名叫Blog的Rails应用程序在名称为blog的目录中。
 
-TIP: 你可以通过运行rails new -h，查看rails应用程序创建器的所有命令（开关）。
- <tt>rails new -h</tt>.
-
+TIP: 你可以通过运行 rails new -h，查看rails应用程序创建器的所有命令（开关）。
+ 
 当你创建了这个blog程序，跳转到它所在的文件夹中（直接对这个程序编辑）.
 
 <shell>
@@ -209,7 +208,7 @@ h4. 启动web服务
 $ rails server
 </shell>
 
-TIP: 编译 CoffeeScript 到 JavaScript需要一个 JavaScript 运行库，确实一个运行库将会给出一个+execjs+ error。通常 Mac OS X 和 Windows 自带了一个 JavaScript 运行库。Rails 添加了 +therubyracer+  gem 到 `Gemfile` 的注释行中如果你需要可以取消对它的注释。+therubyrhino+ 推荐 JRuby 使用并且默认添加到 `Gemfile` 中如果应用程序在 `JRuby` 中创建。你可以查看所有的支持的运行库 "ExecJS":https://github.com/sstephenson/execjs#readme。
+TIP: 编译 CoffeeScript 到 JavaScript需要一个 JavaScript 运行库，确实一个运行库将会给出一个+execjs+ error。通常 Mac OS X 和 Windows 自带了一个 JavaScript 运行库。Rails 添加了 +therubyracer+  gem 到 Gemfile 的注释行中如果你需要可以取消对它的注释。+therubyrhino+ 推荐 JRuby 使用并且默认添加到 Gemfile 中如果应用程序在 JRuby 中创建。你可以查看所有的支持的运行库 "ExecJS":https://github.com/sstephenson/execjs#readme。
 
 这里默认将开启一个WEBrick服务器的的实例（Rails也可能使用一些其他的web服务器）。查看你的应用程序的行为，打开一个浏览器并且导航到127.0.0.0：3000你将会看到一个Rails默认的信息页面。
 
@@ -478,11 +477,11 @@ NOTE: 在以前的版本的Rails中，你必须使用 +&lt;%=h post.name %&gt;+ 
 TIP: 了解更过关于渲染处理流程，阅读 "Layouts and Rendering in
 Rails":layouts_and_rendering.html.
 
-h4. Customizing the Layout
+h4. 定制布局
 
-view仅仅告诉HTML要显示什么（内容）在你的web浏览器里面。Rails也有关于 +layouts+ 的概念（定义），那就是（布局）是对view的包装。当Rails渲染一个view到浏览器，它通常是（这样做）把view的HTML放进布局的HTML中。在以前的版本中，+rails generate scaffold+ 命令将会自动创建controller对应指定的布局，就像 +app/views/layouts/posts.html.erb+ 对应于posts controller。 然而在rails3.0中有所不同了。一个应用程序指定的布局适用于所有的controllers，可以在 +app/views/layouts/application.html.erb+ 中找到(这就好像是django的base.html)。打开这个 layout 在你的编辑器中并且修改 +body+ 标签：
+view仅仅告诉HTML在你的web浏览器里面要显示什么（内容）。Rails也有关于 +layouts+ 的概念（定义），那就是布局是对view的包装。当Rails渲染一个view到浏览器，它通常是这样做： 把view的HTML放进布局的HTML中。在以前的版本中，+rails generate scaffold+ 命令将会自动创建controller对应指定的布局，就像 +app/views/layouts/posts.html.erb+ 对应于posts controller。 然而在rails3.0中有所不同了。一个应用程序指定的布局适用于所有的controllers，可以在 +app/views/layouts/application.html.erb+ 中找到(这就好像是django的base.html)。打开这个 layout 在你的编辑器中并且修改 +body+ 标签：
 
-<pre><erb>
+<erb>
 <!DOCTYPE html>
 <html>
   <head>
@@ -495,14 +494,15 @@ view仅仅告诉HTML要显示什么（内容）在你的web浏览器里面。Rai
     <%= yield %>
   </body>
 </html>
-</erb></pre>
+</erb>
+
 
 
 现在你刷新 +/posts+ 页面，你将会看到一个灰色的页面背景。并且相同的灰色背景将会使用在posts的所有视图中。
 
-h4. Creating New Posts
+h4. 建立新文章
 
-创建一个new post 包含两个actions。首先是+new+ action，它会实例化一个空的 +Post+ 对象：
+创建一个new post 包含两个actions。首先是 +new+ action，它会实例化一个空的 +Post+ 对象：
 
 <ruby>
 def new
@@ -525,7 +525,8 @@ end
 <%= link_to 'Back', posts_path %>
 </erb>
 
-+&lt;%= render 'form' %&gt;+ 是我们第一个介绍的Rails的partials。一个partial是一个HTML代码片段和Ruby代码的组合可以在多目标对象中重用。（类似于django的include 'other.html'）在本例中，form用于创建new post，它相当于一个用于编辑一个post的表单，这个表单有一个name text fields 和 title text fields 以及一个content的 text area还有一个用于添加一个新的post或者更新已经存在的post的按钮。
++&lt;%= render 'form' %&gt;+ 是我们第一个介绍的Rails的partials。一个partial是一个HTML代码片段和Ruby代码的组合可以在多目标对象中重用。（类似于django的include 'other.html'）。
+在本例中， form 用于创建 new post，它相当于一个用于编辑一个post的表单，这个表单有一个name text fields 和 title text fields 以及一个 content 的 text area还有一个用于添加一个新的 post 或者更新已经存在的 post 的按钮。
 
 如果你看一下 +views/posts/_form.html.erb+ 这个文件，你将会发现下面的内容：
 
@@ -602,7 +603,8 @@ end
 
 h4. 显示一条 Post
 
-当你在posts 的主页面点击一个 post 的 +show+ 这个超链接，他将会产生一个url +http://localhost:3000/posts/1+。Rails解释这是一个resource的+show+ action 调用。这里是 +show+ action：
+当你在posts 的主页面点击一个 post 的 +show+ 这个超链接，他将会产生一个 url： +http://localhost:3000/posts/1+。Rails解释这是一个resource的+show+ action 调用。这里是 +show+ action：
+
 <ruby>
 def show
   @post = Post.find(params[:id])
@@ -684,7 +686,7 @@ end
 
 在 +update+ action中，Rails首先使用 +:id+ 参数从edit view（传值到）数据库记录下刚才编辑的内容。当获取了请求的+post+ parameter（一个hash字典）就会 call +update_attributes+ 并且 应用 hash 字典的值到相应的记录。如果一切成功，用户会被重定向到post的show视图。如果期间发生了任何错误，它将回到edit视图并（要求）改正他们。
 
-h4. 摧毁一个post
+h4. 删除一个post
 
 最后，点击一个 +destroy+ 链接发送相关的id到 +destroy+ 动作：
 
@@ -1381,15 +1383,9 @@ data into UTF-8, but this doesn't always work reliably, so you're better off
 ensuring that all external data is UTF-8.
 Rails使用Rails最简单的工作方式是存储所有的外部数据为 UTF-8编码。如果不那样做，Ruby libraries和Rails通才会转换你的自然数据成 UTF-8编码，但是这样不是很可靠，因此你最好保证所有的外部数据是 UTF-8编码。如果你在这里犯了错误，一般的症状就是在浏览器中出现钻石符号（可能是^）变成了问号。 另一个普遍症状是“ü”变成了 “Ã¼”。
 
-If you have made a mistake in this area, the most common symptom is a black
-diamond with a question mark inside appearing in the browser. Another common
-symptom is characters like "Ã¼" appearing instead of "ü". Rails takes a number
-of internal steps to mitigate common causes of these problems that can be
-automatically detected and corrected. However, if you have external data that is
-not stored as UTF-8, it can occasionally result in these kinds of issues that
-cannot be automatically detected by Rails and corrected.
+Rails 在国际化上下了很多的功夫，大部分的此类错误都能够自动发现并错误，然而如果你有一些不是用 UTF-8 存储的特殊的数据恐怕就会出现一些奇怪的问题了。 
 
-两种非常普遍的不是UTF-8 编码的源数据：
+两种典型的非 UTF-8 编码的源数据：
 * Your text editor: Most text editors (such as Textmate), default to saving files as
   UTF-8. If your text editor does not, this can result in special characters that you
   enter in your templates (such as é) to appear as a diamond with a question mark inside

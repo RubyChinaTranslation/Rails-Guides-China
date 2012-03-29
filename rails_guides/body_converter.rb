@@ -1,7 +1,6 @@
 #coding: utf-8
-require "rails_guides/text_process"
 require "rails_guides/indexer"
-
+require "rails_guides/markdown_render"
 module RailsGuides
   class BodyConverter
     attr_accessor :body, :markup, :view, :header_capture,:lb 
@@ -66,16 +65,16 @@ module RailsGuides
     end
 
     def textile(body, lite_mode)
-      body = TextProcess.new(body,markup).process
       t = RedCloth.new(body)
       t.hard_breaks = false
       t.lite_mode = lite_mode
-      t.to_html
+      t.to_html(:notestuff, :plusplus_textile, :code)
     end
     
     def markdown(body)
-      body = TextProcess.new(body,markup).process
-      BlueCloth.new(body).to_html
+      rndr = MarkdownRender.new with_toc_data: true
+      md = Redcarpet::Markdown.new rndr, table: true 
+      md.render body
     end
 
 
