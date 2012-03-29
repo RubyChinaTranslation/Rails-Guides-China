@@ -3,7 +3,7 @@
   name: Start Here
   documents:
     -
-      name: Rails 初上手指南 
+      name: 与Rails的第一次接触 
       url: getting_started.html
       contributor: jhjguxin
       description: Everything you need to know to install Rails and create your first application.
