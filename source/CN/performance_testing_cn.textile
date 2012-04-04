@@ -232,5 +232,15 @@ BrowsingTest#test_homepage (31 ms warmup)
              gc_time: 19 ms
 </shell>
 
+h6. CSV 文件
+
+性能测试的输出结果同样可以输出到 +tmp/performance+ 下面的 +.csv+ 文件。举例来说，运行+BrowsingTest#test_homepage+ 将会生成以下5个文件：
+
+* BrowsingTest#test_homepage_gc_runs.csv
+* BrowsingTest#test_homepage_gc_time.csv
+* BrowsingTest#test_homepage_memory.csv
+* BrowsingTest#test_homepage_objects.csv
+* BrowsingTest#test_homepage_wall_time.csv
+
 
 
