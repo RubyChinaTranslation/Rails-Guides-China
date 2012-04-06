@@ -9,7 +9,7 @@ module RailsGuides
          content_tag(:dd, "施工中！贡献者: <a href='http://github.com/#{options[:contributor]}'>#{options[:contributor] || '匿名'}</a>".html_safe, :class => 'work-in-progress')
       elsif !options[:contributor]
          content_tag(:dd, :class => 'work-in-progress' ) do
-          "这篇还没有人翻译，我要<a href='rails_guides_translate_rules'>翻译本文</a>".html_safe
+          "这篇还没有人翻译，我要<a href='https://github.com/ruby-china/rails-guides'>翻译本文</a>".html_safe
         end
       else
          content_tag(:dd, :class => 'contributor' ) do
