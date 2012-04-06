@@ -97,6 +97,21 @@ xxx包括以下关键字：
 就可以生成 `source/CN` 文件夹下的所有 **markdown** 和 **textile** 文档到 **output/CN** 下。
 后缀可以是 `.markdown` 或者 `.md` 或者 `.textile`。
 
+### 部署
+
+文档使用了 *capistrano* 来进行自动化部署。
+在部署之前你需要修改 `config/deploy.rb`,设置你的用户名与决定部署的路径等。
+之后只要每次运行
+
+```
+
+cap deploy:setup
+cap deploy
+
+```
+
+即可自动完成.
+
 ### 建议与反馈
 
 欢迎任何建议！直接开一个 [github issues](https://github.com/RubyChinaTranslation/rails-guides-china/issues) 就可以了，当然你也可以跑到 [Ruby China](http://ruby-china.org) 社区上面去吐槽，我想这问题不大～
