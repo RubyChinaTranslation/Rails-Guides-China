@@ -9,19 +9,19 @@ h2. 与Rails的第一次接触
 
 endprologue.
 
-WARNING. 这个指导手册适用与 Rails 3.1，有些代码在 Rails 早期版本可能会不工作。
+WARNING. 这个指导手册适用与 Rails 3.1，有些代码在 Rails 早期版本可能无法正常运行。
 
 h3. 手册假设
 
 本指导设计给那些想大概的了解 Rails 应用创建的初学者。这里假设你对 Rails 没有任何预先的了解。要得到（本手册的）知识，你需要预先安装：
 
-* "Ruby":http://www.ruby-lang.org/en/downloads version 1.8.7 或者更高
+* "Ruby":http://www.ruby-lang.org/en/downloads version 1.8.7 或者更高版本
 
-TIP: 注意 Ruby 1.8.7 p248 and p249 有 marshaling bugs 会与 Rails 3.0 发生冲突。Ruby 1.8.7 p248 and p249在 发行版 1.8.7-2010.02 已经得到解决。Ruby 1.9 前提下，Ruby 1.9.1 不能使用因为它在 Rails 3.0 上会出现 segfaults 错误，因此如果你希望使用 Rails 3 和 1.9.x 跳至 1.9.2 （就可以）安全地使用 Rails。
+TIP: 注意 Ruby 1.8.7 p248 和 p249 有 marshaling bugs ，会与 Rails 3.0 发生冲突。Ruby 1.8.7 p248 和 p249在 发行版 1.8.7-2010.02 已经得到解决。Ruby 1.9 下 Ruby 1.9.1 不能使用，因为它在 Rails 3.0 上会出现 segfaults 错误，因此如果你希望使用 Rails 3 和 1.9.x ，更新版本到 1.9.2 就可以安全地使用 Rails。
  
 
 * "RubyGems":http://rubyforge.org/frs/?group_id=126 包管理系统
-  ** 如果你想了解更多关于RubyGems，请阅读 "RubyGems User Guide":http://docs.rubygems.org/read/book/1
+  ** 如果你想了解更多关于 RubyGems 的知识，请阅读 "RubyGems User Guide":http://docs.rubygems.org/read/book/1
 * 安装 "SQLite3 Database":http://www.sqlite.org
 
 Rails是一个基于Ruby程序语言的web程序框架。如果你没有预先的学习ruby，你会发现直接的入门Rails学习很有跨度。这里有一些学习ruby的免费互联网资源。
@@ -41,7 +41,7 @@ Rails是一个值得骄傲的软件。它使得我们以最好的方式去做事
 Rails 理念包含几个指导原则
 
 * DRY - 不要自己重复——建议一次又一次编写同样的代码是一件坏事请。
-* 约定优于配置——意思是 Rails 假设对于你想做什么以及你想怎么做的事情，刻意的做很少的事情比编写无尽的配置文件更好
+* 约定优于配置——意思是 Rails 假设对于你想做什么以及你想怎么做的事情，刻意的做很少的事情比编写无尽的配置文件更好。
 
 h4. MVC架构
 
