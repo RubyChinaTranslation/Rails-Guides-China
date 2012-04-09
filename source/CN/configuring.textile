@@ -70,7 +70,7 @@ config.asset_path = proc { |path| "/blog/public#{path}" }
 
 * +config.colorize_logging+ 指定记录日志信息是否使用ANSI颜色码.默认是 true.
 
-* +config.consider_all_requests_local+ 是个标记. 如果为 true 则任何携带详细调试信息的错误信息都会被放置到 HTTP 回应(response) 里, 并且 +Rails::Info+ 控制器会显示应用在 +/rails/info/properties+文件里的运行时上下文. 在开发和测试模式默认是true, 在生产模式是 false. 为了更细致的控制, 将其设置为 false 并在控制器里实现+local_request?+来指定哪些请求的错误信息需要提供调式信息.
+* +config.consider_all_requests_local+ 是个标记. 如果为 true 则任何携带详细调试信息的错误信息都会被放置到 HTTP 回应(response) 里, 并且 +Rails::Info+ 控制器会显示应用运行时上下文到 +/rails/info/properties+文件里的. 在开发和测试模式默认是true, 在生产模式是 false. 为了更细致的控制, 将其设置为 false 并在控制器里实现+local_request?+来指定哪些请求的错误信息需要提供调式信息.
 
 * +config.dependency_loading+ 是个标志. 将其设置为 false 可以使自动加载常量失效. 它只在 +config.cache_classes+ 为 true 的时候才有效, 这在生产模式是默认的. 这个标志会被 +config.threadsafe!+ 设置为 false.
 
@@ -90,3 +90,71 @@ config.asset_path = proc { |path| "/blog/public#{path}" }
 
 * +config.log_tags+ 接受一组方法, 这些方法回应 +request+ 对象. 这样使标记调试信息日志行更容易, 像子域名和请求标示(id) -- 在调试多用户应用产品时都很又用.
 
+h4. 配置资源
+
+Rails 3.1, 默认使用 +sprockets+ gem 来管理资源。这个 gem 合并并压缩资源，为了降低服务器负载。
+
+* +config.assets.enabled+ 是一个标记，这个标记控制是否使用资源通道(asset pipeline)。 这在 +config/application.rb+ 里被明确的初始化了.
+
+* +config.assets.compress+ 标记是否压缩已经编译好的资源。这在+config/production.rb+里明确的设置为 true.
+
+* +config.assets.css_compressor+ 定义要使用的 CSS 压缩器。默认被设置为 +sass-rails+。目前唯一可以选择的值是 +:yui+, 这会使用 +yui-compressor+ gem.
+
+* +config.assets.paths+ 包含了所有用来查找资源的路径。 添加到这个配置选项里的路径，会被用于搜索资源.
+
+* +config.assets.precompile+ 让你指定其它（+application.css+ 和 +application.js+以外的）资源，这些资源会在 +rake assets:precompile+ 执行时被预编译.
+
+* +config.assets.prefix+ 指定资源目录的前缀，默认是+/assets+.
+
+* +config.assets.digest+ 使资源的名字能使用(带有)MD5指纹。 在+production.rb+默认设置为 true.
+
+* +config.assets.debug+ 不合并压缩资源。在 +development.rb+ 里默认不设置为 false
+
+* +config.assets.manifest+ 指定了一个完整的路径，这是资源预编译器的待编译列表文件所在目录的路径。默认使用 +config.assets.prefix+
+
+* +config.assets.cache_store+ 指定 Sprockets 要使用的缓存存储. 默认是Rails的文件存储。
+
+* +config.assets.version+ 是一个字符串选项，用于生成MD5哈希值。可以被更改从而强制所有文件都被预编译.
+
+* +config.assets.compile+ 是一个布尔值，可以用于开启让、 Sprockets 在生产环境的即时执行编译。
+
+* +config.assets.logger+ 接受一个遵循 Log4r 或者 Ruby 默认 +Logger+ 类接口的日志类.默认和 +config.logger+ 指定的一样。设置 +config.assets.logger+ 为 false, 就可以关闭记录资源处理的日志。
+
+h4. 配置生成器
+
+Rails 3 允许你修改在 +config.generators+ 方法被使用到的生成器.这个方法接受一个闭包:
+
+<ruby>
+config.generators do |g|
+  g.orm :active_record
+  g.test_framework :test_unit
+end
+</ruby>
+
+可以被这个闭包使用的所有方法列表如下:
+
+* +assets+ 允许在创建一个脚手架(scaffold)时候创建资源文件。默认是 +true+
+* +force_plural+ 运行将数据模型(model)的名字都变成复数。默认是 +false+
+* +helper+ 指定是否要创建帮助器(helpers). 默认是 +true+
+* +integration_tool+ 指定使用哪个集成工具。默认是 +nil+
+* +javascripts+ 开启生成器中javascript的钩子(hook). 被使用于Rails运行 +scaffold+ 生成器的时候。默认是 +true+。
+* +javascript_engine+ 配置用于生成资源的引擎(例如, coffee).默认为 +nil+.
+* +orm+ 指定使用哪个orm. 默认是 +false+ 并且默认使用 Active Record.
+* +performance_tool+ 指定使用哪个性能工具.默认为+nil+
+* +resource_controller+ 指定当使用 +rails generate resource+时,生成控制器的生成器.默认是 +:controller+
+* +scaffold_controller+ 和 +resource_controller+不同，指定当使用 +rails generate scaffold+时，生成一个 _scaffolded_ 控制器的生成器。
+* +stylesheets+ 开启生成器中的式样钩子。在Rails中被用于 +scaffold+ 生成器运行的时候， 但这个钩子也可以用在其它生成器。默认为 +true+
+* +stylesheets_engine+ 配置生成资源的式样引擎(例如, sass)。默认是 +css+
+* +test_framework+ 指定使用哪个测试框架。默认为 +false+, 并且默认使用 Test::Unit.
+* +template_engine+ 指定使用哪个模板引擎，比如 ERB 或 Haml.默认为 +:erb+.
+
+h4. 配置中间件
+
+所有的Rails应用程序都来自于一系列标准的中间件，这些中间件以下列顺序被使用于开发环境:
+
+* +ActionDispatch::SSL+ 强制所有请求使用HTTPS协议。在 +config.force_ssl+ 被设置为 +true+ 的时候可用。传递给它的选项可以在 +config.ssl_options+ 编辑.
+* +ActionDispatch::Static+ 用于处理静态资源。在 +config.serve_static_assets+ 设置为 +true+ 的时候不可用。
+* +Rack::Lock+ 将应用封装成互斥体，那么应用程序就一次只能被单个线程调用。只在 +config.action_controller_concurrency+ 设置为 +false+的时候才可用， 这是默认的.
+* +ActiveSupport::Cache::StrategyLocalCache+ 作为基础的内存Backed缓存器. 这个缓存器不是线程安全的，并且只是作为单个线程的临时内存缓存器。
+* +Rack::Runtime+ 设置一个 +X-Runtime+ 头部，包括时间(精确到秒)令牌, 去执行请求。
+* +Rails::Rack::Logger+ 
