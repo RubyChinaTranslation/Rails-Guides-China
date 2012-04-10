@@ -133,6 +133,24 @@ SELECT * FROM clients ORDER BY clients.id DESC LIMIT 1
 
 <tt>Model.last</tt> returns +nil+ if no matching record is found. No exception will be raised.
 
+h5. +find_by+
+
+<tt>Model.find_by</tt> finds the first record matching some conditions. For example:
+
+<ruby>
+Client.find_by first_name: 'Lifo'
+# => #<Client id: 1, first_name: "Lifo">
+
+Client.find_by first_name: 'Jon'
+# => nil
+</ruby>
+
+It is equivalent to writing:
+
+<ruby>
+Client.where(first_name: 'Lifo').first
+</ruby>
+
 h5(#first_1). +first!+
 
 <tt>Model.first!</tt> finds the first record. For example:
@@ -166,6 +184,24 @@ SELECT * FROM clients ORDER BY clients.id DESC LIMIT 1
 </sql>
 
 <tt>Model.last!</tt> raises +RecordNotFound+ if no matching record is found.
+
+h5(#find_by_1). +find_by!+
+
+<tt>Model.find_by!</tt> finds the first record matching some conditions. It raises +RecordNotFound+ if no matching record is found. For example:
+
+<ruby>
+Client.find_by! first_name: 'Lifo'
+# => #<Client id: 1, first_name: "Lifo">
+
+Client.find_by! first_name: 'Jon'
+# => RecordNotFound
+</ruby>
+
+It is equivalent to writing:
+
+<ruby>
+Client.where(first_name: 'Lifo').first!
+</ruby>
 
 h4. Retrieving Multiple Objects
 
@@ -659,7 +695,7 @@ Optimistic locking allows multiple users to access the same record for edits, an
 
 <strong>Optimistic locking column</strong>
 
-In order to use optimistic locking, the table needs to have a column called +lock_version+. Each time the record is updated, Active Record increments the +lock_version+ column. If an update request is made with a lower value in the +lock_version+ field than is currently in the +lock_version+ column in the database, the update request will fail with an +ActiveRecord::StaleObjectError+. Example:
+In order to use optimistic locking, the table needs to have a column called +lock_version+ of type integer. Each time the record is updated, Active Record increments the +lock_version+ column. If an update request is made with a lower value in the +lock_version+ field than is currently in the +lock_version+ column in the database, the update request will fail with an +ActiveRecord::StaleObjectError+. Example:
 
 <ruby>
 c1 = Client.find(1)
@@ -943,21 +979,23 @@ If, in the case of this +includes+ query, there were no comments for any posts, 
 
 h3. Scopes
 
-Scoping allows you to specify commonly-used ARel queries which can be referenced as method calls on the association objects or models. With these scopes, you can use every method previously covered such as +where+, +joins+ and +includes+. All scope methods will return an +ActiveRecord::Relation+ object which will allow for further methods (such as other scopes) to be called on it.
+Scoping allows you to specify commonly-used queries which can be referenced as method calls on the association objects or models. With these scopes, you can use every method previously covered such as +where+, +joins+ and +includes+. All scope methods will return an +ActiveRecord::Relation+ object which will allow for further methods (such as other scopes) to be called on it.
 
-To define a simple scope, we use the +scope+ method inside the class, passing the ARel query that we'd like run when this scope is called:
+To define a simple scope, we use the +scope+ method inside the class, passing the query that we'd like run when this scope is called:
 
 <ruby>
 class Post < ActiveRecord::Base
-  scope :published, where(:published => true)
+  scope :published, -> { where(published: true) }
 end
 </ruby>
 
-Just like before, these methods are also chainable:
+This is exactly the same as defining a class method, and which you use is a matter of personal preference:
 
 <ruby>
 class Post < ActiveRecord::Base
-  scope :published, where(:published => true).joins(:category)
+  def self.published
+    where(published: true)
+  end
 end
 </ruby>
 
@@ -965,8 +1003,8 @@ Scopes are also chainable within scopes:
 
 <ruby>
 class Post < ActiveRecord::Base
-  scope :published, where(:published => true)
-  scope :published_and_commented, published.and(self.arel_table[:comments_count].gt(0))
+  scope :published,               -> { where(:published => true) }
+  scope :published_and_commented, -> { published.where("comments_count > 0") }
 end
 </ruby>
 
@@ -983,25 +1021,13 @@ category = Category.first
 category.posts.published # => [published posts belonging to this category]
 </ruby>
 
-h4. Working with times
-
-If you're working with dates or times within scopes, due to how they are evaluated, you will need to use a lambda so that the scope is evaluated every time.
-
-<ruby>
-class Post < ActiveRecord::Base
-  scope :created_before_now, lambda { where("created_at < ?", Time.zone.now ) }
-end
-</ruby>
-
-Without the +lambda+, this +Time.zone.now+ will only be called once.
-
 h4. Passing in arguments
 
-When a +lambda+ is used for a +scope+, it can take arguments:
+Your scope can take arguments:
 
 <ruby>
 class Post < ActiveRecord::Base
-  scope :created_before, lambda { |time| where("created_at < ?", time) }
+  scope :created_before, ->(time) { where("created_at < ?", time) }
 end
 </ruby>
 
@@ -1048,7 +1074,7 @@ If we wish for a scope to be applied across all queries to the model we can use 
 
 <ruby>
 class Client < ActiveRecord::Base
-  default_scope where("removed_at IS NULL")
+  default_scope { where("removed_at IS NULL") }
 end
 </ruby>
 
