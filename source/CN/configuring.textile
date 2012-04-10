@@ -175,6 +175,74 @@ h4. 配置中间件
 * +ActionDispatch::SSL+ 强制所有请求使用HTTPS协议。在 +config.force_ssl+ 被设置为 +true+ 的时候可用。传递给它的选项可以在 +config.ssl_options+ 编辑.
 * +ActionDispatch::Static+ 用于处理静态资源。在 +config.serve_static_assets+ 设置为 +true+ 的时候不可用。
 * +Rack::Lock+ 将应用封装成互斥体，那么应用程序就一次只能被单个线程调用。只在 +config.action_controller_concurrency+ 设置为 +false+的时候才可用， 这是默认的.
-* +ActiveSupport::Cache::StrategyLocalCache+ 作为基础的内存Backed缓存器. 这个缓存器不是线程安全的，并且只是作为单个线程的临时内存缓存器。
+* +ActiveSupport::Cache::StrategyLocalCache+ 作为基础的内存后备缓存器. 这个缓存器不是线程安全的，并且只是作为单个线程的临时内存缓存器。
 * +Rack::Runtime+ 设置一个 +X-Runtime+ 头部，包括时间(精确到秒)令牌, 去执行请求。
-* +Rails::Rack::Logger+ 
+* +Rails::Rack::Logger+ 通知日志请求已经开始。请求完成后，清除所有的日志。
+* +ActionDispatch::ShowExceptions+ 救回(回收)应用程序返回的异常，如果是本地请求或者 +config.consider_all_requests_local+ 设置为 +true+ 的话，还会渲染出漂亮的异常信息页。如果 +config.action_dispatch.show_exceptions+ 设置为 +false+， 抛出的异常会被忽略。
+* +ActionDispatch::RequestId+ 产生一个唯一的 X-Request-Id 头部给响应(response)，并使用 +ActionDispatch::Request#uuid+ 方法.
+* +ActionDispatch::RemoteIp+ 用于防止IP欺骗攻击。可在 +config.action_dispatch.id_spoofing_check+ 和 +config.action_dispatch.trusted_proxies+ 进行设置.
+* +Rack::Sendfile+ 截取所有正文(HTTP 正文)被用于服务于某个文件的响应(responses)，并将其替换成一个服务器指定的 X-Sendfile 头部(HTTP 头部). 可以在 +config.action_dispatch.x_sendfile_header+.
+* +ActionDispatch::Callbacks+ 在处理请求之前运行预先准备的回调。
+* +ActiveRecord::ConnectionAdapters::ConnectionManagement+ 在每次请求完成后清除连接，除非 +rack.test+ 键在请求的环境设置中设置为 +true+
+* +ActiveRecord::QueryCache+ 缓存所有请求中产生的 SELECT 查询。如果换成任何 INSERT 或者 UPDATE 则缓存会被清除.
+* +ActionDispatch::Cookies+ 为请求设置 cookies.
+* +ActionDispatch::Session::CookieStore+ 负责存储cookies中的会话。通过根据可选值修改 +config.action_controller.session_store+，可以使用其它中间件. 另外，传递给这个中间件的参数可以在 +config.action_controller.session_options+ 配置.
+* +ActionDispatch::Flash+ 设置 +flash+ 的键值。只有在 +config.action_controller.session_store+ 设置为某个值才会起作用
+* +ActionDispatch::ParamsParser+ 将请求中的参数解析成+params+
+* +Rack::MethodOverride+ 允许方法被重写，如果有对 +params[:_method]+ 进行设置。这是提供 PATCH, PUT 和 DELETE 的 HTTP方法类型处理支持的中间件.
+* +ActionDispatch::Head+ 将所有HEAD请求转换成GET请求，然后再处理。
+* +ActionDispatch::BestStandardsSupport+ 启用 "最好的标准支持" 所以IE8能正确的渲染元素.
+
+除了这些常用的中间件，你可以通过 +config.middleware.use+ 方法添加自己的:
+
+<ruby>
+config.middleware.use Magical::Unicorns
+</ruby>
+
+这会将 +Magical::Unicorns+ 中间件放置到堆栈的尾部。如果你想添加一个中间件到另一个的前面，可以使用 +insert_before+
+
+<ruby>
+config.middleware.insert_before ActionDispatch::Head, Magical::Unicorns
+</ruby>
+
+当然也有 +insert_after+，它将把某个中间件插入到另一个的后面:
+
+<ruby>
+config.middleware.insert_after ActionDispatch::Head, Magical::Unicorns
+</ruby>
+
+所有的中间件也可以被完全移除并替换成其它的:
+
+<ruby>
+config.middleware.swap ActionDispatch::BestStandardsSupport, Magical::Unicorns
+</ruby>
+
+它们也能完全从堆栈中被移除.
+<ruby>
+config.middleware.delete ActionDispatch::BestStandardsSupport
+</ruby>
+
+除了这些操作堆栈的方法，如果你的应用程序只作为一个API端的话，中间件堆栈可以像这样设置:
+
+<ruby>
+config.middleware.http_only!
+</ruby>
+
+通过这样做，Rails将会创建一个更小的中间件堆栈，这个堆栈中不会添加一些通常对浏览器访问很有用的中间件, 比如 Cookies, 会话，闪存(Flash), BestStandardsSupport 和 MethodOverride. 你可以手动添加它们。查阅 "API App docs":api_app.html 可以获得更多关于如何设置你API应用程序的信息。
+
+h4. 配置 i18n
+
+* +config.i18n.default_locale+ 设置某个使用i18n应用程序的默认本地语言环境。默认为 +:en+
+
+* +config.i18n.load_path+ 设置Rails用来搜索本地化文件的路径。默认为 +config/locales/*.{yml,rb}+
+
+h4. 配置 Active Record
+
+<tt>config.active_record</tt> 包括了下列配置选项:
+
+* +config.active_record.logger+ 接受一个符合 Log4r 或者 Ruby 默认日志类 接口的日志类, 并会被传递给任何新建立的数据库连接. 你可以通过调用某个Active Record模型类或者某个Active Record模型示例的 +logger+ 对象来取得这个日志类. 默认设置为 +nil+ 来取消日志记录.
+
+* +config.active_record.primary_key_prefix_type+ 让你调整主键栏的名字。默认情况下， Rails假设主键栏是被命名为+id+(这个配置选项不需要设置。) 这有两个其它选择:
+** +:table_name+ 会使用自定义的 +customerid+ 类来生成主键
+** +:table_name_with_underscore+ 会使用自定义的 +customer_id+ 来生成主键
+
