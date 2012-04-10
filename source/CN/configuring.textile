@@ -246,3 +246,10 @@ h4. 配置 Active Record
 ** +:table_name+ 会使用自定义的 +customerid+ 类来生成主键
 ** +:table_name_with_underscore+ 会使用自定义的 +customer_id+ 来生成主键
 
+* +config.active_record.table_name_prefix+ 让你设置一个全局字符串加入到表明中. 如果你这个字符串设置为 +northwest_+, 那么Customer类将找 +northwest_customers+ 表作为它的表. 默认是一个空字符串.
+
+* +config.active_record.table_name_suffix+ 让你为设置一个全局字符串加入到表名中. 如果你将它设置为 +_northwest+, 那么Customer类将会找到 ++customers_northwest+ 作为它的表. 默认是一个空字符串.
+
+* +config.active_record.pluralize_table_names+ 指定Rails是否在数据库中寻找表名是单数的表,还是表名是复数的表. 如果设置为 true (默认值), 那么 Customer 类将会使用 +customers+ 表. 如果设置为 false, 那么 Customer 类将会使用 +customer+ 表.
+
+* +config.active_record.default_timezones+ 当从数据库获取日期和时间时,决定是否使用 +Time.local+ (如果设置为 +:local+) 还是 +Time.utc+ (如果设置为 +:utc+). 虽然活动记录(Active Record)在Rails以外默认为 +:local+, 但在Rails中默认为 +:utc+. 
