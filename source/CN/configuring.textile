@@ -252,4 +252,14 @@ h4. 配置 Active Record
 
 * +config.active_record.pluralize_table_names+ 指定Rails是否在数据库中寻找表名是单数的表,还是表名是复数的表. 如果设置为 true (默认值), 那么 Customer 类将会使用 +customers+ 表. 如果设置为 false, 那么 Customer 类将会使用 +customer+ 表.
 
-* +config.active_record.default_timezones+ 当从数据库获取日期和时间时,决定是否使用 +Time.local+ (如果设置为 +:local+) 还是 +Time.utc+ (如果设置为 +:utc+). 虽然活动记录(Active Record)在Rails以外默认为 +:local+, 但在Rails中默认为 +:utc+. 
+* +config.active_record.default_timezone+ 当从数据库获取日期和时间时,决定是否使用 +Time.local+ (如果设置为 +:local+) 还是 +Time.utc+ (如果设置为 +:utc+). 虽然活动记录(Active Record)在Rails以外默认为 +:local+, 但在Rails中默认为 +:utc+. 
+
+* +config.active_record.schema_format+ 控制将数据库结构导出到文件的格式。选项是 +:ruby+(默认)，这是与数据库无关的选项但依赖于迁移(中间件). 或者是 +:sql+, 一连串 (很可能是数据库依赖的) SQL 语句.
+
+* +config.active_record.timestamped_migrations+ 控制所有迁移脚本的命名中是否带有序列或者时间戳. 如果有多个开发者开发同一个应用程序，建议使用默认的时间戳.
+
+* +config.active_record.lock_optimistically+ 控制活日志(Active Record)是否使用乐观锁， 默认是使用的。
+
+* +config.active_record.whitelist_attributes+ 将会创建一个空白白名单，这个名单包含了用于多赋值防护措施的模块属性，并对应用程序里所有模型有效。
+
+* +config.active_record.auto_explain_threshold_in_seconds+ 配置自动释放的
