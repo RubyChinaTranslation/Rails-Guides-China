@@ -39,7 +39,6 @@ Rails Guides 中文用了一些关键字来让你的文章生成更加便捷。
 
 * [textile 语法](http://redcloth.org/textile)
 
-**由于 markdown 没有提供设置 id 的内建语法，生成的目录无法产生链接，我会尽快修复**。
 
 ##### 概要
 
