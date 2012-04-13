@@ -83,7 +83,7 @@
       url: performance_testing.html
       work_in_progress: true
       contributor: Tassandar	
-      description: 这份文章介绍了几种对一个 Ruby on Rails 应用的测试方法。
+      description: 这份文章介绍了几种对一个 Ruby on Rails 应用进行性能测试的方法。
     - 
       name: Configuring Rails Applications
       url: configuring.html
