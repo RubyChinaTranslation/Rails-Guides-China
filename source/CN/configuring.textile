@@ -48,7 +48,7 @@ config.after_initialize do
 end
 </ruby>
 
-* +config.allow_concurrency+ 应该设置为 true 来处理同时运行(线程安全)的动作. False 为缺省值. 你也许不会想要直接调用它, 然而,因为要让线程安全模式运行的很好而做一系列其它的调整.也可以通过+threadsafe!+来激活.
+* +config.allow_concurrency+ 应该设置为 true 来处理同时运行(线程安全)的活动. False 为缺省值. 你也许不会想要直接调用它, 然而,因为要让线程安全模式运行的很好而做一系列其它的调整.也可以通过+threadsafe!+来激活.
 
 * +config.asset_host+ 用于设置资源主机. 当CDNs被使用于自己的资源主机,或者当你想用不同的域名别名来解决浏览器内建线程并发限制时会很有用.这是+config.action_controller.asset_host+ 更简短的版本
 
@@ -252,14 +252,92 @@ h4. 配置 Active Record
 
 * +config.active_record.pluralize_table_names+ 指定Rails是否在数据库中寻找表名是单数的表,还是表名是复数的表. 如果设置为 true (默认值), 那么 Customer 类将会使用 +customers+ 表. 如果设置为 false, 那么 Customer 类将会使用 +customer+ 表.
 
-* +config.active_record.default_timezone+ 当从数据库获取日期和时间时,决定是否使用 +Time.local+ (如果设置为 +:local+) 还是 +Time.utc+ (如果设置为 +:utc+). 虽然活动记录(Active Record)在Rails以外默认为 +:local+, 但在Rails中默认为 +:utc+. 
+* +config.active_record.default_timezone+ 当从数据库获取日期和时间时,决定是否使用 +Time.local+ (如果设置为 +:local+) 还是 +Time.utc+ (如果设置为 +:utc+). 虽然动作记载(Active Record)在Rails以外默认为 +:local+, 但在Rails中默认为 +:utc+. 
 
 * +config.active_record.schema_format+ 控制将数据库结构导出到文件的格式。选项是 +:ruby+(默认)，这是与数据库无关的选项但依赖于迁移(中间件). 或者是 +:sql+, 一连串 (很可能是数据库依赖的) SQL 语句.
 
 * +config.active_record.timestamped_migrations+ 控制所有迁移脚本的命名中是否带有序列或者时间戳. 如果有多个开发者开发同一个应用程序，建议使用默认的时间戳.
 
-* +config.active_record.lock_optimistically+ 控制活日志(Active Record)是否使用乐观锁， 默认是使用的。
+* +config.active_record.lock_optimistically+ 控制活动日志(Active Record)是否使用乐观锁， 默认是使用的。
 
-* +config.active_record.whitelist_attributes+ 将会创建一个空白白名单，这个名单包含了用于多赋值防护措施的模块属性，并对应用程序里所有模型有效。
+* +config.active_record.whitelist_attributes+ 将会创建一个空白白名单，这个名单包含了用于批量赋值(mass assignment)防护措施的模型属性，并对应用程序里所有模型有效。
 
-* +config.active_record.auto_explain_threshold_in_seconds+ 配置自动释放的
+* +config.active_record.auto_explain_threshold_in_seconds+ 配置自动执行(sql指令)+EXPLAIN+的临界值。所有逼近临界值的查询会把它们的查询计划进行日志记录。在开发模式下默认是0.5。
+
+* +config.active_record.dependent_restrict_raises+ 当某个具有 <tt>:dependent => :restrict</tt> 关联关系的对象被删除时，控制该行为。设置为false将会阻止抛出+DeleteRestrictionError+异常,并且会将错误信息添加入到模型对象里。在开发模式下默认为flase.
+
+* +config.active_record.mass_assignment_sanitizer+ 将会判断Rails中对批量赋值(mass assignment)清理的严格程度。默认为 +:strict+. 在这个模式下，调用 +create+ 或者 +update_attributes+ 并对任何不是+attr_accessible+的属性进行批量赋值的话，将会抛出一个异常。如果设置这个选项为 +:logger+的话，只会将某个属性被赋值时的异常信息打印到日志文件，并不抛出异常。
+
+MySQL 适配器的一个附加配置选项：
+
+* +ActiveRecord::ConnectionAdapters::MysqlAdapter.emulate_booleans+ 控制活动日志(Active Record)是否会将MySQL数据库中 +tinyint(1)+ 栏当作布尔值，默认是true.
+
+结构导出器(Schema Dumper)的一个附加配置选项：
+
+* +ActiveRecord::SchemaDumper.ignore_tables+ 接受一组表，任何产生的(数据库)结构(schema)文件都_不_会包含这些表。这个设置会被忽略除非 +config.active_record.schema_format == :ruby+
+
+h4. 配置活动控制器
+
+<tt>config.action_controller</tt> 包括了这些配置设置：
+
+* +config.action_controller.asset_host+ 设置资源主机。当CDNs被用于资源主机时很有用，比应用程序自己处理资源有用得多.
+
+* +config.action_controller.asset_path+ 接受一个闭包，这个闭包配置去哪找资源文件。更简短的版本是 +config.asset_path+.
+
+* +config.action_controller.page_cache_directory+ 是web服务器的文档的根目录，设置值使用<tt>Base.page_cache_directory = "/document/root"</tt>.在Rails中，这个目录已经被设置为 +Rails.public_path+ (它的值通常设置为<tt>Rails.root + "/public"</tt>)。改变这个值对防止<tt>public</tt>里的文件名冲突很有用，但这么做需要配置你的web服务器从新的地方寻找缓存文件。
+
+* +config.action_controller.page_cache_extension+ 配置保存在 +page_cache_directory+ 的缓存页面是否是用扩展名。默认为 +.html+
+
+* +config.action_controller.perform_caching+ 配置应用程序是否进行缓存。开发模式默认关闭，在生产模式默认开启.
+
+* +config.action_controller.default_charset+ 规定所有渲染器的字符编码。默认是 "utf-8"。
+
+* +config.action_controller.logger+ 接受一个符合 Log4r 或者 Ruby 默认日志类的接口的日志类，这个日志类用于记录来自活动控制器的信息。设置为 +nil+ 以不进行记录。
+
+* +config.action_controller.request_forgery_protection_token+ 为 RequestForgery 设置一个令牌的参数名。调用 +protect_from_forgery+ 默认将其设置为+authenticity_token+。
+
+* +config.action_controller.allow_forgery_protection_token+ 使用或者不使用 CSRF 保护。默认在测试模式下使用，其它模式不使用。
+
+* +config.action_controller.relative_url_root+ 可以被用于告诉Rails你要部署到某个子目录。默认为 +ENV['RAILS_RELATIVE_URL_ROOT']+。
+
+缓存代码的两个附加设置：
+
+* +ActionController::Base.page_cache_directory+ 设置缓存页面的存放目录，这些页面是Rails为你的web服务器创建的。默认为 +Rails.public_path+(通常设置为 <tt>Rails.root + "/public"</tt>).
+
+* +ActionController::Base.page_cache_extensions+ 设置缓存页(文件)的扩展名(如果请求已经有扩展名，那将忽略这个设置)。默认为 +.html+。
+
+Active Record 会话存储也可以这样配置：
+
+* +ActiveRecord::SessionStore::Session.table_name+ 设置会话存储使用的表名。默认为 +session+。
+
+* +ActiveRecord::SessionStore::Session.primary_key+ 设置会话存储使用的表的ID栏的名字。默认为 +session_id+。
+
+* +ActiveRecord::SessionStore::Session.data_column_name+ 设置存放汇集了会话数据那栏的名字。默认为 +data+。
+
+h4. 配置活动调度
+
+* +config.action_dispatch.session_store+ 设置会话数据存储的名字。默认是 +:cookie_store+；其它可选的包括 +:active_record_store+, +:men_cache_store+ 或者你自己定义的类的名字。
+
+* +config.action_dispatch.tld_length+ 设置应用程序TLD(顶级域)的长度.默认为 +1+.
+
+* +ActionDispatch::Callbacks.before+ 接受一个闭包，在请求之前运行。
+
+* +ActionDispatch::Callbacks.to_prepare+ 接受一个闭包，在 +Action::Dispatch::Callbacks.before+ 之后运行，但在请求之前。+development+模式中每个请求都会运行这个闭包，但在 +production+ 模式下或者设置 +cache_classes+ 为 true 的环境只运行一次.
+
+* +ActionDispatch::Callbacks.after+ 接受一个闭包，在请求之后运行。
+
+h4. 配置活动视图
+
+<tt>config.action_view</tt> 包括了这些配置设置:
+
+* +config.action_view.field_error_proc+ 提供一个HTML生成器，用于显示来自动作记载(Active Record)的错误信息。默认为
+
+<ruby>
+Proc.new { |html_tag, instance| %Q(<div class="field_with_errors">#{html_tag}</div>).html_safe }
+</ruby>
+
+* +config.action_view.default_form_builder+ 告诉Rails默认使用哪个表格创建器。默认为 +ActionView::Helpers::FormBuilder+.
+
+* +config.action_view.logger+ 接受一个日志类，这个类要遵循 Log4r 或者 Ruby 默认日志类的接口。该类会被用于记录来自活动视图的信息。设置为 +nil+ 来关闭日志。
+
+* +config.action_view.erb_trim_mode+ 
