@@ -340,4 +340,34 @@ Proc.new { |html_tag, instance| %Q(<div class="field_with_errors">#{html_tag}</d
 
 * +config.action_view.logger+ 接受一个日志类，这个类要遵循 Log4r 或者 Ruby 默认日志类的接口。该类会被用于记录来自活动视图的信息。设置为 +nil+ 来关闭日志。
 
-* +config.action_view.erb_trim_mode+ 
+* +config.action_view.erb_trim_mode+ 给出被ERB使用的修剪模式。默认为 +'-'+。更多信息查阅 "ERB documentation":http://www.ruby-doc.org/stdlib/libdoc/erb/rdoc/
+
+* +config.action_view.javascript_expansions+ 是一个包含了扩展的哈希数组。这些扩张可以通过JavaScript引入标签被导入使用。默认情况下是这么定义的:
+
+<ruby>
+config.action_view.javascript_expansions = { :defaults => %w(jquery jquery_ujs) }
+</ruby>
+
+然而，你也许像这样定义其它的扩展:
+
+<ruby>
+config.action_view.javascript_expansions[:prototype] = ['prototype', 'effects', 'dragdrop', 'controls']
+</ruby>
+
+并且可以在试图里像这样进行引用:
+
+<ruby>
+<%= javascript_include_tag :prototype %>
+</ruby>
+
+* +config.action_view.stylesheet_expansions+ 跟 +javascript_expansions+ 的工作方式差不多，但没有默认的项。在这个哈希数组定义的所有键都可以在视图里像这样引用:
+
+<ruby>
+<%= stylesheet_link_tag :special %>
+</ruby>
+
+* +config.action_view.cache_asset_ids+ 当启用缓存时，资源标签助手会进行几个高耗的文件系统调用(默认进行文件系统时间戳检查)。然而这样可以防止当服务器运行时修改任何资源文件。
+
+* +cofnig.action_view.embed_authenticity_token_in_remote_forms+ 让你设置具有 +:remote => true+ 属性的表单中是否默认带有+authenticity_token+。默认情况下这个值设置为false, 这意味着远程表单里将不包含 +authenticity_token+，这对你局部缓存表单会很有用。运程表单将通过+meta+标签获得真实性(认证), 所以所以嵌入是必要的，除非你支持没有Javascript的浏览器。在这种情况下，你可以投递 +:authenticity_token => true+ 作为表单参数或者将这个配置设置为 +true+
+
+* +config.action_view.prefix_partial_path_with_controller_namespace+ 
