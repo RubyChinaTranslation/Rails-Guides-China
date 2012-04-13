@@ -1,6 +1,8 @@
 # Ruby on Rails Guides 中文指南
 
 如果你也想为 Ruby on Rails 社区出一份力就从这里开始吧！
+
+http://www.railschina.org/
  
 ## Rails Guides 中文
  
@@ -37,7 +39,6 @@ Rails Guides 中文用了一些关键字来让你的文章生成更加便捷。
 
 * [textile 语法](http://redcloth.org/textile)
 
-**由于 markdown 没有提供设置 id 的内建语法，生成的目录无法产生链接，我会尽快修复**。
 
 ##### 概要
 
@@ -86,8 +87,225 @@ xxx包括以下关键字：
     work_in_progress: true #如果加入这一栏说明你正在更新或者对他进行写作
     contributor: ME #这里可以写上你的 github 帐号名	
     description:  这里是描述
-     
-##### 生成
+
+#### 翻译约定 
+**请大家加入意见**
+
+* 专有名词保持大写：HTML, HAML, SASS, REST...等等。
+
+* 英文及数字夹在中文之间显得薄弱的关系，之间保留 1 格的空格：大家都来翻译 Rails 指南吧，Rails 目前版本为 3.2.2。
+
+* 代码与文字之间保留1格：`` `rvm` 是 Ruby 的版本管控工具。``
+
+由于没有照字母顺序排序的关系，建议你使用浏览器的搜索(`ctrl+F`, `cmd+F`)来寻找名词。
+
+**请大家加入名词**
+
+##### 约定翻译的名词：
+
+<table>
+<tr>
+	<th>原文</th>
+	<th>中文</th>
+</tr>
+<tr>
+	<td>class</td>
+	<td>类别</td>
+</tr>
+<tr>
+	<td>object</td>
+	<td>对象</td>
+</tr>
+<tr>
+	<td>instance</td>
+	<td>实例</td>
+</tr>
+<tr>
+	<td>instantiate</td>
+	<td>实例化</td>
+</tr>
+<tr>
+	<td>instance variable</td>
+	<td>实例变量</td>
+</tr>
+<tr>
+	<td>local variable</td>
+	<td>局域变数</td>
+</tr>
+<tr>
+	<td>inherit</td>
+	<td>继承</td>
+</tr>
+<tr>
+	<td>interface</td>
+	<td>接口</td>
+</tr>
+<tr>
+	<td>library</td>
+	<td>函式库</td>
+</tr>
+<tr>
+	<td>server</td>
+	<td>服务器</td>
+</tr>
+<tr>
+	<td>database</td>
+	<td>数据库</td>
+</tr>
+<tr>
+	<td>(database)table</td>
+	<td>数据表</td>
+</tr>
+<tr>
+	<td>code</td>
+	<td>代码</td>
+</tr>
+<tr>
+	<td>command-line</td>
+	<td>命令行</td>
+</tr>
+<tr>
+	<td>terminal</td>
+	<td>终端机</td>
+</tr>
+<tr>
+	<td>method</td>
+	<td>方法</td>
+</tr>
+<tr>
+	<td>application</td>
+	<td>应用程序、应用</td>
+</tr>
+<tr>
+	<td>framework</td>
+	<td>框架</td>
+</tr>
+<tr>
+	<td>template</td>
+	<td>模版</td>
+</tr>
+<tr>
+	<td>layout</td>
+	<td>版型</td>
+</tr>
+<tr>
+	<td>request</td>
+	<td>请求</td>
+</tr>
+<tr>
+	<td>timestamp</td>
+	<td>时间戳章</td>
+</tr>
+<tr>
+	<td>form</td>
+	<td>表单</td>
+</tr>
+<tr>
+	<td>array</td>
+	<td>数组</td>
+</tr>
+<tr>
+	<td>iterate</td>
+	<td>迭代</td>
+</tr>
+<tr>
+	<td>escaped</td>
+	<td>逸出</td>
+</tr>
+<tr>
+	<td>tag</td>
+	<td>标签</td>
+</tr>
+<tr>
+	<td>attribute</td>
+	<td>属性</td>
+</tr>
+<tr>
+	<td>routing</td>
+	<td>路由</td>
+</tr>
+<tr>
+	<td>collection</td>
+	<td>集合</td>
+</tr>
+<tr>
+	<td>macro</td>
+	<td>宏</td>
+</tr>
+</table>
+
+##### 保留不译的名词：
+
+... 基本上 Rails、Ruby 有的特有名词，除了计算机科学中常见的词儿以外，在不造成读者困扰的情况下，尽量保持原汁原味。
+
+<table>
+<tr>
+	<th>原文</th>
+	<th>说明</th>
+</tr>
+<tr>
+	<td>ActiveXXX</td>
+	<td>比如 ActiveRecord</td>
+</tr>
+<tr>
+	<td>resource</td>
+	<td>资源</td>
+</tr>
+<tr>
+	<td>partial</td>
+	<td>片段的 view</td>
+</tr>
+<tr>
+	<td>schema</td>
+	<td>资料库纲要</td>
+</tr>
+<tr>
+	<td>migration</td>
+	<td>资料库迁移</td>
+</tr>
+<tr>
+	<td>REST</td>
+	<td></td>
+</tr>
+<tr>
+	<td>helper</td>
+	<td>辅助的 Ruby 代码</td>
+</tr>
+<tr>
+	<td>scaffold</td>
+	<td>鹰架</td>
+</tr>
+<tr>
+	<td>mock</td>
+	<td>行为驱动测试用词</td>
+</tr>
+<tr>
+	<td>stub</td>
+	<td>行为驱动测试用词</td>
+</tr>
+<tr>
+	<td>param</td>
+	<td>参数</td>
+</tr>
+<tr>
+	<td>Rake</td>
+	<td>任务</td>
+</tr>
+<tr>
+	<td>Cucumber</td>
+	<td>不是小黄瓜</td>
+</tr>
+<tr>
+	<td>validator</td>
+	<td>验证器</td>
+</tr>
+
+</table>
+
+
+
+
+#### 生成
 
 使用命令 
  
@@ -137,3 +355,9 @@ https://github.com/lifo/docrails
 ![Creative Commons License](http://i.creativecommons.org/l/by-nc-sa/2.5/cn/88x31.png)
 
 有什么问题可以联系我<mailto:cool.zhikai@gmail.com>.
+
+
+
+
+
+
