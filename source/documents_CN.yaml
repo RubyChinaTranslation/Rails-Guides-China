@@ -1,15 +1,15 @@
 #coding: utf-8
 - 
-  name: Start Here
+  name: 起步
   documents:
     -
       name: 与Rails的第一次接触 
       url: getting_started.html
       contributor: jhjguxin
-      description: Everything you need to know to install Rails and create your first application.
+      description: 关于安装和建立一个全新的 Rails 程序你所需要知道的一切.
 
 -
-  name: Models
+  name: 模型(Models)
   documents:
     -
       name: Rails 数据迁移
@@ -18,7 +18,7 @@
       contributor: zernel
       description: This guide covers how you can use Active Record migrations to alter your database in a structured and organized manner.
     -
-      name: Active Record 校验于回调
+      name: Active Record 校验与回调
       url: active_record_validations_callbacks.html
       work_in_progress: true
       contributor: reyesyang
@@ -32,7 +32,7 @@
       url: active_record_querying.html
       description: This guide covers the database query interface provided by Active Record.
 -
-  name: Views
+  name: 视图(Views)
   documents:      
     - 
       name: Layouts and Rendering in Rails
@@ -43,18 +43,20 @@
       url: form_helpers.html
       description: Guide to using built-in Form helpers.
 -
-  name: Controllers
+  name: 控制器(Controllers)
   documents:
     - 
       name: Action Controller Overview
       url: action_controller_overview.html
       description: This guide covers how controllers work and how they fit into the request cycle in your application. It includes sessions, filters, and cookies, data streaming, and dealing with exceptions raised by a request, among other topics.
     - 
-      name: Rails Routing from the Outside In
+      name: 深出浅入说路由 
       url: routing.html
-      description: This guide covers the user-facing features of Rails routing. If you want to understand how to use routing in your own Rails applications, start here.
+      work_in_progress: true
+      contributor: Tassandar	
+      description: 这份教程介绍了 Rails 路由的常见功能。如果你想了解你的Rails程序中的路由该如何配置，就从这里开始吧。
 -
-  name: Digging Deeper
+  name: 深入(Digging Deeper)
   documents:
     - 
       name: Active Support Core Extensions
@@ -83,7 +85,6 @@
     - 
       name: Rails 应用与性能测试
       url: performance_testing.html
-      work_in_progress: true
       contributor: Tassandar	
       description: 这份文章介绍了几种对一个 Ruby on Rails 应用进行性能测试的方法。
     - 
@@ -113,7 +114,7 @@
       url: initialization.html
       description: This guide explains the internals of the Rails initialization process as of Rails 3.1
 -
-  name: Extending Rails
+  name: 扩展(Extending Rails)
   documents:
     - 
       name: The Basics of Creating Rails Plugins
