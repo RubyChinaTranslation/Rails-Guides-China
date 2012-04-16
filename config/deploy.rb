@@ -1,5 +1,5 @@
-set :application, "RailsGuides"
-set :domain, "www.railschina.org"
+set :application, "Rails Guides"
+set :domain, "guides.ruby-china.org"
 set :use_sudo, false
 set :user, "ruby"
 set :version, "v3.2.3"
@@ -11,20 +11,8 @@ role :web, domain
 role :app, domain
 role :db,  domain, :primary => true 
 
-#set :deploy_path, "/var/www/public_html/"
-
-set :deploy_to, "/home/#{user}/guides"
+set :deploy_to, "/home/#{user}/www/rails-guides"
 set :deploy_via, :copy
-
-#if you have a special directory to deploy the html
-#namespace :remote do
-  #desc <<-DESC
-    #you can modify the deploy_path to set a symlink to your nginx or apache
-  #DESC
-  #task :create_symlink, :roles => :web do
-    #run "ln -s #{current_path} #{deploy_path}"
-  #end
-#end
 
 
 namespace :local do

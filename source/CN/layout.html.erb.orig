@@ -28,8 +28,11 @@
       <a href="index.html">首页  </a> |
       
       <strong>更多Rails相关：</strong>
-      <a href="index.html">首页</a> |
+      <a href="http://ruby-china.org/">RubyChina社区</a> |
+=======
+      <a href="index.html">首页</a>
       <a href="http://ruby-china.org/">Ruby China 社区</a> |
+>>>>>>> 820990d786e243cdbd5c6764a353a927f0fe5974
       <a href="http://ihower.tw/rails3/">Ruby on Rails 实战圣经</a> |
       <a href="https://github.com/rails/rails">Rails Github</a> |
       <a href="http://railscasts.com/">Rails Casts</a> |
