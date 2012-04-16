@@ -17,6 +17,8 @@ set :deploy_via, :copy
 
 namespace :local do
   task :generate_guides do
+    print "delete all the outfiles"
+    system "rm -rvf ./output"
     print "generate the lastest guides"
     system "rake generate_guides_CN RAILS_VERSION=#{version}  "
   end
