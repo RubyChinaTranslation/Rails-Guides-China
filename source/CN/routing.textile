@@ -46,36 +46,36 @@ h4. 用代码生成 URL 和 路径
 
 h3. Resource 路由规则: Rails 之道
 
-Resource 路由规则能让你迅速地声明一个 resourceful 的控制器所需常用路由规则。
-Resource routing allows you to quickly declare all of the common routes for a given resourceful controller. Instead of declaring separate routes for your +index+, +show+, +new+, +edit+, +create+, +update+ and +destroy+ actions, a resourceful route declares them in a single line of code.
+Resource 路由规则能让你迅速地构建出 resourceful 的控制器所需常用路由规则，它可以自动地为你生成 +index+, +show+, +new+, +edit+, +create+, +update+ 和 +destroy+ 行为，而一个 Resourceful 的路由声明只需要一行代码。
+ 
 
-h4. Resources on the Web
+h4. web 与 Resource
 
-Browsers request pages from Rails by making a request for a URL using a specific HTTP method, such as +GET+, +POST+, +PATCH+, +PUT+ and +DELETE+. Each method is a request to perform an operation on the resource. A resource route maps a number of related requests to actions in a single controller.
+浏览器向 Rails 的一个页面发起请求 URL 的时候必须要指定一个 HTTP 请求方法，例如 +GET+, +POST+, +PATCH+, +PUT+ and +DELETE+.这些方法将会对 Rails 中的资源进行不同的操作。而一个 Resource 的路由规则将会为一个控制器自动匹配多种相关方法。
 
-When your Rails application receives an incoming request for
+例如，当你的 Rails 程序接收到了这样的请求：
 
 <plain>
 DELETE /photos/17
 </plain>
 
-it asks the router to map it to a controller action. If the first matching route is
+它会向 路由请求匹配到一个控制器行为上，这里假设匹配上了我们路由上的这条规则
 
 <ruby>
 resources :photos
 </ruby>
 
-Rails would dispatch that request to the +destroy+ method on the +photos+ controller with <tt>{ :id => "17" }</tt> in +params+.
+Rails 就将会把这个请求分发到 +photos+ 控制器下的 +destroy+ 方法下，并且把 <tt>{ :id => "17" }</tt> 作为 +params+ 的值.
 
-h4. CRUD, Verbs, and Actions
+h4. CRUD, Verbs, Actions
 
-In Rails, a resourceful route provides a mapping between HTTP verbs and URLs to controller actions. By convention, each action also maps to particular CRUD operations in a database. A single entry in the routing file, such as
+对于 Rails 一个 Resourceful 的路由提供了一组 HTTP 和 控制器行为的对应关系。它还约定了与每个行为相对应的 CRUD 的数据库操作。例如这样的一个 简单的 路由记录：
 
 <ruby>
 resources :photos
 </ruby>
 
-creates seven different routes in your application, all mapping to the +Photos+ controller:
+将会在应用中生成七个不同的路由记录，他们都会匹配到 +Photos+ 控制器上去。
 
 |_. HTTP Verb |_.Path            |_.action |_.used for                                   |
 |GET          |/photos           |index    |display a list of all photos                 |
@@ -86,20 +86,23 @@ creates seven different routes in your application, all mapping to the +Photos+ 
 |PATCH/PUT    |/photos/:id       |update   |update a specific photo                      |
 |DELETE       |/photos/:id       |destroy  |delete a specific photo                      |
 
-NOTE: Rails routes are matched in the order they are specified, so if you have a +resources :photos+ above a +get 'photos/poll'+ the +show+ action's route for the +resources+ line will be matched before the +get+ line. To fix this, move the +get+ line *above* the +resources+ line so that it is matched first.
+NOTE: Rails 路由的匹配是按照规则顺序匹配的，所以如果在你的路由规则中有一句 +resources :photos+，接着一句 +get 'photos/poll'+， 这样的话 +resources+ 定义的 +show+ 这个行为会比 +get+ 方法优先完成匹配。如果这样并非是你的本意，你只要将 +get 'photos/poll'+ 调到 +resources+ 那行的前面就可以先行指定特别的匹配规则。
 
-h4. Paths and URLs
+h4.  URL 和 Path
 
-Creating a resourceful route will also expose a number of helpers to the controllers in your application. In the case of +resources :photos+:
+建立一个 Resourceful 的路由的同时也会为你的应用自动添加一系列的 Helper 方法。以上面的 +resources :photos+ 路由规则为例：
 
-* +photos_path+ returns +/photos+
-* +new_photo_path+ returns +/photos/new+
-* +edit_photo_path(:id)+ returns +/photos/:id/edit+ (for instance, +edit_photo_path(10)+ returns +/photos/10/edit+)
-* +photo_path(:id)+ returns +/photos/:id+ (for instance, +photo_path(10)+ returns +/photos/10+)
+* +photos_path+ 会返回 +/photos+
+* +new_photo_path+ 返回 +/photos/new+
+* +edit_photo_path(:id)+ 返回 +/photos/:id/edit+ (例如, +edit_photo_path(10)+ 返回 +/photos/10/edit+)
+* +photo_path(:id)+ 返回 +/photos/:id+ (例如, +photo_path(10)+ returns +/photos/10+)
 
-Each of these helpers has a corresponding +_url+ helper (such as +photos_url+) which returns the same path prefixed with the current host, port and path prefix.
+同时，这些 +_path+ Helper 方法还有一个对应的 +_url+ Helper (例如 +photos_url+) 
+后者将会返回包含了主机，端口等信息的绝对路径地址。
 
-NOTE: Because the router uses the HTTP verb and URL to match inbound requests, four URLs map to seven different actions.
+NOTE: 因为路由器可以使用 HTTP 动词和 URL 来匹配受到的请求
+
+Because the router uses the HTTP verb and URL to match inbound requests, four URLs map to seven different actions.
 
 h4. Defining Multiple Resources at the Same Time
 
