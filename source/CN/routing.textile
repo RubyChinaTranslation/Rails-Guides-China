@@ -1,38 +1,38 @@
-h2. Rails Routing from the Outside In
+h2. 深入浅出说路由
 
-This guide covers the user-facing features of Rails routing. By referring to this guide, you will be able to:
+这份教程介绍了 Rails 路由常用的特性。通过本文，你将会能够：
 
-* Understand the code in +routes.rb+
-* Construct your own routes, using either the preferred resourceful style or the <tt>match</tt> method
-* Identify what parameters to expect an action to receive
-* Automatically create paths and URLs using route helpers
-* Use advanced techniques such as constraints and Rack endpoints
+* 了解 +routes.rb+ 中的代码。
+* 用 Resourceful 风格或者 tt>match</tt> 方法 构建你的路由
+* 了解一个 action 是如何接收从路由来的参数。
+* 用路由提供的 helper 来生成 URL 路径。
+* 一些更高级的技巧，例如 constraints and Rack endpoints。
 
 endprologue.
 
-h3. The Purpose of the Rails Router
+h3. Rails 路由的意义
 
-The Rails router recognizes URLs and dispatches them to a controller's action. It can also generate paths and URLs, avoiding the need to hardcode strings in your views.
+Rails 路由能够识别 URL 并且将请求分发到对应的 控制器下的 action 中。 它也可以生成相对路径和 URL 来避免在你的视图中的硬编码（hardcode string）.
 
-h4. Connecting URLs to Code
+h4. 链接 URL 和代码
 
-When your Rails application receives an incoming request
+当你的 Rails 应用接收到一个像这样的请求时
 
 <plain>
 GET /patients/17
 </plain>
-
-it asks the router to match it to a controller action. If the first matching route is
+ 
+它就会尝试着让路由去匹配字符串到一个控制器行为中。如果第一条路由规则是这样的：
 
 <ruby>
 match "/patients/:id" => "patients#show"
 </ruby>
 
-the request is dispatched to the +patients+ controller's +show+ action with <tt>{ :id => "17" }</tt> in +params+.
+这个请求将会被分发到 +patients+ 控制器下面的 +show+ action 中去，同时 <tt>{ :id => "17" }</tt> 将会存储在 +params+ 中。
 
-h4. Generating Paths and URLs from Code
+h4. 用代码生成 URL 和 路径
 
-You can also generate paths and URLs. If your application contains this code:
+你同样可以用路由来生成 URl 和路径，如果你的应用包含了这样的代码：
 
 <ruby>
 @patient = Patient.find(17)
@@ -42,10 +42,11 @@ You can also generate paths and URLs. If your application contains this code:
 <%= link_to "Patient Record", patient_path(@patient) %>
 </erb>
 
-The router will generate the path +/patients/17+. This reduces the brittleness of your view and makes your code easier to understand. Note that the id does not need to be specified in the route helper.
+路由将会自动生成一个路径 +/patients/17+ ，这将使你的代码更加简洁易懂而健壮。注意这里我们没必要将 id 传递给路由 Helper。
 
-h3. Resource Routing: the Rails Default
+h3. Resource 路由规则: Rails 之道
 
+Resource 路由规则能让你迅速地声明一个 resourceful 的控制器所需常用路由规则。
 Resource routing allows you to quickly declare all of the common routes for a given resourceful controller. Instead of declaring separate routes for your +index+, +show+, +new+, +edit+, +create+, +update+ and +destroy+ actions, a resourceful route declares them in a single line of code.
 
 h4. Resources on the Web
