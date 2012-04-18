@@ -25,7 +25,7 @@ end
 
 begin
   require 'redcloth'
-  require 'bluecloth'
+  require 'redcarpet'
 rescue Gem::LoadError
   # This can happen if doc:guides is executed in an application.
   $stderr.puts('Generating guides requires RedCloth & BlueCloth')
@@ -33,7 +33,7 @@ rescue Gem::LoadError
 Please add
 
   gem 'RedCloth', '~> 4.2'
-  gem 'BlueCloth', '~> 2.2.0'
+  gem 'redcarpet', '~> 2.0'
    
 to the Gemfile, run
 
@@ -44,6 +44,10 @@ ERROR
 
   exit 1
 end
+
+require "rails_guides/text_process"
+RedCloth.send(:include, RailsGuides::TextProcess)
+
 
 require "rails_guides/generator"
 RailsGuides::Generator.new.generate

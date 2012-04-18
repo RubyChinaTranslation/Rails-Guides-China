@@ -5,8 +5,8 @@ gem "actionpack", '>= 3.0'
 
 group :doc do
   gem 'RedCloth', '~> 4.2'
-  gem 'bluecloth', '~> 2.2.0'
   gem 'w3c_validators'
+  gem 'redcarpet'
 end
 
 gem 'rake', '>= 0.8.7'

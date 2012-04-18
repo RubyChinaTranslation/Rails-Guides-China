@@ -1,112 +1,113 @@
-h2. 与Rails的第一次接触
+h2. 与 Rails 的第一次接触
 
-本指导手册覆盖了入门和运行 ruby on rails，通过阅读本指导，你会了解到：
+本指导手册涉及了使用和运行 Ruby on Rails，通过阅读本指导，你会了解到：
 
 * （怎样）安装，创建一个新的 Rails 应用程序，并且将你的应用程序连接到数据库
-* Rails的一般（页面）布局
-* MVC的基本原则和 RESTful 设计（理念）
-* 怎样快捷的开始一个 Rails 应用
+* Rails 的一般（页面）布局
+* MVC 的基本原则和 RESTful 设计（理念）
+* 怎样迅速地开始一个 Rails 应用
 
 endprologue.
 
-警告. 这个指导手册适用与 Rails 3.1，有些代码在 Rails 早期版本可能会不工作。
+警告. 这个指导手册适用与 Rails 3.1，有些代码在 Rails 早期版本可能无法正常运行。
 
 h3. 手册假设
 
-本指导设计给那些想大概的了解 Rails 应用创建的初学者。这里假设你对 Rails 没有任何预先的了解。不管怎样要得到（本手册的）知识，你需要预先安装：
+本指导设计给那些想大概的了解 Rails 应用创建的初学者。这里假设你对 Rails 没有任何预先的了解。要得到（本手册的）知识，你需要预先安装：
 
-* "Ruby":http://www.ruby-lang.org/en/downloads version 1.8.7 或者更高
+* "Ruby":http://www.ruby-lang.org/en/downloads 1.8.7 或者更高版本
 
-TIP: 注意 Ruby 1.8.7 p248 and p249 有 marshaling bugs 会与 Rails 3.0 发生冲突。Ruby 1.8.7 p248 and p249在 发行版1.8.7-2010.02 已经得到解决。Ruby 1.9 前提下，Ruby 1.9.1 不能使用因为它在 Rails 3.0上会出现segfaults错误，因此如果你希望使用 Rails 3 和 1.9.x 跳至 1.9.2 （就可以）平稳的驾驶 Rails。
-  A segmentation fault (aka segfault) is a common condition that causes programs to crash; they are often associated with a file named core . Segfaults are caused by a program trying to read or write an illegal memory location.
+TIP: 注意 Ruby 1.8.7 p248 和 p249 有 marshaling bugs ，会与 Rails 3.0 发生冲突。Ruby 1.8.7 p248 和 p249在 发行版 1.8.7-2010.02 已经得到解决。Ruby 1.9 下 Ruby 1.9.1 不能使用，因为它在 Rails 3.0 上会出现 segfaults 错误，因此如果你希望使用 Rails 3 和 1.9.x ，更新版本到 1.9.2 就可以安全地使用 Rails。
+ 
 
 * "RubyGems":http://rubyforge.org/frs/?group_id=126 包管理系统
-  ** 如果你想了解更多关于RubyGems，请阅读 "RubyGems User Guide":http://docs.rubygems.org/read/book/1
-* 安装"SQLite3 Database":http://www.sqlite.org
+  ** 如果你想了解更多关于 RubyGems 的知识，请阅读 "RubyGems User Guide":http://docs.rubygems.org/read/book/1
+* 安装 "SQLite3 Database":http://www.sqlite.org
 
-Rails是一个基于Ruby程序语言的web程序框架。如果你没有预先的学习ruby，你会发现直接的入门Rails学习很有跨度。这里有一些学习ruby的免费互联网资源。
+Rails 是一个基于 Ruby 程序语言的 web 程序框架。如果你没有预先的学习 Ruby，你会发现直接的入门 Rails 学习很有跨度。这里有一些免费 Ruby 的学习资源。
 
 * "Mr. Neighborly's Humble Little Ruby Book":http://www.humblelittlerubybook.com
 * "Programming Ruby":http://www.ruby-doc.org/docs/ProgrammingRuby/
 * "Why's (Poignant) Guide to Ruby":http://mislav.uniqpath.com/poignant-guide/
 
-h3. Rails是什么
+h3. Rails 是什么
 
-TIP: 这个章节开始就 Rails 框架的背景和来源做一个详细的描述。你可以安全的跳过这个章节并且在以后再回过头来看它。第三节你会开始你的的 Rails 之旅上的第一个 Rails 应用程序。
+提示: 这个章节开始就 Rails 框架的背景和来源做一个详细的描述。你可以安全的跳过这个章节并且在以后再回过头来看它。第三节你会开始你的的 Rails 之旅上的第一个 Rails 应用程序。
 
-Rails是一个使用Ruby语言编写的的web框架应用程序。其设计目的是为了让每个着手开始编写web应用程序的开发人员更加容易的完成工作。它允许你写最少的代码完成超过其他任何语言和框架所完成的工作。经验丰富的Rails开发人员还告诉我们通过Rails使设计web应用程序更快乐。
+Rails是一个使用 Ruby 语言编写的的 web 框架应用程序。其设计目的是为了让每个着手开始编写 web 应用程序的开发人员更加容易的完成工作。它允许你写最少的代码完成超过其他任何语言和框架所完成的工作。经验丰富的 Rails 开发人员还告诉我们通过 Rails 使设计 web 应用程序更快乐。
 
-Rails是一个值得骄傲的软件。它使得我们以最好的方式去做事情，它也鼓励这种方式——并在某些情况下，鼓励替代的思想，如果你学习 “Rails 方式” 你将会适时的发现生产力的巨大增长。如果你固守在来自其他语言的旧的习惯去进行你的 Rails 开发，以以它地方学来的模式尝试Rails，那么你将会得到很少的快乐的经历。
+Rails 是一个值得骄傲的软件。它使得我们以最好的方式去做事情，它也鼓励这种方式——并在某些情况下，鼓励替代的思想，如果你学习 “Rails 方式” 你将会适时的发现生产力的巨大增长。如果你固守在来自其他语言的旧的习惯去进行你的 Rails 开发，以以它地方学来的模式尝试 Rails，那么你将会得到很少的快乐的经历。
 
 Rails 理念包含几个指导原则
 
-* DRY - 不要自己重复——建议一次又一次编写同样的代码是一件坏事请。
+* DRY - 不要自己重复——建议一次又一次编写同样的代码是一件坏事请
 * 约定优于配置——意思是 Rails 假设对于你想做什么以及你想怎么做的事情，刻意的做很少的事情比编写无尽的配置文件更好
 
-h4. MVC架构
+h4. MVC 架构
 
-Model，View，Controller架构是Rails的核心，通常称之为MVC。MVC 的优点如下:
+Model，View，Controller架构是 Rails 的核心，通常称之为 MVC。MVC 的优点如下:
 * 用户界面与业务逻辑的分离
 * 很容易使得代码保持 DRY # “Don’t Repeat Yourself”
 * 明确代码的不同之处使之跟容易维护
 
-h5. 模型
+h5. 模型（ Models ）
 
 模型代表了应用程序的信息（数据）和操纵这些数据的规则。在 Rails 中， models 主要用于管理数据表和相应的规则的互动。在大多数情况，在你数据库中的每个表都会和你的应用程序互动。你应用程序的逻辑业务将会集中放置在 models 中。
 
-h5. 视图
+h5. 视图（ Views ）
 
-View代表了应用程序的用户界面。在Rails中，Views通常是嵌入了执行演示数据任务的Ruby代码的HTML文件。Views完成了给web浏览器或者其他工具用于提出来自你的程序的请求提供数据。
+View代表了应用程序的用户界面。在 Rails 中，Views 通常是嵌入了执行演示数据任务的Ruby代码的HTML文件。Views完成了给web浏览器或者其他工具用于提出来自你的程序的请求提供数据。
 
-h5. 控制器
+h5. 控制器（ Controllers ）
 
-Controllers 提供了models和视图间的粘合。在 Rails 中，controllers 相应来自 web 浏览器请求的进程，向 models 询问数据以及传递数据给 views 用于呈现。
+Controllers 提供了 Models 和 Views 间的粘合。在 Rails 中，Controllers 响应来自 Web 浏览器请求的进程，向 Models 询问数据并将数据传递给 Views 呈现。
 
 h3. Rails 的组件
 
-Rails关联着许多独立的组件。对这些组件在下面给出简要的解释。如果你是Rails的新人，当你阅读到这个部分，不要抛弃任何一个组件的描述，而且他们还会做进一步解释。例如，我们将会构造应用骨架，但是在这里，你不需要知道关于他们的更进一步的任何知识。
+Rails 关联着许多独立的组件。对这些组件在下面给出简要的解释。如果你是 Rails 的新人，当你阅读到这个部分时，不要忽视任何一个组件的描述，但也没有必要了解的过于深入。例如，我们会构造应用骨架，但你不需要了解有关构造应用骨架的深层知识。
 
-* Action Pack活动组
-  ** Action Controller 活动控制
-  ** Action Dispatch 活动传输
-  ** Action View 活动视图
-* Action Mailer 活动信封
-* Active Model 
-* Active Record 
+* Action Pack
+  ** Action Controller
+  ** Action Dispatch
+  ** Action View
+* Action Mailer
+* Active Model
+* Active Record
 * Active Resource 
 * Active Support 
 * Railties 
+
 h4. Action Pack
 
-Action Pack是一个单独的包它包含了 Action Controller, Action View and Action Dispatch（传输调度）。是MVC的VC部分。
+Action Pack 是一个单独的包它包含了 Action Controller, Action View and Action Dispatch（传输调度）。是 MVC 的 VC 部分。
 
 h5. Action Controller
 
-Action Controller是在Rails中管理控制的组件。 The Action Controller框架进程收到Rails应用程序的请求，提取参数，以及调度他们到具有相应义务的动作。这些服务是由 Action Controller包含了会话管理部分，模板渲染（翻译），重定向部分。
+Action Controller 是在 Rails 中管理控制的组件。 The Action Controller 框架进程收到 Rails 应用程序的请求，提取参数，以及调度他们到具有相应义务的动作。这些服务是由 Action Controller 提供，包含会话管理、模板渲染、重定向功能。
 
 h5. Action Dispatch
 
-Action Dispatch处理了你的和其他部分的应用程序的路由——这些web请求以及一些你所期望的调度。Rack applications 是更高级的主题它涵盖在一个叫做 "Rails on Rack":http://guides.rubyonrails.org/rails_on_rack.html 的教程中。
+Action Dispatch 处理了你和其他部分的应用程序的路由——一些Web请求以及你的配置。Rack applications 是更高级的模块，你可以到 "Rails on Rack":http://guides.rubyonrails.org/rails_on_rack.html 了解它。
 
 h5. Action Mailer
 
-Action Mailer 是一个营造 E-mail 服务的框架。你可以使用 Action Mailer 去发送、接收 email 以及发送一些简单的计划文本或者基于灵活模板的复杂的多重的电子邮件。
+Action Mailer 是一个营造 E-mail 服务的框架。你可以使用 Action Mailer 去发送、接收 Email 。
 
 h5. Active Model
 
-Active Model 提供了 Action Pack gem 服务和 Object Relationship Mapping gems 之间的接口定义，比如Active记录。Active Model 允许 Rails 在 Active Record 部分采用其他 ORM 框架如果你的应用程序需要。
+Active Model 提供了 Action Pack gem 服务和 Object Relationship Mapping gems 之间的接口定义，比如 Active 记录。Active Model 允许 Rails 在 Active Record 部分采用其他 ORM 框架如果你的应用程序需要。
 
 h5. Active Record
 
-Active Record 是一个 Rails 应用程序的 models 根本。它提供独立的数据库，基于 CRUD 功能，先进（高级）的查找能力，和与另一个 models 关联的能力，几乎所有其他服务。
+Active Record 是一个 Rails 应用程序的 Models 根本。它提供有 CRUD 功能独立的数据库，有高级的查找、与另一个 Models 关联的能力，支持几乎所有数据库服务。
 
 h5. Active Resource
 
-Active Resource提供一个管理目标业务和 RESTful web 服务之间连接的框架。它实现了使用 CRUD 语义测绘 web-base 资源到本地目标。
+Active Resource 提供一个管理目标业务和 RESTful web 服务之间连接的框架。它实现了使用 CRUD 语义测绘 web-base 资源到本地目标。
 
 h5. Active Support
 
-Active Support 是一个广泛收集实用工具类和标准的 Ruby 库的扩展，它们由的核心代码和您的应用程序（决定）。
+Active Support 是一个广泛收集实用工具类和标准的 Ruby 库的扩展，它们由的核心代码和您的应用程序决定。
 
 h5. Railties
 
@@ -114,42 +115,44 @@ Railties 是在 Rails 代码中创建新 Rails 应用以及在任何 Rails 应�
 
 h3. REST
 
-Rest作为具有代表性的状态传输是RESTful架构的基础。普遍认为它来自Roy Fielding’s doctoral 的博士论文" Architectural Styles and the Design of Network-based Software Architectures":http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm 当你阅读这篇论文的时候,（可以发现）REST在Rails下面可以归纳为下面的主要原则：
+Rest作为具有代表性的状态传输是 RESTful 架构的基础。普遍认为它来自 Roy Fielding’s doctoral 的博士论文 《"Architectural Styles and the Design of Network-based Software Architectures":http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm》 当你阅读这篇论文的时候,（可以发现）REST 在 Rails 下面可以归纳为下面的主要原则：
 
-* 使用资源标识符比如URLs去表现资源
+* 使用资源标识符比如 URLs 去表现资源
 * Transferring representations of the state of that resource between system components.在系统组件之间转移（传送）资源的状态
 
-例如，下面的HTTP请求：
+例如，下面的 HTTP 请求：
 
-DELETE /photos/17
+DELETE /photos/14
 
-（系统）将会明白参照ID为14的phone资源，注明删除该资源。REST的自然风格去架构web应用程序， Rails 通过这样的钩子，使你避免了许多复杂的RESTful和浏览器之间的差异。
+（系统）将会明白参照 ID 为 14 的 phone 资源，注明删除该资源。 REST 的自然风格去架构 web 应用程序， Rails 通过这样的钩子，使你避免了许多复杂的 RESTful 和浏览器之间的差异。
 
-If you’d like more details on REST as an architectural#架构风格 style, these resources are more approachable平易近人 than Fielding’s thesis:如果你希望得到很多的关于REST架构风格的介绍，下面的资源是这个领域里面通俗论文。
+如果你想要了解更多关于 REST 架构风格, 以下这些资源可能比 Fielding 的论文更平易近人一些。  
 
 * A Brief Introduction to REST by Stefan Tilkov 
+
 * An Introduction to REST (video tutorial) by Joe Gregorio 
+
 * Representational State Transfer article in Wikipedia 
+
 * How to GET a Cup of Coffee by Jim Webber, Savas Parastatidis & Ian Robinson 
 
 h3. 建立一个新的 Rails 应用程序
 
 学习（使用）本指导的最好方式是跟随这里描述的每一步，不写代码或者没有例子所需的步骤会使得这个例子被冷落，你可以根据文字描述的步骤一步接着一步的操作。如果你需要完整的代码你可以从这里下载 "Getting Started Code":https://github.com/mikel/getting-started-code 。
 
-如果你跟随这个指导，你将会创建一个叫做 blog 的 Rails 项目——一个非常简单的网络博客。当你准备开始构建这个项目之前你需要确保Rails已经完全安装。
+如果你跟随这个指导，你将会创建一个叫做 blog 的 Rails 项目——一个非常简单的网络博客。当你准备开始构建这个项目之前你需要确保 Rails 已经完全安装。
+ 
+TIP: 下面例子中使用 `#` 和 `$` 来表示 终端提示。如果你正在使用 Windows 提示可能会这样 `c:\source_code>`
 
-TIP: The examples below use # and $ to denote terminal prompts. If you are using Windows, your prompt will look something like c:\source_code>
-TIP: 下面例子中使用 `#` 和 `$` 来表示 终端提示。如果你正在使用 Windows提示可能会这样 `c:\source_code>`
+h4. 安装 Rails
 
-h4. 安装Rails
-
-通过方便的 RubyGems提供的 +gem install+，安装 Rails：
+通过方便的 RubyGems 提供的 +gem install+，安装 Rails：
 
 <shell>
-# gem install rails
+$ gem install rails
 </shell>
 
-TIP. 如果你在Window下面工作，你可以使用 "Rails Installer":http://railsinstaller.org 快速安装Ruby and Rails。
+提示: 如果你在 Window 下面工作，你可以使用 "Rails Installer":http://railsinstaller.org 快速安装 Ruby and Rails。
 
 确认所有的（依赖）安装正确，你应该运行如下命令：
 
@@ -167,39 +170,38 @@ h4. Creating the Blog Application
 $ rails new blog #--skip-bundle    # Don't run bundle install这样在国内就不会由于连不上gem即便上能够上也会很慢半天没反映 可以尝试使用 淘宝gem镜像
 </shell>
 
-这里将创建一个名叫Blog的Rails应用程序在名称为blog的目录中。
+这里将创建一个名叫 Blog 的 Rails 应用程序在名称为 blog 的目录中。
 
-TIP: 你可以通过运行rails new -h，查看rails应用程序创建器的所有命令（开关）。
- <tt>rails new -h</tt>.
-
-当你创建了这个blog程序，跳转到它所在的文件夹中（直接对这个程序编辑）.
+提示: 你可以通过运行 rails new -h，查看 Rails 应用程序创建器的所有命令（开关）。
+ 
+当你创建了这个 blog 程序，跳转到它所在的文件夹中（直接对这个程序编辑）.
 
 <shell>
 $ cd blog
 </shell>
 
-命令 +rails new blog+ 将会创建一个名为<tt>blog</tt>的文件夹在你的工作目录中。目录 <tt>blog</tt> 一些自动生成的文件它构成了 Rails 应用程序的结构。在这个体验中的大多数的工作都是在app/这个文件夹中完成的，这里对Rails创建的新应用中的每一个文件夹的功能做出了一个概述：
+命令 +rails new blog+ 将会创建一个名为 <tt>blog</tt> 的文件夹在你的工作目录中。目录 <tt>blog</tt> 一些自动生成的文件它构成了 Rails  应用程序的结构。在这个体验中的大多数的工作都是在 app/ 这个文件夹中完成的，这里对 Rails 创建的新应用中的每一个文件夹的功能做出了一个概述：
 
 |_.File/Folder|_.Purpose|
-|app/|包含 controllers, models, views和 你应用程序的assets（资源），再接下面的手册中你主要的注意力应该放在这里。|
+|app/|包含 controllers, models, views 和 你应用程序的 assets（资源），再接下面的手册中你主要的注意力应该放在这里。|
 |config/|配置你的应用程序的运行的规则，（url）路由，数据库和其他。|
-|config.ru|基于Rack服务器使用这个应用程序的Rack配置|
+|config.ru|基于 Rack 服务器使用这个应用程序的 Rack 配置|
 |db/|显示你当前的数据表，同样也显示数据迁移。你将会简单的了解关于（数据）迁移。|
 |doc/|应用程序的（深入）全面的文档。|
-|Gemfile<BR />Gemfile.lock|这个文件让你可以（添加）你的Rails所需要的特殊的gem依赖关系。这个文件被Bundler gem 使用，更多的信息查看 "the Bundler website":http://gembundler.com |
+|Gemfile<BR />Gemfile.lock|这个文件让你可以（添加）你的 Rails 所需要的特殊的 Gem 依赖关系。这个文件被 Bundler gem 使用，更多的信息查看 "the Bundler website":http://gembundler.com |
 |lib/|应用程序用到的扩展库（本手册没有涉及）|
 |log/|应用程序的日志文件|
 |public/|这是外部可见的唯一文件夹。包含静态文件和编译资源。|
-|Rakefile|这个文件定位和载入能够在命令行中运行的任务。这个任务定义贯穿整个 Rails 的组件。除了修改Rakefile，你更应该添加你自己的任务的文件到你的应用程序的lib/tasks目录。|
+|Rakefile|这个文件定位和载入能够在命令行中运行的任务。这个任务定义贯穿整个 Rails 的组件。除了修改 Rakefile，你更应该添加你自己的任务的文件到你的应用程序的 lib/tasks 目录。|
 |README.rdoc|这是一个简单的说明手册。你需要编辑这个文件告诉其他人你的应用程序可以做什么，怎么安装等等。|
-|script/|包含运行你的app的rails脚本，或者其他用来配置或运行你的应用程序的scripts。|
-|test/|单元测试， fixtures，或者其他test工具。他们在Testing Rails Applications里面有完整的讲述。|
+|script/|包含运行你的 app 的 rails 脚本，或者其他用来配置或运行你的应用程序的 scripts。|
+|test/|单元测试， fixtures，或者其他 test 工具。他们在 Testing Rails Applications 里面有完整的讲述。|
 |tmp/|临时文件|
-|vendor/|放置第三方代码的地方。在一个典型的Rails应用程序中，这里包含Ruby Gems，Rails源代码（如果你把Rails安装到你的项目中）还包含一些预先包装好的额外的插件|
+|vendor/|放置第三方代码的地方。在一个典型的 Rails 应用程序中，这里包含 Ruby Gems，Rails 源代码（如果你把 Rails 安装到你的项目中）还包含一些预先包装好的额外的插件|
 
 h3. Hello, Rails!
 
-传统的方式之一，开始使用一种新的（命令）语法并得到快速掠过的文字。要得到这样的结果你需要使你的Rails程序运行。
+传统的方式之一，开始使用一种新的（命令）语法并得到快速掠过的文字。要得到这样的结果你需要使你的 Rails 程序运行。
 
 h4. 启动web服务
 
@@ -209,27 +211,27 @@ h4. 启动web服务
 $ rails server
 </shell>
 
-TIP: 编译 CoffeeScript 到 JavaScript需要一个 JavaScript 运行库，确实一个运行库将会给出一个+execjs+ error。通常 Mac OS X 和 Windows 自带了一个 JavaScript 运行库。Rails 添加了 +therubyracer+  gem 到 `Gemfile` 的注释行中如果你需要可以取消对它的注释。+therubyrhino+ 推荐 JRuby 使用并且默认添加到 `Gemfile` 中如果应用程序在 `JRuby` 中创建。你可以查看所有的支持的运行库 "ExecJS":https://github.com/sstephenson/execjs#readme。
+提示: 编译 CoffeeScript 到 JavaScript需要一个 JavaScript 运行库，确实一个运行库将会给出一个 +execjs+ error。通常 Mac OS X 和 Windows 自带了一个 JavaScript 运行库。Rails 添加了 +therubyracer+  gem 到 Gemfile 的注释行中如果你需要可以取消对它的注释。+therubyrhino+ 推荐 JRuby 使用并且默认添加到 Gemfile 中如果应用程序在 JRuby 中创建。你可以查看所有的支持的运行库 "ExecJS":https://github.com/sstephenson/execjs#readme。
 
-这里默认将开启一个WEBrick服务器的的实例（Rails也可能使用一些其他的web服务器）。查看你的应用程序的行为，打开一个浏览器并且导航到127.0.0.0：3000你将会看到一个Rails默认的信息页面。
+这里默认将开启一个 WEBrick 服务器的的实例（Rails 也可能使用一些其他的 web 服务器）。查看你的应用程序的行为，打开一个浏览器并且导航到 127.0.0.0：3000 你将会看到一个 Rails 默认的信息页面。
 
 !images/rails_welcome.png(Welcome Aboard screenshot)!
 
-TIP: 要终止web服务，在命令运行的终端中按下 Ctrl+C 。在开发环境模式中，Rails 一般不需要你停止服务；你所做的更改将自动的编译进需要的文件中并且重启服务。
+TIP: 要终止 web 服务，在命令运行的终端中按下 Ctrl+C 。在开发环境模式中，Rails 一般不需要你停止服务；你所做的更改将自动的编译进需要的文件中并且重启服务。
 
-这个欢迎界面体现了一个新的Rails应用程序创建成功（通过了Rails的自检）。你可以点击‘ About your application’s environment’查看你的应用程序运行环境摘要信息。
+这个欢迎界面体现了一个新的 Rails 应用程序创建成功（通过了 Rails 的自检）。你可以点击‘ About your application’s environment’查看你的应用程序运行环境摘要信息。
 
 h4. Rails 说 Hello"
 
-要使Rails说出（显示）“你好”，你还需要创建一个最小的 controller和view。幸运的是，你可以完成这些通过一行命令。在终端中输入：
+要使 Rails 说出（显示）“你好”，你还需要创建一个最小的 controller 和 view。幸运的是，你可以完成这些通过一行命令。在终端中输入：
 
 <shell>
 $ rails generate controller welcome index
 </shell>
 
-TIP: 如果你在输入这个命令的时候出现没有这个命令错误，你需要明确的使用ruby来执行Rails命令。
+提示: 如果你在输入这个命令的时候出现没有这个命令错误，你需要明确的使用 ruby 来执行 Rails 命令。
 
-Rails将会为你创建一些文件，包含‘app/views/home/index.html.erb’。.这个模板会用来显示在 home controller中的index action (method)的结果。在文本编辑器中打开这个文件并输入：
+Rails 将会为你创建一些文件，包含 `app/views/home/index.html.erb` 。这个模板会用来显示在 home controller 中的 index action (method) 的结果。在文本编辑器中打开这个文件并输入：
 
 <code class="html">
 <h1>Hello, Rails!</h1>
@@ -237,7 +239,7 @@ Rails将会为你创建一些文件，包含‘app/views/home/index.html.erb’�
 
 h4. 设置应用程序主页
 
-现在我们已经创建了controller 和 view，我们还需要告诉Rails我们想在什么时候显示出来。在本例中，我们想让它在我们导航至站点url根目录 "http://localhost:3000":http://localhost:3000 的时候替代“Welcome Aboard”显示。
+现在我们已经创建了 controller 和 view，我们还需要告诉 Rails 我们想在什么时候显示出来。在本例中，我们想让它在我们导航至站点 url 根目录 "http://localhost:3000":http://localhost:3000 的时候替代 “Welcome Aboard” 显示。
 
 首先移除应用程序中的默认页面。
 
@@ -478,11 +480,11 @@ NOTE: 在以前的版本的Rails中，你必须使用 +&lt;%=h post.name %&gt;+ 
 TIP: 了解更过关于渲染处理流程，阅读 "Layouts and Rendering in
 Rails":layouts_and_rendering.html.
 
-h4. Customizing the Layout
+h4. 定制布局
 
-view仅仅告诉HTML要显示什么（内容）在你的web浏览器里面。Rails也有关于 +layouts+ 的概念（定义），那就是（布局）是对view的包装。当Rails渲染一个view到浏览器，它通常是（这样做）把view的HTML放进布局的HTML中。在以前的版本中，+rails generate scaffold+ 命令将会自动创建controller对应指定的布局，就像 +app/views/layouts/posts.html.erb+ 对应于posts controller。 然而在rails3.0中有所不同了。一个应用程序指定的布局适用于所有的controllers，可以在 +app/views/layouts/application.html.erb+ 中找到(这就好像是django的base.html)。打开这个 layout 在你的编辑器中并且修改 +body+ 标签：
+view仅仅告诉HTML在你的web浏览器里面要显示什么（内容）。Rails也有关于 +layouts+ 的概念（定义），那就是布局是对view的包装。当Rails渲染一个view到浏览器，它通常是这样做： 把view的HTML放进布局的HTML中。在以前的版本中，+rails generate scaffold+ 命令将会自动创建controller对应指定的布局，就像 +app/views/layouts/posts.html.erb+ 对应于posts controller。 然而在rails3.0中有所不同了。一个应用程序指定的布局适用于所有的controllers，可以在 +app/views/layouts/application.html.erb+ 中找到(这就好像是django的base.html)。打开这个 layout 在你的编辑器中并且修改 +body+ 标签：
 
-<pre><erb>
+<erb>
 <!DOCTYPE html>
 <html>
   <head>
@@ -495,14 +497,15 @@ view仅仅告诉HTML要显示什么（内容）在你的web浏览器里面。Rai
     <%= yield %>
   </body>
 </html>
-</erb></pre>
+</erb>
+
 
 
 现在你刷新 +/posts+ 页面，你将会看到一个灰色的页面背景。并且相同的灰色背景将会使用在posts的所有视图中。
 
-h4. Creating New Posts
+h4. 建立新文章
 
-创建一个new post 包含两个actions。首先是+new+ action，它会实例化一个空的 +Post+ 对象：
+创建一个new post 包含两个actions。首先是 +new+ action，它会实例化一个空的 +Post+ 对象：
 
 <ruby>
 def new
@@ -525,7 +528,8 @@ end
 <%= link_to 'Back', posts_path %>
 </erb>
 
-+&lt;%= render 'form' %&gt;+ 是我们第一个介绍的Rails的partials。一个partial是一个HTML代码片段和Ruby代码的组合可以在多目标对象中重用。（类似于django的include 'other.html'）在本例中，form用于创建new post，它相当于一个用于编辑一个post的表单，这个表单有一个name text fields 和 title text fields 以及一个content的 text area还有一个用于添加一个新的post或者更新已经存在的post的按钮。
++&lt;%= render 'form' %&gt;+ 是我们第一个介绍的Rails的partials。一个partial是一个HTML代码片段和Ruby代码的组合可以在多目标对象中重用。（类似于django的include 'other.html'）。
+在本例中， form 用于创建 new post，它相当于一个用于编辑一个post的表单，这个表单有一个name text fields 和 title text fields 以及一个 content 的 text area还有一个用于添加一个新的 post 或者更新已经存在的 post 的按钮。
 
 如果你看一下 +views/posts/_form.html.erb+ 这个文件，你将会发现下面的内容：
 
@@ -602,7 +606,8 @@ end
 
 h4. 显示一条 Post
 
-当你在posts 的主页面点击一个 post 的 +show+ 这个超链接，他将会产生一个url +http://localhost:3000/posts/1+。Rails解释这是一个resource的+show+ action 调用。这里是 +show+ action：
+当你在posts 的主页面点击一个 post 的 +show+ 这个超链接，他将会产生一个 url： +http://localhost:3000/posts/1+。Rails解释这是一个resource的+show+ action 调用。这里是 +show+ action：
+
 <ruby>
 def show
   @post = Post.find(params[:id])
@@ -684,7 +689,7 @@ end
 
 在 +update+ action中，Rails首先使用 +:id+ 参数从edit view（传值到）数据库记录下刚才编辑的内容。当获取了请求的+post+ parameter（一个hash字典）就会 call +update_attributes+ 并且 应用 hash 字典的值到相应的记录。如果一切成功，用户会被重定向到post的show视图。如果期间发生了任何错误，它将回到edit视图并（要求）改正他们。
 
-h4. 摧毁一个post
+h4. 删除一个post
 
 最后，点击一个 +destroy+ 链接发送相关的id到 +destroy+ 动作：
 
@@ -1381,15 +1386,9 @@ data into UTF-8, but this doesn't always work reliably, so you're better off
 ensuring that all external data is UTF-8.
 Rails使用Rails最简单的工作方式是存储所有的外部数据为 UTF-8编码。如果不那样做，Ruby libraries和Rails通才会转换你的自然数据成 UTF-8编码，但是这样不是很可靠，因此你最好保证所有的外部数据是 UTF-8编码。如果你在这里犯了错误，一般的症状就是在浏览器中出现钻石符号（可能是^）变成了问号。 另一个普遍症状是“ü”变成了 “Ã¼”。
 
-If you have made a mistake in this area, the most common symptom is a black
-diamond with a question mark inside appearing in the browser. Another common
-symptom is characters like "Ã¼" appearing instead of "ü". Rails takes a number
-of internal steps to mitigate common causes of these problems that can be
-automatically detected and corrected. However, if you have external data that is
-not stored as UTF-8, it can occasionally result in these kinds of issues that
-cannot be automatically detected by Rails and corrected.
+Rails 在国际化上下了很多的功夫，大部分的此类错误都能够自动发现并错误，然而如果你有一些不是用 UTF-8 存储的特殊的数据恐怕就会出现一些奇怪的问题了。 
 
-两种非常普遍的不是UTF-8 编码的源数据：
+两种典型的非 UTF-8 编码的源数据：
 * Your text editor: Most text editors (such as Textmate), default to saving files as
   UTF-8. If your text editor does not, this can result in special characters that you
   enter in your templates (such as é) to appear as a diamond with a question mark inside

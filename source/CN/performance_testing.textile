@@ -1,22 +1,25 @@
-h2. Performance Testing Rails Applications
+h2. Rails 应用中的性能测试
 
-This guide covers the various ways of performance testing a Ruby on Rails application. By referring to this guide, you will be able to:
+这篇文章介绍了几种在 *Ruby on Rails* 应用中进行性能测试的方法。通过阅读这篇文章，你可以
 
-* Understand the various types of benchmarking and profiling metrics
-* Generate performance and benchmarking tests
-* Install and use a GC-patched Ruby binary to measure memory usage and object allocation
-* Understand the benchmarking information provided by Rails inside the log files
-* Learn about various tools facilitating benchmarking and profiling
+* 了解多种基准测试和分析测试指标。
+* 生成基准性能测试。 
+* 安装使用 Ruby 的扩展 GC 类库来测试你的内存使用和分配情况。 
+* 通过 Rails 内置的日志功能来了解 benchmarking 信息。 
+* 了解并掌握基准测试和分析测试工具。
 
-Performance testing is an integral part of the development cycle. It is very important that you don't make your end users wait for too long before the page is completely loaded. Ensuring a pleasant browsing experience for end users and cutting the cost of unnecessary hardware is important for any non-trivial web application.
+在开发中，性能测试是一个循序渐进的过程。让你的用户能够很快的完成加载并看到你的产品是非常重要的。为了确保用户在各类浏览器上的良好体验，降低硬件上不必要的消耗是每一个 web 程序都必须要经过的一道工序。
 
 endprologue.
 
-h3. Performance Test Cases
+h3. 性能测试案例
 
-Rails performance tests are a special type of integration tests, designed for benchmarking and profiling the test code. With performance tests, you can determine where your application's memory or speed problems are coming from, and get a more in-depth picture of those problems.
+Rails 性能测试是包括基准测试，分析测试在内的一系列集成测试。用上了性能测试，你可以发现你的应用程序中存在的内存或者速度问题，对存在的问题进行更深入的检测。
 
-In a freshly generated Rails application, +test/performance/browsing_test.rb+ contains an example of a performance test:
+NOTE. 译者：本文中，将 *benchmarking* 翻译为 _基准_ 或者 _基准测试_,将 *profiling test* 翻译为 _分析测试_。*performance test* 翻译为 _性能测试_，*integration test* 将翻译成 _集成测试_ . 
+
+在这里我们新建一个 Rails 应用程序， +test/performance/browsing_test.rb+ ，在这个文件里写入一个测试的例子：
+
 
 <ruby>
 require 'test_helper'
@@ -30,17 +33,18 @@ class BrowsingTest < ActionDispatch::PerformanceTest
 end
 </ruby>
 
-This example is a simple performance test case for profiling a GET request to the application's homepage.
+这是一个简单的性能测试用例，他会对你的应用首页( homepage )的 **GET** 请求进行分析测试。
 
-h4. Generating Performance Tests
 
-Rails provides a generator called +performance_test+ for creating new performance tests:
+h4. 生成一个性能测试
+
+Rails 提供了一个叫作 +performance_test+ 的生成器(generator) 来新建一个性能测试
 
 <shell>
 $ rails generate performance_test homepage
 </shell>
 
-This generates +homepage_test.rb+ in the +test/performance+ directory:
+这里生成的 +performance_test.rb+ 会在  +test/performance+ 目录中：
 
 <ruby>
 require 'test_helper'
@@ -54,9 +58,10 @@ class HomepageTest < ActionDispatch::PerformanceTest
 end
 </ruby>
 
-h4. Examples
+h4. 例子
 
-Let's assume your application has the following controller and model:
+现在假设你的应用程序有如下的 controller 和 model ：
+
 
 <ruby>
 # routes.rb
@@ -95,11 +100,12 @@ class Post < ActiveRecord::Base
 end
 </ruby>
 
-h5. Controller Example
+h5. 控制器测试范例
 
-Because performance tests are a special kind of integration test, you can use the +get+ and +post+ methods in them.
+因为性能测试本质上是一种特殊的集成测试，你可以在测试中使用  +get+ 和 +post+ 方法。
 
-Here's the performance test for +HomeController#dashboard+ and +PostsController#create+:
+下面分别对  +HomeController#dashboard+ 和 +PostsController#create+ 方法进行测试:
+
 
 <ruby>
 require 'test_helper'
@@ -121,121 +127,104 @@ class PostPerformanceTest < ActionDispatch::PerformanceTest
 end
 </ruby>
 
-You can find more details about the +get+ and +post+ methods in the "Testing Rails Applications":testing.html guide.
+你可以在"Testing Rails Applications":testing.html这篇文章中找到  +get+ 和 +post+ 的更多细节。 
 
-h5. Model Example
+h4. 模式
 
-Even though the performance tests are integration tests and hence closer to the request/response cycle by nature, you can still performance test pure model code.
+性能测试可以运行于两种测试中： 基准模式 （Benchmarking）和 分析模式(Profiling)
 
-Performance test for +Post+ model:
+h5. 基准模式
 
-<ruby>
-require 'test_helper'
-require 'rails/performance_test_help'
+基准测试能让我们迅速获取每个测试运行的数据。默认情况下，每一个测试都会在基准模式下运行 *四 次*。
 
-class PostModelTest < ActionDispatch::PerformanceTest
-  def test_creation
-    Post.create :body => 'still fooling you', :cost => '100'
-  end
-
-  def test_slow_method
-    # Using posts(:awesome) fixture
-    posts(:awesome).slow_method
-  end
-end
-</ruby>
-
-h4. Modes
-
-Performance tests can be run in two modes: Benchmarking and Profiling.
-
-h5. Benchmarking
-
-Benchmarking makes it easy to quickly gather a few metrics about each test run. By default, each test case is run *4 times* in benchmarking mode.
-
-To run performance tests in benchmarking mode:
+你可以这样来启动一个 基准测试。
 
 <shell>
 $ rake test:benchmark
 </shell>
 
-h5. Profiling
+h5. 分析测试
 
-Profiling allows you to make an in-depth analysis of each of your tests by using an external profiler. Depending on your Ruby interpreter, this profiler can be native (Rubinius, JRuby) or not (MRI, which uses RubyProf). By default, each test case is run *once* in profiling mode.
+ 分析测试能让你借助一个模具（profiler）更深入的分析你的每一个测试，根据你的Ruby解释器，这个测试模具可能会是本地的 （ ruby ， JRuby ） 或 远程的（MRI，用在了 RubyProf上）。默认情况下，每一个测试用例会在分析测试下被运行一次。
 
-To run performance tests in profiling mode:
+我们可以这样运行一个 分析测试：
+
 
 <shell>
 $ rake test:profile
 </shell>
 
-h4. Metrics
+h4. 指标（Metrics）
 
-Benchmarking and profiling run performance tests and give you multiple metrics. The availability of each metric is determined by the interpreter being used—none of them support all metrics—and by the mode in use. A brief description of each metric and their availability across interpreters/modes is given below.
+性能测试会得到多组指标，每个指标的产生都取决于计算机的硬件，模式以及解释器的使用————这意味着你需要综合的看待他们。应该尽量对每一组数据都做出一个简短描述并记录下当前运行的环境。
 
-h5. Wall Time
+h5. 真实时间（Wall Time）
 
-Wall time measures the real world time elapsed during the test run. It is affected by any other processes concurrently running on the system.
+Wall Time 记录了你在跑测试的时候花了多少时间，这个时间会被计算机系统上的其他进程影响。
 
-h5. Process Time
+h5. 处理时间（Process Time）
 
-Process time measures the time taken by the process. It is unaffected by any other processes running concurrently on the same system. Hence, process time is likely to be constant for any given performance test, irrespective of the machine load.
+Process Time 记录了 CPU 花在单个进程上的时间，这个数据并不会被同系统上的其他进程所影响。也正是因此，Process Time 通常对于同一个性能测试来说会是一个常数————如果忽略机器的载入时间的话。
 
-h5. CPU Time
 
-Similar to process time, but leverages the more accurate CPU clock counter available on the Pentium and PowerPC platforms.
+h5. CPU时间（CPU Time）
 
-h5. User Time
+与 process time 相似, 但是 CPU Time 运用了 更加精准的 CPU 时钟计数器，该功能只在奔腾和 PowerPC 平台上有效.
 
-User time measures the amount of time the CPU spent in user-mode, i.e. within the process. This is not affected by other processes and by the time it possibly spends blocked.
+h5. 用户时间（User Time）
 
-h5. Memory
+User Time 计算了CPU花在_用户态_下的时间总和。它不会被其他处理器所影响，但是可能会被 “阻止”（blocked）的状态影响。  
 
-Memory measures the amount of memory used for the performance test case.
+TIP： 译者注： "用户态":http://zh.wikipedia.org/wiki/%E7%94%A8%E6%88%B7%E6%80%81（user mode）在计算机结构指两项类似的概念。在CPU的设计中，用户态指非特权状态。在此状态下，执行的代码被硬件限定，不能进行某些操作，比如写入其他进程的存储空间，以防止给操作系统带来安全隐患。在操作系统的设计中，用户态也类似，指非特权的执行状态。内核禁止此状态下的代码进行潜在危险的操作，比如写入系统配置文件、杀掉其他用户的进程、重启系统等。
 
-h5. Objects
+h5. 内存
 
-Objects measures the number of objects allocated for the performance test case.
+计算在性能测试用例中所占用的内存
 
-h5. GC Runs
+h5. 对象
 
-GC Runs measures the number of times GC was invoked for the performance test case.
+对象（Objects）计算了性能测试中被分配了的对象总数。
 
-h5. GC Time
+h5. GC 状态
 
-GC Time measures the amount of time spent in GC for the performance test case.
+GC 状态 （GC Runs）计算了在性能测试中GC被调用的次数
 
-h5. Metric Availability
+h5. GC 时间
 
-h6(#benchmarking_1). Benchmarking
+GC Time 计算了在性能测试GC所花费的总时间。
 
-|_.Interpreter|_.Wall Time|_.Process Time|_.CPU Time|_.User Time|_.Memory|_.Objects|_.GC Runs|_.GC Time|
+h5. 数据示例
+
+h6. 基准测试
+
+
+|_.解释器|_.Wall Time|_.Process Time|_.CPU Time|_.User Time|_.Memory|_.Objects|_.GC Runs|_.GC Time|
 |_.MRI        | yes       | yes          | yes      | no        | yes    | yes     | yes     | yes     |
 |_.REE        | yes       | yes          | yes      | no        | yes    | yes     | yes     | yes     |
 |_.Rubinius   | yes       | no           | no       | no        | yes    | yes     | yes     | yes     |
 |_.JRuby      | yes       | no           | no       | yes       | yes    | yes     | yes     | yes     |
 
-h6(#profiling_1). Profiling
+h6. 分析测试
 
-|_.Interpreter|_.Wall Time|_.Process Time|_.CPU Time|_.User Time|_.Memory|_.Objects|_.GC Runs|_.GC Time|
+|_.解释器|_.Wall Time|_.Process Time|_.CPU Time|_.User Time|_.Memory|_.Objects|_.GC Runs|_.GC Time|
 |_.MRI        | yes       | yes          | no       | no        | yes    | yes     | yes     | yes     |
 |_.REE        | yes       | yes          | no       | no        | yes    | yes     | yes     | yes     |
 |_.Rubinius   | yes       | no           | no       | no        | no     | no      | no      | no      |
 |_.JRuby      | yes       | no           | no       | no        | no     | no      | no      | no      |
 
-NOTE: To profile under JRuby you'll need to run +export JRUBY_OPTS="-Xlaunch.inproc=false --profile.api"+ *before* the performance tests.
+NOTE: 要在JRuby下面运行这个测试你可能需要在运行测试前运行 +export JRUBY_OPTS="-Xlaunch.inproc=false --profile.api" .
 
-h4. Understanding the Output
+h4. 输出
 
-Performance tests generate different outputs inside +tmp/performance+ directory depending on their mode and metric.
+性能测试会根据你的模式在 +tmp/performance+ 文件夹里面输出几个不同的测试结果。
 
-h5(#output-benchmarking). Benchmarking
+h5. 基准测试
 
-In benchmarking mode, performance tests generate two types of outputs.
+在基准模式中，性能测试会产生两种输出。
 
-h6(#output-command-line). Command Line
+h6. 命令行
 
-This is the primary form of output in benchmarking mode. Example:
+这是一个基准测试所产生输出示例：
 
 <shell>
 BrowsingTest#test_homepage (31 ms warmup)
@@ -246,9 +235,9 @@ BrowsingTest#test_homepage (31 ms warmup)
              gc_time: 19 ms
 </shell>
 
-h6. CSV Files
+h6. CSV 文件
 
-Performance test results are also appended to +.csv+ files inside +tmp/performance+. For example, running the default +BrowsingTest#test_homepage+ will generate following five files:
+性能测试的输出结果同样可以输出到 +tmp/performance+ 下面的 +.csv+ 文件。举例来说，运行+BrowsingTest#test_homepage+ 将会生成以下5个文件：
 
 * BrowsingTest#test_homepage_gc_runs.csv
 * BrowsingTest#test_homepage_gc_time.csv
@@ -256,9 +245,8 @@ Performance test results are also appended to +.csv+ files inside +tmp/performan
 * BrowsingTest#test_homepage_objects.csv
 * BrowsingTest#test_homepage_wall_time.csv
 
-As the results are appended to these files each time the performance tests are run in benchmarking mode, you can collect data over a period of time. This can be very helpful in analyzing the effects of code changes.
+在每次进行基准模式下的性能测试之后，结果都会附加到这几个文件下面，你可以从文件中的时间间隔里来搜集你所需要的信息。分析这些数据会对你的代码性能有很大帮助。
 
-Sample output of +BrowsingTest#test_homepage_wall_time.csv+:
 
 <shell>
 measurement,created_at,app,rails,ruby,platform
@@ -274,13 +262,14 @@ measurement,created_at,app,rails,ruby,platform
 0.00771250000000012,2009-01-09T15:46:03Z,,3.0.0,ruby-1.8.7.249,x86_64-linux
 </shell>
 
-h5(#output-profiling). Profiling
 
-In profiling mode, performance tests can generate multiple types of outputs. The command line output is always presented but support for the others is dependent on the interpreter in use. A brief description of each type and their availability across interpreters is given below.
+h5. 分析模式
 
-h6. Command Line
+在分析模式里，性能测试可以生成多种输出文档。除了命令行输出以外，其他的都会根据你的解释器的不同而改变。下面是不同的输出文档类型，介绍和它支持的解释器。
 
-This is a very basic form of output in profiling mode:
+h6. 命令行
+
+这是一个简单的分析测试的命令行输出：
 
 <shell>
 BrowsingTest#test_homepage (58 ms warmup)
@@ -291,27 +280,27 @@ BrowsingTest#test_homepage (58 ms warmup)
 
 h6. Flat
 
-Flat output shows the metric—time, memory, etc—measure in each method. "Check Ruby-Prof documentation for a better explanation":http://ruby-prof.rubyforge.org/files/examples/flat_txt.html.
+Flat output 下会显示运行时间，内存等等 ———— 会对每一个方法进行计算。"看看 Ruby-Prof 的文档会许对你会有帮助":http://ruby-prof.rubyforge.org/files/examples/flat_txt.html.
 
-h6. Graph
+h6. 图形
 
-Graph output shows the metric measure in each method, which methods call it and which methods it calls. "Check Ruby-Prof documentation for a better explanation":http://ruby-prof.rubyforge.org/files/examples/graph_txt.html.
+图形输出会显示每个方法所运行的时间，调用的对象，被哪个对象所调用。"参考 Ruby-Prof ":http://ruby-prof.rubyforge.org/files/examples/graph_txt.html.
 
-h6. Tree
+h6. 树形
 
-Tree output is profiling information in calltree format for use by "kcachegrind":http://kcachegrind.sourceforge.net/html/Home.html and similar tools.
+将分析测试的结果显示成树形结构，用到了 "kcachegrind":http://kcachegrind.sourceforge.net/html/Home.html 和其他的一些工具。
 
-h6. Output Availability
+h6. 解释器支持
 
-|_.         |_.Flat|_.Graph|_.Tree|
+|_.解释器    |_.Flat|_.Graph|_.Tree|
 |_.MRI      | yes  | yes   | yes  |
 |_.REE      | yes  | yes   | yes  |
 |_.Rubinius | yes  | yes   | no   |
 |_.JRuby    | yes  | yes   | no   |
 
-h4. Tuning Test Runs
+h4. 测试选项
 
-Test runs can be tuned by setting the +profile_options+ class variable on your test class.
+性能测试留出了一些选项接口，你可以通过改变你的测试类中的 +profile_options+ 类变量来对测试进行设置。
 
 <ruby>
 require 'test_helper'
@@ -328,7 +317,7 @@ class BrowsingTest < ActionDispatch::PerformanceTest
 end
 </ruby>
 
-In this example, the test would run 5 times and measure wall time and memory. There are a few configurable options:
+在这个例子里，测试会运行 5 次来计算 wall_time 和 memory。这里是一些设置选项 
 
 |_.Option   |_.Description|_.Default|_.Mode|
 |+:runs+    |Number of runs.|Benchmarking: 4, Profiling: 1|Both|
@@ -336,7 +325,7 @@ In this example, the test would run 5 times and measure wall time and memory. Th
 |+:metrics+ |Metrics to use.|See below.|Both|
 |+:formats+ |Formats to output to.|See below.|Profiling|
 
-Metrics and formats have different defaults depending on the interpreter in use.
+其中 metrics 和 formats 默认值决定于你的解释器。
 
 |_.Interpreter|_.Mode|_.Default metrics|_.Default formats|
 |/2.MRI/REE |Benchmarking|+[:wall_time, :memory, :objects, :gc_runs, :gc_time]+|N/A|
@@ -346,38 +335,27 @@ Metrics and formats have different defaults depending on the interpreter in use.
 |/2.JRuby   |Benchmarking|+[:wall_time, :user_time, :memory, :gc_runs, :gc_time]+|N/A|
 |Profiling   |+[:wall_time]+|+[:flat, :graph]+|
 
-As you've probably noticed by now, metrics and formats are specified using a symbol array with each name "underscored.":http://api.rubyonrails.org/classes/String.html#method-i-underscore
+你现在可能已经意识到了， metrics 和 formats 用的是一个 符号数组，装的是他们 "被下划线":http://api.rubyonrails.org/classes/String.html#method-i-underscore
+的名字。
 
-h4. Performance Test Environment
+h4. 性能测试环境
 
-Performance tests are run in the +test+ environment. But running performance tests will set the following configuration parameters:
+为了在 MRI 解释器下的 Rails 性能测试中得到最佳效果。你可能需要建立一些特别配置的 Ruby 二进制解释器。
 
-<shell>
-ActionController::Base.perform_caching = true
-ActiveSupport::Dependencies.mechanism = :require
-Rails.logger.level = ActiveSupport::BufferedLogger::INFO
-</shell>
-
-As +ActionController::Base.perform_caching+ is set to +true+, performance tests will behave much as they do in the +production+ environment.
-
-h4. Installing GC-Patched MRI
-
-To get the best from Rails' performance tests under MRI, you'll need to build a special Ruby binary with some super powers.
-
-The recommended patches for each MRI version are:
+比较推荐的MRI版本和补丁：
 
 |_.Version|_.Patch|
 |1.8.6|ruby186gc|
 |1.8.7|ruby187gc|
 |1.9.2 and above|gcdata|
 
-All of these can be found on "RVM's _patches_ directory":https://github.com/wayneeseguin/rvm/tree/master/patches/ruby under each specific interpreter version.
+他们可以在各自 “RVM” 的 "_补丁_目录":https://github.com/wayneeseguin/rvm/tree/master/patches/ruby 下中的特殊解释器版本中被找到。
 
-Concerning the installation itself, you can either do this easily by using "RVM":http://rvm.beginrescueend.com or you can build everything from source, which is a little bit harder.
+你可以直接用 "RVM":http://rvm.beginrescueend.com 来安装他们或者自己从源程序编译出来，当然后者会比较费劲一点。
 
-h5. Install Using RVM
+h5. 安装与使用 RVM
 
-The process of installing a patched Ruby interpreter is very easy if you let RVM do the hard work. All of the following RVM commands will provide you with a patched Ruby interpreter:
+如果你已经装上了 RVM 的话，对你的 Ruby 解释器打一个补丁就很容易了 ，你只要为 RVM 指名一个要打上的补丁版本，其他的事情 RVM 会帮你搞定。
 
 <shell>
 $ rvm install 1.9.2-p180 --patch gcdata
@@ -385,21 +363,13 @@ $ rvm install 1.8.7 --patch ruby187gc
 $ rvm install 1.9.2-p180 --patch ~/Downloads/downloaded_gcdata_patch.patch
 </shell>
 
-You can even keep your regular interpreter by assigning a name to the patched one:
+只要这样就搞定了!
 
-<shell>
-$ rvm install 1.9.2-p180 --patch gcdata --name gcdata
-$ rvm use 1.9.2-p180 # your regular ruby
-$ rvm use 1.9.2-p180-gcdata # your patched ruby
-</shell>
+h5. 从源代码安装
 
-And it's done! You have installed a patched Ruby interpreter.
+这个办法会相对复杂一点，不过也别怕，如果你从未编译过一个二进制的 Ruby 解释器，按照下面的这几个步骤就可以在你的家目录里编译安装一个 Ruby 了。
 
-h5. Install From Source
-
-This process is a bit more complicated, but straightforward nonetheless. If you've never compiled a Ruby binary before, follow these steps to build a Ruby binary inside your home directory.
-
-h6. Download and Extract
+h6. 下载和解压缩
 
 <shell>
 $ mkdir rubygc
@@ -408,25 +378,25 @@ $ tar -xzvf <ruby-version.tar.gz>
 $ cd <ruby-version>
 </shell>
 
-h6. Apply the Patch
+h6. 打上补丁
 
 <shell>
 $ curl http://github.com/wayneeseguin/rvm/raw/master/patches/ruby/1.9.2/p180/gcdata.patch | patch -p0 # if you're on 1.9.2!
 $ curl http://github.com/wayneeseguin/rvm/raw/master/patches/ruby/1.8.7/ruby187gc.patch | patch -p0 # if you're on 1.8.7!
 </shell>
 
-h6. Configure and Install
+h6. 设置并安装
 
-The following will install Ruby in your home directory's +/rubygc+ directory. Make sure to replace +&lt;homedir&gt;+ with a full patch to your actual home directory.
+之后的步骤会在你的家目录下的 +/rubygc+ 目录中编译并安装上一个 Ruby。你学要把下面的 +&lt;homedir&gt;+ 换成你的家目录的完整路径。
 
 <shell>
 $ ./configure --prefix=/<homedir>/rubygc
 $ make && make install
 </shell>
 
-h6. Prepare Aliases
+h6. 设置别名（Aliases）
 
-For convenience, add the following lines in your +~/.profile+:
+为了方便，将这些别名设置命令加入到你的 +~/.profile+ 里:
 
 <shell>
 alias gcruby='~/rubygc/bin/ruby'
@@ -436,29 +406,24 @@ alias gcirb='~/rubygc/bin/irb'
 alias gcrails='~/rubygc/bin/rails'
 </shell>
 
-Don't forget to use your aliases from now on.
+从此你就可以使用这些便捷的别名了。
 
-h6. Install RubyGems (1.8 only!)
+h6. 安装 RubyGems （只有 1.8 需要！）
 
-Download "RubyGems":http://rubyforge.org/projects/rubygems and install it from source. Rubygem's README file should have necessary installation instructions. Please note that this step isn't necessary if you've installed Ruby 1.9 and above.
+在这里 下载 "RubyGems"http://rubyforge.org/projects/rubygems 的源码并安装。RubyGems 的 README 文件是一份很有用的安装手册。注意，如果你用的是1.9版本的 Ruby ，那么这步骤是没有必要的。
 
-h4. Using Ruby-Prof on MRI and REE
+h4. 基於 MRI 和 REE 的 Ruby-Prof
 
-Add Ruby-Prof to your applications' Gemfile if you want to benchmark/profile under MRI or REE:
+如果你想要用上 benchmark 测试 或者 profile 测试，先在你的应用程序中的 Gemfile 中加上 Ruby-Prof.
 
 <ruby>
 gem 'ruby-prof', :git => 'git://github.com/wycats/ruby-prof.git'
 </ruby>
 
-Now run +bundle install+ and you're ready to go.
+然后运行 +bundle install+ 就搞定了。
 
-h3. Command Line Tools
+h3. 命令行工具
 
-Writing performance test cases could be an overkill when you are looking for one time tests. Rails ships with two command line tools that enable quick and dirty performance testing:
-
-h4. +benchmarker+
-
-Usage:
 
 <shell>
 Usage: rails benchmarker 'Ruby.code' 'Ruby.more_code' ... [OPTS]
@@ -470,7 +435,7 @@ Usage: rails benchmarker 'Ruby.code' 'Ruby.more_code' ... [OPTS]
                                      Default: wall_time,memory,objects,gc_runs,gc_time
 </shell>
 
-Example:
+示例：
 
 <shell>
 $ rails benchmarker 'Item.all' 'CouchItem.all' --runs 3 --metrics wall_time,memory
@@ -478,7 +443,6 @@ $ rails benchmarker 'Item.all' 'CouchItem.all' --runs 3 --metrics wall_time,memo
 
 h4. +profiler+
 
-Usage:
 
 <shell>
 Usage: rails profiler 'Ruby.code' 'Ruby.more_code' ... [OPTS]
@@ -492,18 +456,19 @@ Usage: rails profiler 'Ruby.code' 'Ruby.more_code' ... [OPTS]
                                      Default: flat,graph_html,call_tree
 </shell>
 
-Example:
+
+示例：
 
 <shell>
 $ rails profiler 'Item.all' 'CouchItem.all' --runs 2 --metrics process_time --formats flat
 </shell>
 
-NOTE: Metrics and formats vary from interpreter to interpreter. Pass +--help+ to each tool to see the defaults for your interpreter.
+NOTE: Metrics 和 formats 选项的行为会因为不同的解释器而不同。你最好对每一个指令都加一个 +--help+  参数去看看。 
 
-h3. Helper Methods
+h3. Helper 方法
 
-Rails provides various helper methods inside Active Record, Action Controller and Action View to measure the time taken by a given piece of code. The method is called +benchmark()+ in all the three components.
-
+Rails 在 Active Record ，Action Controller 和 Action View 中提供了不同的计算代码片段运行时间的 Helper 方法。不过在这三个模块中的方法的名字都一样，叫做  +benchmark()+。
+ 
 h4. Model
 
 <ruby>
@@ -514,17 +479,17 @@ Project.benchmark("Creating project") do
 end
 </ruby>
 
-This benchmarks the code enclosed in the +Project.benchmark("Creating project") do...end+ block and prints the result to the log file:
+这其中一段被 +Project.benchmark("Creating project") do...end+ 包住的代码将会被测试，并且测试结果将会被记录到 log 文件中。
 
 <ruby>
 Creating project (185.3ms)
 </ruby>
 
-Please refer to the "API docs":http://api.rubyonrails.org/classes/ActiveRecord/Base.html#M001336 for additional options to +benchmark()+
+你可以到 "API 文档":http://api.rubyonrails.org/classes/ActiveRecord/Base.html#M001336 获取更多关于 +benchmark()+ 方法的信息。 
 
 h4. Controller
 
-Similarly, you could use this helper method inside "controllers":http://api.rubyonrails.org/classes/ActionController/Benchmarking/ClassMethods.html#M000715
+同样地，你可以在 "controllers":http://api.rubyonrails.org/classes/ActionController/Benchmarking/ClassMethods.html#M000715  当中运行这个 +benchmark+ 测试的方法.
 
 <ruby>
 def process_projects
@@ -535,11 +500,12 @@ def process_projects
 end
 </ruby>
 
-NOTE: +benchmark+ is a class method inside controllers
+NOTE: +benchmark+ 在 controller 中是一个类方法。
+
 
 h4. View
 
-And in "views":http://api.rubyonrails.org/classes/ActionController/Benchmarking/ClassMethods.html#M000715:
+视图也大同小异，关于 "views":http://api.rubyonrails.org/classes/ActionController/Benchmarking/ClassMethods.html#M000715:  
 
 <erb>
 <% benchmark("Showing projects partial") do %>
@@ -547,9 +513,9 @@ And in "views":http://api.rubyonrails.org/classes/ActionController/Benchmarking/
 <% end %>
 </erb>
 
-h3. Request Logging
+h3. 请求日志
 
-Rails log files contain very useful information about the time taken to serve each request. Here's a typical log file entry:
+Rails 日志文件会再每次处理请求之后返回很多有用的信息，这里是一个典型的日志文件片段：
 
 <shell>
 Processing ItemsController#index (for 127.0.0.1 at 2009-01-08 03:06:39) [GET]
@@ -558,40 +524,42 @@ Rendering items/index
 Completed in 5ms (View: 2, DB: 0) | 200 OK [http://0.0.0.0/items]
 </shell>
 
-For this section, we're only interested in the last line:
+在这个片段里面我们可能只会对最后一行感兴趣。
 
 <shell>
 Completed in 5ms (View: 2, DB: 0) | 200 OK [http://0.0.0.0/items]
 </shell>
 
-This data is fairly straightforward to understand. Rails uses millisecond(ms) as the metric to measure the time taken. The complete request spent 5 ms inside Rails, out of which 2 ms were spent rendering views and none was spent communication with the database. It's safe to assume that the remaining 3 ms were spent inside the controller.
+这段文字很好理解了。Rails 用毫秒（ms）为单位来衡量时间。上面这次请求在Rails程序上一共花费了 5ms ，其中在渲染页面中花费了 2ms，没有时间花费在 数据库操作上。 所以我们能很容易的推断出在控制器上花费了3ms。
 
-Michael Koziarski has an "interesting blog post":http://www.therailsway.com/2009/1/6/requests-per-second explaining the importance of using milliseconds as the metric.
+Michael Koziarski 有一个  "有趣的博客日志":http://www.therailsway.com/2009/1/6/requests-per-second 来解释使用毫秒来做时间度量的重要性。
 
-h3. Useful Links
+h3. 相关链接
 
-h4. Rails Plugins and Gems
+h4. Rails 相关插件和开源包
 
 * "Rails Analyzer":http://rails-analyzer.rubyforge.org
 * "Palmist":http://www.flyingmachinestudios.com/programming/announcing-palmist
 * "Rails Footnotes":https://github.com/josevalim/rails-footnotes/tree/master
 * "Query Reviewer":https://github.com/dsboulder/query_reviewer/tree/master
 
-h4. Generic Tools
+h4. 常用工具
+
 
 * "httperf":http://www.hpl.hp.com/research/linux/httperf/
 * "ab":http://httpd.apache.org/docs/2.2/programs/ab.html
 * "JMeter":http://jakarta.apache.org/jmeter/
 * "kcachegrind":http://kcachegrind.sourceforge.net/html/Home.html
 
-h4. Tutorials and Documentation
+h4. 相关教程和文档
 
 * "ruby-prof API Documentation":http://ruby-prof.rubyforge.org
 * "Request Profiling Railscast":http://railscasts.com/episodes/98-request-profiling - Outdated, but useful for understanding call graphs
 
-h3. Commercial Products
+h3. 商业项目
 
-Rails has been lucky to have a few companies dedicated to Rails-specific performance tools. A couple of those are:
+幸运的是，有一些商业公司为 Rails 提供了非常精致详细的性能测试，下面两个就是这样的公司：
 
 * "New Relic":http://www.newrelic.com
 * "Scout":http://scoutapp.com
+

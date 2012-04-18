@@ -42,9 +42,6 @@ module RailsGuides
             idx ||= '#' + index 
             if markup == "textile" 
               @result.sub!(matched, "h#{level}(#{idx}). #{index.gsub('-','.')} #{title}") 
-            else
-              @result.sub!(matched, "#{'#'*level} #{index.gsub('-','.')}#{title} ") 
-              s.pos += matched.size
             end
             key = {
               :title => title,
@@ -60,7 +57,11 @@ module RailsGuides
             counters << last + 1
           end
         end
-        s.getch
+        if matched
+          s.pos += matched.size
+        else
+          s.getch
+        end
       end
       level_hash
     end
