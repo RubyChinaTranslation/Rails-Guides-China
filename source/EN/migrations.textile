@@ -475,7 +475,16 @@ end
 </ruby>
 
 will add an +attachment_id+ column and a string +attachment_type+ column with
-a default value of 'Photo'.
+a default value of 'Photo'. +references+ also allows you to define an
+index directly, instead of using +add_index+ after the +create_table+ call:
+
+<ruby>
+create_table :products do |t|
+  t.references :category, :index => true
+end
+</ruby>
+
+will create an index identical to calling `add_index :products, :category_id`.
 
 NOTE: The +references+ helper does not actually create foreign key constraints
 for you. You will need to use +execute+ or a plugin that adds "foreign key
@@ -770,7 +779,7 @@ Both migrations work for Alice.
 
 Bob comes back from vacation and:
 
-# Updates the source - which contains both migrations and the latests version of
+# Updates the source - which contains both migrations and the latest version of
 the Product model.
 # Runs outstanding migrations with +rake db:migrate+, which
 includes the one that updates the +Product+ model.
@@ -927,3 +936,4 @@ features, the +execute+ method can be used to execute arbitrary SQL. You could
 also use some plugin like "foreigner":https://github.com/matthuhiggins/foreigner
 which add foreign key support to Active Record (including support for dumping
 foreign keys in +db/schema.rb+).
+
