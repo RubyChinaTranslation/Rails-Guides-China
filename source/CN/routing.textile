@@ -100,19 +100,17 @@ h4.  URL 和 Path
 同时，这些 +_path+ Helper 方法还有一个对应的 +_url+ Helper (例如 +photos_url+) 
 后者将会返回包含了主机，端口等信息的绝对路径地址。
 
-NOTE: 因为路由器可以使用 HTTP 动词和 URL 来匹配受到的请求
+NOTE: 因为路由器可以使用 HTTP 动词 加上一个 URL 来匹配受到的请求，所以四个不同的 URL 可以组合出7种不同的行为。
 
-Because the router uses the HTTP verb and URL to match inbound requests, four URLs map to seven different actions.
+h4. 同时定义多个 Resource  
 
-h4. Defining Multiple Resources at the Same Time
-
-If you need to create routes for more than one resource, you can save a bit of typing by defining them all with a single call to +resources+:
+如果你想在路由表中建立多个 Resource， 你可以把他们写到一行里面去，这样只需要调用一个 +resources+ ，同时为你节约点输入时间：
 
 <ruby>
 resources :photos, :books, :videos
 </ruby>
 
-This works exactly the same as
+它和下面这样写的效果是一样的：
 
 <ruby>
 resources :photos
@@ -120,21 +118,21 @@ resources :books
 resources :videos
 </ruby>
 
-h4. Singular Resources
+h4. 单件 Resources
 
-Sometimes, you have a resource that clients always look up without referencing an ID. For example, you would like +/profile+ to always show the profile of the currently logged in user. In this case, you can use a singular resource to map +/profile+ (rather than +/profile/:id+) to the +show+ action.
+有时候，你并不需要一个能够根据ID查询个体的 resource 。例如，你可能会想用 +/profile+ 来显示当前登录用户的简介，这时候你可以用 map +/profile+ (或者 +/profile/:id+) 一个单体化的 Resource 来匹配 show 行为。
 
 <ruby>
-match "profile" => "users#show"
+match "profile" => "users#show"                           
 </ruby>
-
-This resourceful route
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+或者这样来声明一个 Resourceful 的资源：
 
 <ruby>
 resource :geocoder
 </ruby>
 
-creates six different routes in your application, all mapping to the +Geocoders+ controller:
+它会为你的应用建立六个不同的 routes ，都将匹配到 +Geocoders+ 控制器:
 
 |_.HTTP Verb |_.Path         |_.action |_.used for                                    |
 |GET         |/geocoder/new  |new      |return an HTML form for creating the geocoder |
@@ -144,19 +142,19 @@ creates six different routes in your application, all mapping to the +Geocoders+
 |PATCH/PUT   |/geocoder      |update   |update the one and only geocoder resource     |
 |DELETE      |/geocoder      |destroy  |delete the geocoder resource                  |
 
-NOTE: Because you might want to use the same controller for a singular route (+/account+) and a plural route (+/accounts/45+), singular resources map to plural controllers.
+NOTE: 因为你可能要在路由中同时使用单数 (+/account+) 和 复数 （+/accounts/45+） 而想要对应同一个控制器，所以单件 Resource 命令也是对应复数的控制器。
 
-A singular resourceful route generates these helpers:
+一个 单件 Resourceful 路由生成这些 Helper 方法：
 
-* +new_geocoder_path+ returns +/geocoder/new+
-* +edit_geocoder_path+ returns +/geocoder/edit+
-* +geocoder_path+ returns +/geocoder+
+* +new_geocoder_path+ 返回 +/geocoder/new+
+* +edit_geocoder_path+ 返回 +/geocoder/edit+
+* +geocoder_path+ 返回 +/geocoder+
 
-As with plural resources, the same helpers ending in +_url+ will also include the host, port and path prefix.
+同复数的 resources 命令一样，以 +_url+ 结尾的  Hepler 将会包括主机名，端口值和其他的相关路径前缀。
 
-h4. Controller Namespaces and Routing
+h4. 控制器、命名空间(Namespaces),和路由
 
-You may wish to organize groups of controllers under a namespace. Most commonly, you might group a number of administrative controllers under an +Admin::+ namespace. You would place these controllers under the +app/controllers/admin+ directory, and you can group them together in your router:
+有时，你可以想要把一些同类的控制器组织到一个命名空间下面去，其中最常见的就是我们会把一组管理功能的控制器放到 +Admin::+ 下，然后把这个空间下的控制器都放在 +app/controllers/admin+ 目录下，并且统一在路由中配置：
 
 <ruby>
 namespace :admin do
@@ -164,7 +162,7 @@ namespace :admin do
 end
 </ruby>
 
-This will create a number of routes for each of the +posts+ and +comments+ controller. For +Admin::PostsController+, Rails will create:
+这样将会为每一个 +posts+ 和 +comments+ 方法建立一个路由规则，对于 +Admin::PostsController+， Rails 会建立这些路由表规则：
 
 |_.HTTP Verb |_.Path                |_.action |_.named helper             |
 |GET         |/admin/posts          |index    | admin_posts_path          |
@@ -175,7 +173,7 @@ This will create a number of routes for each of the +posts+ and +comments+ contr
 |PATCH/PUT   |/admin/posts/:id      |update   | admin_post_path(:id)      |
 |DELETE      |/admin/posts/:id      |destroy  | admin_post_path(:id)      |
 
-If you want to route +/posts+ (without the prefix +/admin+) to +Admin::PostsController+, you could use
+如果你想要把路由 +/posts+ (不以 +/admin+ 作前缀) 匹配到 +Admin::PostsController+，你就需要这样了：
 
 <ruby>
 scope :module => "admin" do
@@ -183,13 +181,13 @@ scope :module => "admin" do
 end
 </ruby>
 
-or, for a single case
+或者对单个 Resource 匹配的时候
 
 <ruby>
 resources :posts, :module => "admin"
 </ruby>
 
-If you want to route +/admin/posts+ to +PostsController+ (without the +Admin::+ module prefix), you could use
+而你如果想要把路由：+/admin/posts+ 给匹配到 +PostsController+ (控制器中没有 +Admin::+ 这个模块作为前缀)，你可以用
 
 <ruby>
 scope "/admin" do
@@ -197,13 +195,13 @@ scope "/admin" do
 end
 </ruby>
 
-or, for a single case
+或者在为单个 Resource 匹配的时候这么写：
 
 <ruby>
 resources :posts, :path => "/admin/posts"
 </ruby>
 
-In each of these cases, the named routes remain the same as if you did not use +scope+. In the last case, the following paths map to +PostsController+:
+在这些例子里面，可以发现 scope 并不会改变 routes 的生成的路径名称的（译者注：named routes，这里指的是生成的Helper的名称。） ，例如在最后一个例子里面，会生成数条规则匹配到  +PostsController+:
 
 |_.HTTP Verb |_.Path               |_.action |_.named helper      |
 |GET         |/admin/posts         |index    | posts_path         |
