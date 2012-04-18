@@ -1,32 +1,28 @@
 h2. Rails 数据库迁移(Migrations)
 
-Migrations are a convenient way for you to alter your database in a structured
-and organized manner. You could edit fragments of SQL by hand but you would then
-be responsible for telling other developers that they need to go and run them.
-You'd also have to keep track of which changes need to be run against the
-production machines next time you deploy.
+数据库迁移（Migrations）提供了一些便利的方法让你有条理地修改数据库。虽然说直接
+编写SQL也能修改数据库，但是这样你就得通知其他的开发者去执行一样的步骤。另外，你
+也得一直注意下次部署的时候和在正式上线的产品版服务器上面追踪并执行这些操作。
 
-Active Record tracks which migrations have already been run so all you have to
-do is update your source and run +rake db:migrate+. Active Record will work out
-which migrations should be run. It will also update your +db/schema.rb+ file to
-match the structure of your database.
+Active Record会自动追踪哪些migrations已经执行过、哪些还没执行。所以，你只要更新
+你本地的代码然后执行+rake db:migrate+，其他的就交给Active Record，它会自己搞懂该
+跑哪些migrations。还有，它也会自动更新+db/schema.rb+文件跟修改后的数据库结构同步。
 
-Migrations also allow you to describe these transformations using Ruby. The
-great thing about this is that (like most of Active Record's functionality) it
-is database independent: you don't need to worry about the precise syntax of
-+CREATE TABLE+ any more than you worry about variations on +SELECT *+ (you can
-drop down to raw SQL for database specific features). For example you could use
-SQLite3 in development, but MySQL in production.
+有了migrations，你就可以用Ruby来写这些数据库变更。一件很棒的事情是migration是独立
+于数据库系统的（和大多数Active Record的功能一样），也就是说，你不用烦恼各种数据
+库的语法差异，像是+SELECT *+的各种写法之类的。（当然，如果要针对某个特定的数据库
+系统编写特定的功能的话，你也可以直接编写原始的SQL语句）。例如，你可以在开发阶段
+使用SQLite3，在正式上线阶段则使用MySQL，它会自动处理好两者间的语法细节。
 
 在这个指南中，你将会了解到：
 
-* 你可以用于创建migration的生成器
+* 用于创建migration的生成器
 * Active Record 所提供用于操纵数据库的方法
 * 用于操纵migrations的Rake任务
-* Migrations跟数据库模式文件（+schema.rb+）的关联
+* Migrations跟数据库纲要文件（+schema.rb+）的关联
 
 
-h3. 剖析一个Migration
+h3. 剖析Migration的构造
 
 在我们深入介绍migration的细节之前，我们先看下列例子看下我们能怎么写migration:
 
@@ -71,9 +67,7 @@ class AddReceiveNewsletterToUsers < ActiveRecord::Migration
 end
 </ruby>
 
-/*TODO*/
-NOTE: Some "caveats":#using-models-in-your-migrations apply to using models in
-your migrations.
+NOTE: 在migrations中使用Models的一些"警告":#using-models-in-your-migrations
 
 这个migration为+users+表添加了一个+receive_newsletter+字段，并设定新的user创建
 时它的默认值为+false+，对于数据库中已存在的users我们使用User模型来把他们的这个
@@ -101,9 +95,7 @@ h4. Migrations也是类
 Migration是继承<tt>ActiveRecord::Migration</tt>的一个子类，它实现了两个方法：
 +up+(执行需要的改变)和+down+(恢复所做的改变)
 
-Active Record provides methods that perform common data definition tasks in a
-database independent way (you'll read about them in detail later):
-Active Record提供一些用于执行普通数据定义任务的方法(你稍后将会了解到它们的细节):
+Active Record提供以下独立于数据库的方法，用来执行普通数据定义任务的方法:
 
 * +add_column+
 * +add_index+
@@ -121,13 +113,11 @@ Active Record提供一些用于执行普通数据定义任务的方法(你稍后
 因而你不限于使用以上的方法。例如在添加完新字段后你可以编写代码去为数据库中已经
 存在的记录设定这个字段的值(有需要的话利用你的models)。
 
-On databases that support transactions with statements that change the schema
-(such as PostgreSQL or SQLite3), migrations are wrapped in a transaction. If the
-database does not support this (for example MySQL) then when a migration fails
-the parts of it that succeeded will not be rolled back. You will have to rollback
-the changes that were made by hand.
-/*TODO*/
-在数据库中支持一些修改数据库模式(schema)的处理，migrations包裹在事务中
+某些数据库支持变更数据库纲要(schema)的语句的事务(transactions)，例如PostgreSQL
+或SQLite3，它们的migrations就会包含在事务中处理。相反的，若你的数据库系统(如MySQL)
+不支持的话，那么当migration失败了，发到一半的schema，并不会随着事务的取消而自动
+回滚(roll back)。你必须手动挑出这些已经改动的部分。
+
 
 h4. 关于文件名
 
@@ -174,9 +164,9 @@ h4. 变更 Migrations
 migration来做数据库变更。如果这个migration还没有进入版本控制（也就是说这些变更还
 没有发布出去），那么直接修改还是可以的。
 
-h4. Supported Types
+h4. 支持的数据类型
 
-Active Record supports the following database column types:
+Active Record支持的数据类型包括：
 
 * +:binary+
 * +:boolean+
@@ -191,10 +181,8 @@ Active Record supports the following database column types:
 * +:time+
 * +:timestamp+
 
-These will be mapped onto an appropriate underlying database type. For example,
-with MySQL the type +:string+ is mapped to +VARCHAR(255)+. You can create
-columns of types not supported by Active Record when using the non-sexy syntax,
-for example
+这些类型会自动对应到数据库，例如在MySQL下，+:string+类型会对应到+VARCHAR(255)+。
+如果你要建立Active Recore不支持的数据类型，那可以用「non-sexy」语法，比方说：
 
 <ruby>
 create_table :products do |t|
@@ -202,7 +190,7 @@ create_table :products do |t|
 end
 </ruby>
 
-This may however hinder portability to other databases.
+不过，这样就失去了不同数据库系统之间的通用性。
 
 h3. 创建一个 Migration
 
@@ -363,34 +351,34 @@ end
 这样在建立数据表的SQL语句中就会加入+ENGINE=BLACKHOLE+。（如果是用MySQL的话，预设
 是+ENGINE=InnoDB+）
 
-h4. Creating a Join Table
+h4. 创建连接表
 
-Migration method +create_join_table+ creates a HABTM join table. A typical use
-would be
+Migration的+create_join_table+方法可以创建一张多对多的连接表，经典的写法如下：
 
 <ruby>
 create_join_table :products, :categories
 </ruby>
 
-which creates a +categories_products+ table with two columns called +category_id+ and +product_id+.
-These columns have the option +:null+ set to +false+ by default.
+这里创建了一张名为+categories_products+的连接表，里面包含+category_id+和
++product_id+这两个字段。
 
-You can pass the option +:table_name+ with you want to customize the table name. For example,
+你可以通过+:table_name+字段去定义自己想要的数据表名称。例如：
 
 <ruby>
 create_join_table :products, :categories, :table_name => :categorization
 </ruby>
 
-will create a +categorization+ table.
+这里将会创建一张名为+categorization+的数据表。
 
-By default, +create_join_table+ will create two columns with no options, but you can specify these
-options using the +:column_options+ option. For example,
+默认情况下，+create_join_table+将会创建两个不包含参数的字段，不过你也可以通过
++:column_options+来指定这些参数。例如：
 
 <ruby>
 create_join_table :products, :categories, :column_options => {:null => true}
 </ruby>
 
 will create the +product_id+ and +category_id+ with the +:null+ option as +true+.
+这里将会创建允许为空的+product_id+和+category_id+字段。
 
 h4. 变更数据表
 
@@ -451,28 +439,24 @@ end
 
 以上会建立一个+attachment_id+字段和一个默认值为'Photo'的+attachment_type+字段。
 
-NOTE: The +references+ helper does not actually create foreign key constraints
-for you. You will need to use +execute+ or a plugin that adds "foreign key
-support":#active-record-and-referential-integrity.
+NOTE: +references+辅助方法实际上不会帮你建立外键约束。你可能需要通过+execute+方法
+或者用能够加入"外键支持":#active-record-and-referential-integrity 的插件。
 
-If the helpers provided by Active Record aren't enough you can use the +execute+
-method to execute arbitrary SQL.
+如果Active Record提供的辅助方法不能满足你的需求，你可以使用+execute+方法来执行任意
+的SQL语句。
 
-For more details and examples of individual methods, check the API documentation,
-in particular the documentation for
+要想知道各个方法的细节和范例，请参考API文档，特别是关于
 "<tt>ActiveRecord::ConnectionAdapters::SchemaStatements</tt>":http://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/SchemaStatements.html
-(which provides the methods available in the +up+ and +down+ methods),
+(提供了在+up+和+down+中可使用的方法)、
 "<tt>ActiveRecord::ConnectionAdapters::TableDefinition</tt>":http://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/TableDefinition.html
-(which provides the methods available on the object yielded by +create_table+)
-and
+(提供了在+create_table+所产生的对象中可使用的方法)、以及
 "<tt>ActiveRecord::ConnectionAdapters::Table</tt>":http://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/Table.html
-(which provides the methods available on the object yielded by +change_table+).
+(提供了在+create_table+所产生的对象中可使用的方法)。
 
-h4. Using the +change+ Method
+h4. 使用+change+方法
 
-The +change+ method removes the need to write both +up+ and +down+ methods in
-those cases that Rails know how to revert the changes automatically. Currently,
-the +change+ method supports only these migration definitions:
+在一些情况下，Rails会知道如何去恢复所做的改变，使用+change+方法可以让我们不用同
+时写+up+和+down+方法。目前来说+change+方法只支持以下migration的定义：
 
 * +add_column+
 * +add_index+
@@ -483,17 +467,14 @@ the +change+ method supports only these migration definitions:
 * +rename_index+
 * +rename_table+
 
-If you're going to need to use any other methods, you'll have to write the
-+up+ and +down+ methods instead of using the +change+ method.
+如果你需要使用其他方法，那么你就不能使用+change+方法而需要同时写+up+和+down+方法。
 
-h4. Using the +up+/+down+ Methods
+h4. 使用+up+/+down+方法
 
-The +down+ method of your migration should revert the transformations done by
-the +up+ method. In other words, the database schema should be unchanged if you
-do an +up+ followed by a +down+. For example, if you create a table in the +up+
-method, you should drop it in the +down+ method. It is wise to reverse the
-transformations in precisely the reverse order they were made in the +up+
-method. For example,
+Migration里面的+down+方法能复原+up+方法所造成的变更。也就是说如果执行了+up+然后
+再执行+down+，那么数据库的schema应该会没有改变。所以说，如果用+up+建立一个数据表，
+就应该在+down+方法中删除它。明智的做法会使用跟+up+完全相反的顺便来做这些事情。
+例如，
 
 <ruby>
 class ExampleMigration < ActiveRecord::Migration
@@ -524,100 +505,84 @@ class ExampleMigration < ActiveRecord::Migration
 end
 </ruby>
 
-Sometimes your migration will do something which is just plain irreversible; for
-example, it might destroy some data. In such cases, you can raise
-+ActiveRecord::IrreversibleMigration+ from your +down+ method. If someone tries
-to revert your migration, an error message will be displayed saying that it
-can't be done.
+有时候，你的migrations会做出一些无法复原的事，例如删掉某些资料之类的。在这种情况
+下，你可以在+down+方法中抛出(raise)+ActiveRecord::IrreversibleMigration+。这样一
+来如果有人想恢复你的migration时就会出现错误信息，显示它无法执行。
 
-h3. Running Migrations
+h3. 执行Migrations
 
-Rails provides a set of rake tasks to work with migrations which boil down to
-running certain sets of migrations.
+Rails提供一系列rake任务来执行migrations。第一个跟migration相关的rake任务是
++rake db:migrate+。它最基本有用法就是单纯地执行所有还没执行migrations的up或者
+change方法。若所有migrations都执行过了，它就会直接结束。执行的顺序是按照migration
+的日期。
 
-The very first migration related rake task you will use will probably be
-+rake db:migrate+. In its most basic form it just runs the +up+ or +change+
-method for all the migrations that have not yet been run. If there are
-no such migrations, it exits. It will run these migrations in order based
-on the date of the migration.
+值得注意的是执行+db:migrate+也会一起执行+db:schema:dump+，去更新db/schema.rb文件，
+以便跟数据库的结构同步。
 
-Note that running the +db:migrate+ also invokes the +db:schema:dump+ task, which
-will update your db/schema.rb file to match the structure of your database.
-
-If you specify a target version, Active Record will run the required migrations
-(up, down or change) until it has reached the specified version. The version
-is the numerical prefix on the migration's filename. For example, to migrate
-to version 20080906120000 run
+如果你要migrate到某个特定版本，Active Record会执行所需的migrations(up,down,change)
+直到到达指定的版本为上。所谓版本就是migration文件名前面的那串数字。例如要迁移到
+版本20080906120000，只需执行:
 
 <shell>
 $ rake db:migrate VERSION=20080906120000
 </shell>
 
-If version 20080906120000 is greater than the current version (i.e., it is
-migrating upwards), this will run the +up+ method on all migrations up to and
-including 20080906120000, and will not execute any later migrations. If
-migrating downwards, this will run the +down+ method on all the migrations
-down to, but not including, 20080906120000.
+如果指定的版本大于当前的版本（往上迁移），那么就会执行+up+方法到包含指定版本在内的
+所有版本。如果是往下迁移的话则会执行所有+down+方法，但不包括指定版本本身。
 
-h4. Rolling Back
+h4. 回滚（Rolling Back）
 
-A common task is to rollback the last migration, for example if you made a
-mistake in it and wish to correct it. Rather than tracking down the version
-number associated with the previous migration you can run
+另一个常见的任务是回滚最后一个版本。比如你不小心打错了要修正。输入回滚命令时可以
+不用输入先前版本的版本号，直接这样就行了：
 
 <shell>
 $ rake db:rollback
 </shell>
 
-This will run the +down+ method from the latest migration. If you need to undo
-several migrations you can provide a +STEP+ parameter:
+这样会执行最后一个migration的+down+方法。如果要恢复多个migrations的话，可以多给
+一个STEP参数：
 
 <shell>
 $ rake db:rollback STEP=3
 </shell>
 
-will run the +down+ method from the last 3 migrations.
+这样会执行最后3个migrations的+down+方法。
 
-The +db:migrate:redo+ task is a shortcut for doing a rollback and then migrating
-back up again. As with the +db:rollback+ task, you can use the +STEP+ parameter
-if you need to go more than one version back, for example
+要回滚然后重新执行最后一个migration的话可以直接执行+db:migrate:redo+。如果要回滚
+重新执行的不止一个版本时可以用STEP参数，就跟+db:rollback+的用法一样：
 
 <shell>
 $ rake db:migrate:redo STEP=3
 </shell>
 
-Neither of these Rake tasks do anything you could not do with +db:migrate+. They
-are simply more convenient, since you do not need to explicitly specify the
-version to migrate to.
+这两个rake任务只是用起来比较方便，让你可以不用输入一大串版本号数字。除了输入比较
+方便外没有比+db:migrate+多做什么额外的工作。
 
-h4. Resetting the database
+h4. 重置数据库
 
-The +rake db:reset+ task will drop the database, recreate it and load the
-current schema into it.
+最后是+db:reset+任务，它会删除数据库，然后重新建立数据库并在重新建立的数据库中
+载入当前的schema。
 
-NOTE: This is not the same as running all the migrations - see the section on
-"schema.rb":#schema-dumping-and-you.
+NOTE: 所谓的载入schema跟执行全部的migrations是不一样的，请参照：
+"schema.rb":#schema-dumping-and-you 。
 
-h4. Running specific migrations
+h4. 执行指定的migration
 
-If you need to run a specific migration up or down, the +db:migrate:up+ and
-+db:migrate:down+ tasks will do that. Just specify the appropriate version and
-the corresponding migration will have its +up+ or +down+ method invoked, for
-example,
+如果你需要执行一个指定的migration的up或down方法，那么你可以用+db:migrate:up+和
++db:migrate:down+这两个任务。你只需指定版本号，就可以触发它的+up+或+down+方法：
 
 <shell>
 $ rake db:migrate:up VERSION=20080906120000
 </shell>
 
-will run the +up+ method from the 20080906120000 migration. These tasks still
-check whether the migration has already run, so for example +db:migrate:up
-VERSION=20080906120000+ will do nothing if Active Record believes that
-20080906120000 has already been run.
+会执行20080906120000这个版本的migration的+up+方法。它会去确认这个migration之前有
+没有跑过，所以，如果Active Record认为20080906120000已经跑过，那么执行
++db:migrate:up VERSION=20080906120000+将不会做任何操作。
 
-h4. Changing the output of running migrations
+h4. 修改执行migration时的提示结果
 
-By default migrations tell you exactly what they're doing and how long it took.
-A migration creating a table and adding an index might produce output like this
+默认情况下，migrations会告诉你它们在做什么，花多少时间。例如建立数据库并且添加
+索引(index)的话会产生以下输出结果：
 
 <shell>
 ==  CreateProducts: migrating =================================================
@@ -626,19 +591,15 @@ A migration creating a table and adding an index might produce output like this
 ==  CreateProducts: migrated (0.0028s) ========================================
 </shell>
 
-Several methods are provided in migrations that allow you to control all this:
+想要控制这些输出值的话可以使用这几种方法：
 
 |_.Method             |_.Purpose|
-|suppress_messages    |Takes a block as an argument and suppresses any output
-                       generated by the block.|
-|say                  |Takes a message argument and outputs it as is. A second
-                       boolean argument can be passed to specify whether to
-                       indent or not.|
-|say_with_time        |Outputs text along with how long it took to run its
-                       block. If the block returns an integer it assumes it
-                       is the number of rows affected.|
+|suppress_messages    |阻止这个代码块的任何输出结果|
+|say                  |输出一段文字（第二个参数可以指定是否要缩排）|
+|say_with_time        |输出一段文字，以及这个代码块需要花多少时间才能跑完。如果代
+                       码块中回传了一个整数，这个数代表受影响的数据(rows)有多少。|
 
-For example, this migration
+例如以下这个migration
 
 <ruby>
 class CreateProducts < ActiveRecord::Migration
@@ -661,7 +622,7 @@ class CreateProducts < ActiveRecord::Migration
 end
 </ruby>
 
-generates the following output
+会产生这样的输出结果：
 
 <shell>
 ==  CreateProducts: migrating =================================================
@@ -673,27 +634,23 @@ generates the following output
 ==  CreateProducts: migrated (10.0054s) =======================================
 </shell>
 
-If you want Active Record to not output anything, then running +rake db:migrate
-VERBOSE=false+ will suppress all output.
+如果你希望Active Record不作任何输出，那么执行+rake db:migrate VERBOSE=false+就可
+以阻止所有的输出结果。
 
-h3. Using Models in Your Migrations
+h3. 在Migrations中使用Models
 
-When creating or updating data in a migration it is often tempting to use one of
-your models. After all, they exist to provide easy access to the underlying
-data. This can be done, but some caution should be observed.
+在migration中不管你是新增数据或者更新数据，多少都会用到一个model。毕竟model存在
+就是为了方便地处理我们的数据。这当然是没问题的，只是有些地方需要留意一下。
 
-For example, problems occur when the model uses database columns which are (1)
-not currently in the database and (2) will be created by this or a subsequent
-migration.
+比方说，当model使用不正确的数据库的字段或者使用的字段是后来的migration创建的时候
+就会出现问题。
 
-Consider this example, where Alice and Bob are working on the same code base
-which contains a +Product+ model:
+根据这个例子，当爱丽比和鲍勃在同一份代码上工作，这份代码包含一个+Product+的模型：
 
-Bob goes on vacation.
+鲍勃正在放假期。
 
-Alice creates a migration for the +products+ table which adds a new column and
-initializes it.  She also adds a validation to the +Product+ model for the new
-column.
+爱丽丝创建了一个migration给+products+表添加一个新的字段并为它初始化。她同时在
++Product+模型为这个新的字段添加了验证(validation)。
 
 <ruby>
 # db/migrate/20100513121110_add_flag_to_product.rb
@@ -716,9 +673,7 @@ class Product < ActiveRecord::Base
 end
 </ruby>
 
-Alice adds a second migration which adds and initializes another column to the
-+products+ table and also adds a validation to the +Product+ model for the new
-column.
+爱丽丝又添加了一个migration来添加和初始化另一个字段并同样在model中添加了验证。
 
 <ruby>
 # db/migrate/20100515121110_add_fuzz_to_product.rb
@@ -741,18 +696,17 @@ class Product < ActiveRecord::Base
 end
 </ruby>
 
-Both migrations work for Alice.
+这两个migrations在爱丽丝用起来是可以正常工作的。
 
-Bob comes back from vacation and:
+鲍勃从他的假期回来后他做了以下操作：
 
-# Updates the source - which contains both migrations and the latests version of
-the Product model.
-# Runs outstanding migrations with +rake db:migrate+, which
-includes the one that updates the +Product+ model.
 
-The migration crashes because when the model attempts to save, it tries to
-validate the second added column, which is not in the database when the _first_
-migration runs:
+# 更新源代码 - 包含了艾丽丝添加的那两个migrations和最新版本的Product model。
+# 执行+rake db:migrate+命令来执行还未执行的migrations（包含那个更新+product+model
+的migration）。
+
+Migration执行失败，因为当model尝试保存的时候它会去验证那两个新增加的字段，而这些
+字段在第一个migration执行的时候还没有添加数据库。
 
 <plain>
 rake aborted!
@@ -761,14 +715,13 @@ An error has occurred, this and all later migrations canceled:
 undefined method `fuzz' for #<Product:0x000001049b14a0>
 </plain>
 
-A fix for this is to create a local model within the migration. This keeps rails
-from running the validations, so that the migrations run to completion.
+对于这种情况可以尝试在migration中建立一个本地的model来修复。这样避免了validations
+的执行，因此这个migration可以完成。
 
-When using a faux model, it's a good idea to call
-+Product.reset_column_information+ to refresh the +ActiveRecord+ cache for the
-+Product+ model prior to updating data in the database.
+当使用假的(faux)model时，我们可以直接调用+Product.reset_column_information+
+来更新+ActiveRecord+中+Product+模型的缓存从而在数据库中更新数据。
 
-If Alice had done this instead, there would have been no problem:
+如果爱丽丝能这样做，那么将不会有问题发生。
 
 <ruby>
 # db/migrate/20100513121110_add_flag_to_product.rb
@@ -804,39 +757,33 @@ class AddFuzzToProduct < ActiveRecord::Migration
 end
 </ruby>
 
-h3. Schema Dumping and You
+h3. 导出数据库纲要(Schema Dumping)
 
-h4. What are Schema Files for?
+h4. Schema文件的作用?
 
-Migrations, mighty as they may be, are not the authoritative source for your
-database schema. That role falls to either +db/schema.rb+ or an SQL file which
-Active Record generates by examining the database. They are not designed to be
-edited, they just represent the current state of the database.
+虽然我们用Migrations来定义database schema(数据库纲要)，但是我们却不能一次看到完
+整精确的schema。这个机制是由+db/schema.rb+或是Active Record检验数据库后所生成的
+SQL文件来担当。它们设计出来不是用来编辑的，只是纯粹代表着数据库的schema现况。
 
-There is no need (and it is error prone) to deploy a new instance of an app by
-replaying the entire migration history. It is much simpler and faster to just
-load into the database a description of the current schema.
+当我们要部署新的应用程序时，并不需要把整个migrations历程全部重跑一遍，我们只需要
+把当前的schema载入新的数据库就可以了。这样做会更快更简单。
 
-For example, this is how the test database is created: the current development
-database is dumped (either to +db/schema.rb+ or +db/structure.sql+) and then
-loaded into the test database.
+例如，这就是建立一个测试用数据库所做的操作：把当前开发环境下的数据库导出来（
+看是db/schema.rb或db/development.sql都行），然后再载入到测试数据库。
 
-Schema files are also useful if you want a quick look at what attributes an
-Active Record object has. This information is not in the model's code and is
-frequently spread across several migrations, but the information is nicely
-summed up in the schema file. The
-"annotate_models":https://github.com/ctran/annotate_models gem automatically
-adds and updates comments at the top of each model summarizing the schema if
-you desire that functionality.
+另外，如果要快速浏览Active Record 对象中有哪些属性也可以通过schema文件。关于
+Active Record对象属性的信息并不在model的代码中，而且可能会散布在多个migrations
+之间，但是最终都会整理在schema文件中。其次，有个插件叫做"annotate_models":https://github.com/ctran/annotate_models ，
+可以把schema的结果自动用注释的方式放在每个model的上面，有需要也可以看一下。
 
-h4. Types of Schema Dumps
 
-There are two ways to dump the schema. This is set in +config/application.rb+ by
-the +config.active_record.schema_format+ setting, which may be either +:sql+ or
-+:ruby+.
+h4. 数据库纲要(Schema)的导出类型
 
-If +:ruby+ is selected then the schema is stored in +db/schema.rb+. If you look
-at this file you'll find that it looks an awful lot like one very big migration:
+导出的schema有+:sql+和+:ruby+两种方式，可以通过+config/application.rb+文件中的
++config.active_record.schema_format+来设置。
+
+如果设定成+:ruby+的话，schema就会存在+db/schema.rb+里面。这个文件看起来像是一个
+超大的migration。
 
 <ruby>
 ActiveRecord::Schema.define(:version => 20080906171750) do
@@ -856,49 +803,41 @@ ActiveRecord::Schema.define(:version => 20080906171750) do
 end
 </ruby>
 
-In many ways this is exactly what it is. This file is created by inspecting the
-database and expressing its structure using +create_table+, +add_index+, and so
-on. Because this is database-independent, it could be loaded into any database
-that Active Record supports. This could be very useful if you were to distribute
-an application that is able to run against multiple databases.
+各方面来说，它也的确如此。这个文件的生成方式，正是在检查数据库并用+create_table+、
++add_index+等方法，来表达数据库的结构。由于schema是独立于数据库系统的，只要是
+Active Record支持的数据库系统，它都可以载入。如果你的应用程序要发布到多个数据库
+系统，这点会非常有用。
 
-There is however a trade-off: +db/schema.rb+ cannot express database specific
-items such as foreign key constraints, triggers, or stored procedures. While in
-a migration you can execute custom SQL statements, the schema dumper cannot
-reconstitute those statements from the database. If you are using features like
-this, then you should set the schema format to +:sql+.
+不过，这也是有考量的：+db/schema.rb+没办法表达出特定数据库所专属的功能，像是外键
+约束(foreign key constraints)、触发(triggers)或是预存程序(stored procedures)。
+虽然migration里面可以执行自定义的SQL语句，但是schema dumper却无法从数据库中将它
+们重组回来。如果你要用到这个自定义SQL的功能，那么就必须把schema的格式设定成+:sql+。
 
-Instead of using Active Record's schema dumper, the database's structure will be
-dumped using a tool specific to the database (via the +db:structure:dump+ Rake task)
-into +db/structure.sql+. For example, for the PostgreSQL RDBMS, the
-+pg_dump+ utility is used. For MySQL, this file will contain the output of +SHOW
-CREATE TABLE+ for the various tables. Loading these schemas is simply a question
-of executing the SQL statements they contain. By definition, this will create a
-perfect copy of the database's structure. Using the +:sql+ schema format will,
-however, prevent loading the schema into a RDBMS other than the one used to
-create it.
+设定成+:sql+的话就不是用Active Record来导出Schema了，而是用该数据库系统的专门工具，
+从+db:structure:dump+这个Rake任务导进+db/#{Rails.env}_structure.sql+里面。比方说，
+用PostgreSQL的话，就是用+pg_dump+这个工具。用MySQL的话，则是各个数据表的+SHOW
+CREATE TABLE+输出结果。载入这些schema只不过是执行了文件里面的SQL语句而已。
 
-h4. Schema Dumps and Source Control
+虽然用+:sql+方式可以完美地复制数据库结构，不过如果换一个不同的数据库系统那就往往
+没办法将schema写入新的数据库了。
 
-Because schema dumps are the authoritative source for your database schema, it
-is strongly recommended that you check them into source control.
+h4. 导出数据库纲要(Schema)以及版本控制
 
-h3. Active Record and Referential Integrity
+因为schema dumps是数据库结构的精确来源，这么重要的东西，强烈建议你把它加入到版本
+控制系统内。
 
-The Active Record way claims that intelligence belongs in your models, not in
-the database. As such, features such as triggers or foreign key constraints,
-which push some of that intelligence back into the database, are not heavily
-used.
+h3. Active Record 与 Referential Integrity(参照完整性)
 
-Validations such as +validates :foreign_key, :uniqueness => true+ are one way in
-which models can enforce data integrity. The +:dependent+ option on associations
-allows models to automatically destroy child objects when the parent is
-destroyed. Like anything which operates at the application level, these cannot
-guarantee referential integrity and so some people augment them with foreign key
-constraints in the database.
+所谓的Active Record之道，认为有头脑的应该是models，而不是数据库。因此，像是触发
+（triggers）或外键约束(foreign key constraints)这类偏向数据库功能，在Rails中就
+比较不常使用。
 
-Although Active Record does not provide any tools for working directly with such
-features, the +execute+ method can be used to execute arbitrary SQL. You could
-also use some plugin like "foreigner":https://github.com/matthuhiggins/foreigner
-which add foreign key support to Active Record (including support for dumping
-foreign keys in +db/schema.rb+).
+在model里面要确保数据库完整性，可以用+validates :foreign_key, :uniqueness => true+
+来做验证。Model里面，数据库关联(associations)上有个+:dependent+的选项，可以设定
+成当父对象删除(destroy)的时候，自动连其子对象也一起删除。不过就像其他应用程式层级
+操作的东西一样，这并不能保证数据表之间的参照完整性，所以有些人用外键约束来增进
+这个功能。
+
+关于外建约束的功能，Active Record并没有提供可以直接编辑它的工具，不过还是可以用
++execute+方法来执行任意的SQL。也有不少的插件，可以帮Active Record加上外键的支持
+（还可以把外键的设定全部显示在db/schema.rb），像是这个"foreigner":https://github.com/matthuhiggins/foreigner
