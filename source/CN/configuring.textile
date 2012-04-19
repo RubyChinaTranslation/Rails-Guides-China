@@ -433,4 +433,130 @@ Active Support 有如下一些可用配置选项:
 
 * +config.active_support.use_standard_json_time_format+ 是否使日期序列化成 ISO 8601 格式。默认为 +false+.
 
-* +ActiveSupport::BufferedLogger.silencer+ 设置为 +false+ 去取消
+* +ActiveSupport::BufferedLogger.silencer+ 设为false则禁用了对代码块的缄默日志（silence logging）功能(缄默日志使得silence方法可以对指定的代码块屏蔽日志功能或者改变日志的level)。默认值为true。
+
+* +ActiveSupport::Cache::Store.logger+ 设定在缓存存储操作中的日志类。
+
+* +ActiveSupport::Deprecation.behavior+ +config.active_support.deprecation+ 可选的设置器，它能配置 Rails 废弃警告的动作。
+
+* +ActiveSupport::Deprecation.silence+ 接受一个闭包，这个闭包里的所有废弃警告都会被忽略。
+
+* +ActiveSupport::Deprecation.slienced+ 设置是否打印出废弃警告。
+
+* +ActiveSupport::Logger.silencer+ 设置为 +false+ 取消闭包中缄默日志的功能。默认为 +true+
+
+h4. 配置数据库
+
+几乎所有 Rails 应用程序都会和数据库交互。 数据库在一个叫做 +config/database.yml+ 的文件里被指定的。 如果你在一个新的 Rails 应用里打开这个文件，你会看到一个默认数据库配置默认为 SQLite3。 该文件包含三个部分，分别是不同的 Rails 运行环境：
+
+* +development+ 环境用于你的开发或本地电脑,所以你可以手动控制应用程序。
+* +test+ 环境用于运行自动测试的时候。
+* +production+ 环境用于部署应用程序给全世界用的时候。
+
+TIP: 你不必手动更新数据库配置文件。如果你注意到应用程序生成器的选项, 你会发现其中一个选项为 <tt>--database</tt>. 这个选项允许你选择一个适配器，这个适配器可以是最常用的关系型数据库。你甚至可以重复运行生成器: <tt>cd .. && rails new blog --database=mysql</tt>. 如果你确认重写 +config/database.yml+ 文件， 你的应用程序将被配置使用 MySQL 而不是 SQLite. 一般数据库连接的详细例子会在下面说到。
+
+h5. 配置 SQLite3 数据库
+
+Rails 内建支持 "SQLite3":http://www.sqlite.org, SQLite3 是一个轻量型，不需要服务器的数据库应用程序。在一个繁忙的生产环境中应该会使其过载，但在开发和测试环境会运作的很好。创建一个新项目的时候，Rails 会默认使用 SQLite 数据库，但你可以随后自行修改.
+
+下面这部分是默认配置文件中开发环境的连接信息:
+
+<yaml>
+development:
+  adapter: sqlite3
+  database: db/development.sqlite3
+  pool: 5
+  timeout: 5000
+</yaml>
+
+NOTE: Rails 默认使用 SQLite3 数据库存储数据是因为它是一个不需要配置就能工作的数据库。Rails 也支持 MySQL 和 PostgreSQL, 并且有许多其它数据库的插件。如果你在生产环境中使用数据库，Rails一般都能为其提供一个适配器.
+
+h5. 配置 MySQL 数据库
+
+如果你选择 MySQL 而不是已有的 SQLite3 数据库，+config/database.yml+ 将会有些不同。下面是开发环境部分：
+
+<yaml>
+development:
+  adapter: mysql2
+  encoding: utf8
+  database: blog_development
+  pool: 5
+  username: root
+  password:
+  socket: /tmp/mysql.sock
+</yaml>
+
+如果你的开发电脑安装的 MySQL 有一个没有密码的 root 用户，你可以使用这个配置。不然，在开发环境部分的更改相应的 username 和 password。
+
+h5. 配置 PostgreSQL 数据库
+
+如果你选择 PostgreSQL，+config/database.yml+ 要被自定义使用 PostgreSQL 数据库：
+
+<yaml>
+development:
+  adapter: postgresql
+  encoding: unicode
+  database: blog_development
+  pool: 5
+  username: blog
+  password:
+</yaml>
+
+h5. 为 JRuby 平台配置 SQLite3
+
+如果你选择使用 SQLite3 并且使用的是JRuby, +config/database.yml+ 将会有一点不同。这是开发环境部分：
+
+<yaml>
+development:
+  adapter: jdbcsqlite3
+  database: db/development.sqlite3
+</yaml>
+
+h5. 为 JRuby 平台配置 MySQL
+
+如果你选择使用 MySQL 并且使用的是JRuby, +config/database.yml+ 将会有一点不同。这是开发环境部分：
+
+<yaml>
+development:
+  adapter: jdbcmysql
+  database: blog_development
+  username: root
+  password:
+</yaml>
+
+h5. 为 JRuby 平台配置 PostgreSQL
+
+如果你选择使用 PostgreSQL 并且使用的是JRuby, +config/database.yml+ 将会有一点不同。这是开发环境部分：
+
+<yaml>
+development:
+  adapter: jdbcpostgresql
+  encoding: unicode
+  database: blog_development
+  username: blog
+  password:
+</yaml>
+
+修改 +development+ 部分相应的用户名和密码。
+
+h3. Rails 环境设置
+
+Rails 的某些部分也可以通过设置环境变量，进行外部赋值来配置。以下环境变量会被Rails的各部分识别:
+
+* +ENV["RAILS_ENV"] 定义了 Rails 的运行环境 (生产，开发，测试等等)。
+* +ENV["RAILS_RELATIVE_URL_ROOT"] 当你的应用程序部署到某个子目录下时，用它帮助路由(routing)代码识别 URLs。
+* +ENV["RAILS_ASSET_ID"] 将重写默认的 cache-busting 时间戳章，这个时间戳章是Rails 为可下载资源生成的.
+* +ENV["RAILS_CACHE_ID"]+ 和 +ENV["RAILS_APP_VERSION"]+ 用于生成 Rails 缓存代码的扩张缓存键。这可以让同一个应用程序有多个独立分开的缓存。
+
+
+h3. 使用 Initialiezer 文件
+
+加载完框架和应用程序的所有 gems 之后，Rails 会接着去加载 initializers. 一个 initializer 是存放在 +config/initializers+ 里任何一个的 Ruby 文件。你可以使用 initializers 容纳所有框架和 gems 加载完之后的要使用的配置设置，例如为这些部分配置设置的选项。
+
+NOTE: 你可以使用子文件夹来组织你的 initializers， 因为 Rails 会纵向搜索整个 initializers 文件夹。
+
+TIPS: 如果你的 initialziers 里有一组依赖，你可以根据名字控制加载循序。例如, +01_critical.rb+ 将会先于 +01_normal.rb+ 被加载。
+
+h3. 初始化事件
+
+Rails 有 5 种初始化事件，这些事件可以
