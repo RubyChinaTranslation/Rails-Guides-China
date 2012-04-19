@@ -559,4 +559,60 @@ TIPS: 如果你的 initialziers 里有一组依赖，你可以根据名字控制
 
 h3. 初始化事件
 
-Rails 有 5 种初始化事件，这些事件可以
+Rails 有 5 种初始化事件, 这些事件可以被挂上钩子(列出了它们的运行顺序)
+
+* +before_configuration+: 这个和继承了 +Rails::Application+ 的应用程序常量同时运行。+config+ 回调会在这发生之前被运行。
+
+* +before_initialize+: 这个在应用程序的初始化过程之前立即运行。应用程序的初始化过程在接近 Rails 整个初始化过程的最开始出现并带有 +:bootstrap_hook+ 初始化程序。
+
+* +to_prepare+: 在所有的 initializers 和 Railties 之后运行(包括应用程序自身)，但在即时加载(eager loading)和中间件堆创建之前运行。最重要的是，在+development+环境中，会在所有的请求上运行。而在 +production+ 和 +test+ 环境只会运行一次(启动的期间)。
+
+* +before_eager_load+: 在即时加载(eager loading)发生之前立即运行，这是_生产_ 环境的默认行为，但在_开发_环境则不是。
+
+* +after_initialize+: 应用程序加载后立即运行，但在应用程序的 initializers 之前运行。
+
+在 +Rails::Application+, +Rails::Railtie+ 或者 +Rails::Engine+ 的子类里使用闭包语法, 可以为这些事件定义钩子:
+
+<ruby>
+module YourApp
+  class Application < Rails::Application
+    config.before_initialize do
+      # initialization code goes here
+    end
+  end
+end
+</ruby>
+
+可选的，你也可以通过 +Rails.application+ 对象的 +config+ 方法这么做。
+
+<ruby>
+Rails.application.config.before_initialize do
+  # initialization code goes here
+end
+</ruby>
+
+警告: 应用程序的一些部分，特别是 观察者(observers) 和 路由(routing) 在 +after_initialize+ 闭包被调用之时都还没有启动。
+
+h4. +Rails::Railtie#initializer+
+
+Rails 有数个初始化程序在(应用程序)启动的时候运行，它们都使用 +Rails::Railtie+ 的 +initializer+ 方法定义。下面是 Active Suppport 的 +initialize_whiny_nils+ 初始化程序的例子:
+
+<ruby>
+initializer "active_support.initialize_whiny_nils" do |app|
+  require 'active_support/whiny_nil' if app.config.whiny_nils
+end
+</ruby>
+
++initializer+ 方法接受三个参数，第一个初始化程序的名字，第二个是可选项的哈希数组(这里没有显示)和第三个是一个闭包。 选项哈希数组里的 +before+ 键可以指定为指定哪个初始化程序必须在这个初始化程序之前运行，而 +after+ 键则指定哪个初始化程序在这个初始化程序_之后_运行。
+
+通过 +initializer+ 方法定义的初始化程序会按照它们被定义的顺序运行，除了那个使用 +:before+ 或者 +:after+ 方法的。
+
+警告: 你应该将你的初始化程序放在其它初始化程序之前或者之后，如果有逻辑关系。比如说有 4 个初始化程序， "one" 到 "four"(按照这个顺序定义)，并且你定义"four"在"four"_之前_ 但在"three"_之后_运行。像这种无逻辑的定义Rails将不能确定它们的顺序。
+
++initializer+ 方法的闭包参数是应用程序自身的对象，所以我们能通过它使用 +config+ 方法访问配置，就像在例子里做的那样。
+
+因为 +Rails::Application+ 继承了 +Rails::Railtie+ (非直接)，你可以使用 +config/application.rb+ 里的 +initializer+ 方法去为应用程序定义初始化程序.
+
+h4. Initializers
+
+
