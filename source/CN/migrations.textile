@@ -21,6 +21,7 @@ Active Record会自动追踪哪些migrations已经执行过、哪些还没执行
 * 用于操纵migrations的Rake任务
 * Migrations跟数据库纲要文件（+schema.rb+）的关联
 
+endprologue.
 
 h3. 剖析Migration的构造
 
