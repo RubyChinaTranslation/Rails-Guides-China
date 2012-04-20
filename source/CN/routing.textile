@@ -201,7 +201,7 @@ end
 resources :posts, :path => "/admin/posts"
 </ruby>
 
-在这些例子里面，可以发现 scope 并不会改变 routes 的生成的路径名称的（译者注：named routes，这里指的是生成的Helper的名称。） ，例如在最后一个例子里面，会生成数条规则匹配到  +PostsController+:
+在这些例子里面，可以发现 scope 并不会改变 routes 的生成的路径名称的（译者注：named routes，这里指的是生成的Helper的名称。） ，例如在最后一个例子里面，会生成匹配到  +PostsController+的规则:
 
 |_.HTTP Verb |_.Path               |_.action |_.named helper      |
 |GET         |/admin/posts         |index    | posts_path         |
@@ -212,9 +212,9 @@ resources :posts, :path => "/admin/posts"
 |PATCH/PUT   |/admin/posts/:id     |update   | post_path(:id)     |
 |DELETE      |/admin/posts/:id     |destroy  | post_path(:id)     |
 
-h4. Nested Resources
+h4. 嵌套(Nested)数组
 
-It's common to have resources that are logically children of other resources. For example, suppose your application includes these models:
+通常，一个 Resource 常常有数个逻辑上的子 Resource 。例如，你的应用有这样一个模型：
 
 <ruby>
 class Magazine < ActiveRecord::Base
@@ -234,7 +234,7 @@ resources :magazines do
 end
 </ruby>
 
-In addition to the routes for magazines, this declaration will also route ads to an +AdsController+. The ad URLs require a magazine:
+在这里，对于每一个 magazines 的路径下面都需要能够有 ad 作为 Resource 匹配到+AdsController+。 这时候每一组 ad 都需要指定一个 magzine 作为前缀。
 
 |_.HTTP Verb |_.Path                               |_.action |_.used for                                                                 |
 |GET         |/magazines/:magazine_id/ads          |index    |display a list of all ads for a specific magazine                          |
@@ -245,11 +245,11 @@ In addition to the routes for magazines, this declaration will also route ads to
 |PATCH/PUT   |/magazines/:magazine_id/ads/:id      |update   |update a specific ad belonging to a specific magazine                      |
 |DELETE      |/magazines/:magazine_id/ads/:id      |destroy  |delete a specific ad belonging to a specific magazine                      |
 
-This will also create routing helpers such as +magazine_ads_url+ and +edit_magazine_ad_path+. These helpers take an instance of Magazine as the first parameter (+magazine_ads_url(@magazine)+).
+这样生成的路由 Hepler 就会是  +magazine_ads_url+ 和 +edit_magazine_ad_path+。这个帮助方法会把第一个参数当作指定 Magazine 的实例(例如 +magazine_ads_url(@magazine)+)。
 
-h5. Limits to Nesting
+h5. 嵌套 Resources 的限制
 
-You can nest resources within other nested resources if you like. For example:
+你可以把多个 Resources 一起嵌套起来。例如：
 
 <ruby>
 resources :publishers do
@@ -259,19 +259,19 @@ resources :publishers do
 end
 </ruby>
 
-Deeply-nested resources quickly become cumbersome. In this case, for example, the application would recognize paths such as
+但是多层的嵌套很快会让你的路由变得笨重。例如上面那个例子里，你需要这样来访问一个照片：
 
 <pre>
 /publishers/1/magazines/2/photos/3
 </pre>
 
-The corresponding route helper would be +publisher_magazine_photo_url+, requiring you to specify objects at all three levels. Indeed, this situation is confusing enough that a popular "article":http://weblog.jamisbuck.org/2007/2/5/nesting-resources by Jamis Buck proposes a rule of thumb for good Rails design:
+相关的路由 helper 会变成 +publisher_magazine_photo_url+ ，而且需要在参数中传入指定的每一个实例。事实上，这种令人郁闷的情形已经被很多人讨论过了，Jamis Buck 在 "这里":http://weblog.jamisbuck.org/2007/2/5/nesting-resources 有一份很火的 _Rails 路由设计简则_ ，这个问题或许可以在那里找到答案。
 
-TIP: _Resources should never be nested more than 1 level deep._
+TIP: _事实上，你无法建立超过一层深的嵌套 Resources._
 
-h4. Creating Paths and URLs From Objects
+h4. 从对象到路径 URL
 
-In addition to using the routing helpers, Rails can also create paths and URLs from an array of parameters. For example, suppose you have this set of routes:
+关于 路由 Helper, Rails 还可以通过传入一组参数来建立 路径或 URL，例如，你设置了这样的一组路由：
 
 <ruby>
 resources :magazines do
@@ -279,45 +279,45 @@ resources :magazines do
 end
 </ruby>
 
-When using +magazine_ad_path+, you can pass in instances of +Magazine+ and +Ad+ instead of the numeric IDs.
+当你使用 +magazine_ad_path+ 时，你可以把  +Magazine+ 和 +Ad+ 实例传入作参数来作为 ID。
 
 <erb>
 <%= link_to "Ad details", magazine_ad_path(@magazine, @ad) %>
 </erb>
 
-You can also use +url_for+ with a set of objects, and Rails will automatically determine which route you want:
+你也可以用 +url_for+ 带上一组对象，Rails 将会自动地生成正确的路由。
 
 <erb>
 <%= link_to "Ad details", url_for([@magazine, @ad]) %>
 </erb>
 
-In this case, Rails will see that +@magazine+ is a +Magazine+ and +@ad+ is an +Ad+ and will therefore use the +magazine_ad_path+ helper. In helpers like +link_to+, you can specify just the object in place of the full +url_for+ call:
+在这里，Rails 将会把 +@magazine+ 对应到 +Magazine+， +@ad+ 对应到 +Ad+ 上去，然后决定使用 +magazine_ad_path+ 这个 Helper。而如果你用的是 +link_to+ 这样的Helper，你可以和调用 +url_for+ 一样用对象作参数:
 
 <erb>
 <%= link_to "Ad details", [@magazine, @ad] %>
 </erb>
 
-If you wanted to link to just a magazine:
+如果你并没有用嵌套式的路由，只要这样就可以访问一个对象的 show 方法：
 
 <erb>
 <%= link_to "Magazine details", @magazine %>
 </erb>
 
-For other actions, you just need to insert the action name as the first element of the array:
+如果你要指定对象的其他动作的话你也可以这样：
 
 <erb>
 <%= link_to "Edit Ad", [:edit, @magazine, @ad] %>
 </erb>
 
-This allows you to treat instances of your models as URLs, and is a key advantage to using the resourceful style.
+这样就能把你的模型和 URL 有效的结合起来了，而且这也是一个很棒很 Resourceful 的特性。
 
-h4. Adding More RESTful Actions
+h4. 加入额外的 RESTful 行为
 
-You are not limited to the seven routes that RESTful routing creates by default. If you like, you may add additional routes that apply to the collection or individual members of the collection.
+除了7个默认创建的 RESTful 路由之外，如果你喜欢，你可以将一些额外的路由应用到你的物件集合或者单个的物件下面。
 
-h5. Adding Member Routes
+h5. 成员(Member)路由
 
-To add a member route, just add a +member+ block into the resource block:
+加入一个成员路由只需要在你的 +resource+ 代码块中加入你一个 +member+ 代码块就好：
 
 <ruby>
 resources :photos do
@@ -327,9 +327,9 @@ resources :photos do
 end
 </ruby>
 
-This will recognize +/photos/1/preview+ with GET, and route to the +preview+ action of +PhotosController+. It will also create the +preview_photo_url+ and +preview_photo_path+ helpers.
+这样将会把 +/photos/1/preview+ 的 GET 动作识别出来，然后路由会匹配到 +PhotosController+ 控制器下面的 +preview+ 行为中。它同样会建立两个Helper：+preview_photo_url+ 和 +preview_photo_path+。
 
-Within the block of member routes, each route name specifies the HTTP verb that it will recognize. You can use +get+, +patch+, +put+, +post+, or +delete+ here. If you don't have multiple +member+ routes, you can also pass +:on+ to a route, eliminating the block:
+当你使用了路由中的 Member 代码块时，你可以任意指定一个HTTP动词： +get+, +patch+, +put+, +post+, 或者 +delete+ 。如果你并没有太多的 Member 路由规则，可以用  +:on+ 作为后缀来把代码块替换掉：
 
 <ruby>
 resources :photos do
@@ -337,9 +337,9 @@ resources :photos do
 end
 </ruby>
 
-h5. Adding Collection Routes
+h5. 集合(Collection)路由
 
-To add a route to the collection:
+要想加入一个集合路由：
 
 <ruby>
 resources :photos do
@@ -349,9 +349,9 @@ resources :photos do
 end
 </ruby>
 
-This will enable Rails to recognize paths such as +/photos/search+ with GET, and route to the +search+ action of +PhotosController+. It will also create the +search_photos_url+ and +search_photos_path+ route helpers.
+上面这段代码将会让 Rails 用 GET 方法匹配路径 +/photos/search+。并且这个 +search+ 行为将会匹配到 +PhotosController+下，它将会创建  +search_photos_url+ 和 +search_photos_path+ 两个路由Helper。
 
-Just as with member routes, you can pass +:on+ to a route:
+同成员路由一样，你可以传入一个 +:on+ 选项。
 
 <ruby>
 resources :photos do
@@ -359,13 +359,13 @@ resources :photos do
 end
 </ruby>
 
-h5. A Note of Caution
+h5. 注意事项
 
-If you find yourself adding many extra actions to a resourceful route, it's time to stop and ask yourself whether you're disguising the presence of another resource.
+如果你发现自己对 Resourceful 路由加入了太多的额外规则，是时候停下来好好审视下你是不是应该创建另一个 resource。
 
-h3. Non-Resourceful Routes
+h3. 非 Resourceful 路由
 
-In addition to resource routing, Rails has powerful support for routing arbitrary URLs to actions. Here, you don't get groups of routes automatically generated by resourceful routing. Instead, you set up each route within your application separately.
+对于 Resourceful 的路由，Rails 有着一整套强大的路由和行为支持，即使如此，你有时候可能也会需要一些不是由 Rails 成组生成的路由，这时候，你就需要把规则手动地一个一个输入到你的应用中去了。
 
 While you should usually use resourceful routing, there are still many places where the simpler routing is more appropriate. There's no need to try to shoehorn every last piece of your application into a resourceful framework if that's not a good fit.
 
