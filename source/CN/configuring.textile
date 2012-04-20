@@ -138,7 +138,7 @@ Rails 3.1, 默认使用 +sprockets+ gem 来管理资源。这个 gem 合并并�
 
 * +config.assets.version+ 是一个字符串选项，用于生成 MD5 哈希值。可以被更改从而强制所有文件都被预编译.
 
-* +config.assets.compile+ 是一个布尔值，可以用于开启让、 Sprockets 在生产环境的即时执行编译。
+* +config.assets.compile+ 是一个布尔值，可以用于让Sprockets 在生产环境的即时执行编译。
 
 * +config.assets.logger+ 接受一个遵循 Log4r 或者 Ruby 默认 +Logger+ 类接口的日志类.默认和 +config.logger+ 指定的一样。设置 +config.assets.logger+ 为 false, 就可以关闭记录资源处理的日志。
 
@@ -427,7 +427,7 @@ h4. 配置 Active Support
 
 Active Support 有如下一些可用配置选项:
 
-* +config.active_support.bare+ 是否让 +active_support/all+ 在 Rails 启动时的加载。默认为 +nil+, 意识是 +active_support/all+ 已经加载了(所以Rails不会再加载)。
+* +config.active_support.bare+ 是否让 +active_support/all+ 在 Rails 启动时的加载。默认为 +nil+, 意思是 +active_support/all+ 已经加载了(所以Rails不会再加载)。
 
 * +config.active_support.escape_html_entities_in_json+ 设置在 JSON 序列化中是否剔除 HTML 实体。默认为 +true+.
 
@@ -615,4 +615,90 @@ end
 
 h4. Initializers
 
+下面是一列所有能在 Rails 中找到的初始化程序，并按它们被定义的顺序排列 (也是它们运行的顺序，除非有其它设定)
+
+*+load_environment_hook+*
+作为一个占位器，所以可以让 +:load_environment_config+ 可以被定义在这之前运行。
+
+*+load_active_support+* 导入 +active_support/dependencies+ 为 Active Support 建立了基础。如果 +config.active_support.bare+ 不可确定, 也可以导入 +active_support/all+，这是默认的。
+
+*+preload_frameworks+* 如果 +config.preload_frameworks+ 为 +true+ 或者 "可确定性的"，那么将自动地加载所有 Rails 会自动加载的依赖。一般这个配置选项是关闭的。在 Rails 里，当内部的类会第一次被引用的时候才会自动加载。+:preload_frameworks+ 在初始化的时候就会一次过加载完它们。
+
+*+initialize_logger+* 初始化应用程序的日志类(一个 +ActiveSupport::BufferedLogger+ 对象) 并且让它可以通过 +Rails.logger+ 访问. 它会在在这个点之前插入的初始化程序还没有定义 +Rails.logger+ 的时候运行。
+
+*+initialize_cache+* 如果 +Rails.cache+ 还没有设置，则通过引用 +config.cache_store+ 的值并将其赋予 +Rails.cache+ 来初始化。如果该对象有 +middleware+ 方法，它的中间件将在中间件堆中被插入到 +Rack::Runtime+ 之前。
+
+*+set_clear_dependencies_hook+* 提供一个 +active_record.set_dispatch_hooks+ 可使用的 hook， 它会那个(set_clear_dependencies)初始化程序之前运行. 那个初始化程序 -- 只有在 +cache_classes+ 设置为 +false+ 的时候运行 -- 使用 +ActionDispatch::Callbacks.after+ 去除在请求中就已经被引用并来自对象空间的常量(依赖)，所以它们会在后续的请求中被重新加载。
+
+*+initialize_dependency_mechanism+* 如果 +cofnig.cache_classes+ 为 true, 配置 +ActiveSupport::Dependencies.mechanism+ 去 +require+ 依赖而不是 +load+ 它们。
+
+*+bootstrap_hook+* 运行所有配置了的 +before_initialize+ 闭包。
+
+*+i18n.callbacks+* 在开发环境中，建立一个 +to_prepare+ 回调, 如果任何一个本地化文件从最好一次请求之后有更改, 这个回调将会调用 +I18n.reload!+。
+
+*+active_support.initialize_whiny_nils+* 在 +config.whiny_nils+ 为 true 的情况下引入 +active_support/whiny_nil+ 这个文件会输出如下错误：
+
+<plain>
+  Called id for nil, which would mistakenly be 4 -- if you really wanted the id of nil, use object_id
+</plain>
+
+和:
+
+<plain>
+You have a nil object when you didn't expect it!
+You might have expected an instance of Array.
+The error occurred while evaluating nil.each
+</plain>
+
+*+active_support.deprecation_behaivor+* 为(运行)环境建立废弃报告，默认开发环境为 +:log+， 生产环境为 +:notify+ 和 测试环境的 +:stderr+。 如果 +config.active_support.deprecation+ 没有设置值，那么这个初始化程序就会提示用户去 +config/environments+ 里与当前环境对应的文件修改该行(config.active_support.deprecation)。那个值可以是一个数组。
+
+*+active_support.initialize_time_zone+* 根据 +config.tiem_zone+ 设置为应用程序设置默认的时区，默认为 "UTC".
+
+*+action_dispatch.configure+* 配置 +ActionDispatch::Http::URL.tld_length+ 的值为 +config.action_dispatch.tpl_length+ 的值。
+
+*+action_view.cache_asset_ids+* 当 Active Support 加载时，设置 +ActionView::Helpers::AssetTagHelper::AssetPatchs.cache_asset_ids+ 为 +false+, 但前提是 +config.cache_classes+ 也有加载。
+
+*+active_view.javascript_expansions+* 登记由 +config.active_view.javascript_expansions+ 和 +config.action_view.stylesheet_expansions+ 建立起来的扩展名，这个扩展名可以被 Action View 识别并且在试图中使用.
+
+*+action_controller.logger+* 设置 +ActionController::Base.logger+ -- 如果这个还没有设置 -- 为 +Rails.logger+。
+
+*+action_controller.initialize_framework_caches+* 设置 +ActionController::Base.cache_store+ -- 如果它还没有被设置 -- 为 +Rails.cache+.
+
+*+action_controller.set_configs+* 通过使用 +config.action_controller+ 里的设置来建立 Action Controller. 而这个初始化程序是将方法名作为 setters +send+ 给 +ActionController::Base+ 并通过它传值来使用 +config.action_controller+ 的设置的。
+
+*+action_controller.compile_config_methods+* 为指定的配置设置方法初始化，所以它们能被更快的访问。
+
+*+active_record.initialize_timezone+* 设置 +ActiveRecord::Base.time_zone.aware_attributes+ 为 true, 就好像设置 +ActiveRecord::Base.default_timezone+ 为 UTC. 当属性从数据库被读取的时候，它们会被转换成由 +Time.zone+ 指定的时区.
+
+*+active_record.logger+* 设置 +ActiveRecord::Base.logger+ -- 如果它还没有设置 -- 为 +Rails.logger+。
+
+*+active_record.set_configs+* 通过使用 +config.active_record+ 里的设置来建立 Action Record. 而这个初始化程序是将方法名作为 setters +send+ 给 +ActionRecord::Base+ 并通过它传值来使用 +config.active_record+ 的设置的。
+
+*+active_record.initialize_database+* 从 +config/database.yml+ 加载数据库配置(默认)并为当前环境简历连接。
+
+*+active_record.log_runtime+* 引入 +ActiveRecord::Railties::ControllerRuntime+，它会负责为请求闭包向日志器报告 Active Record 调用所使用的时间.(译者注: 就是说 +ActiveRecord::Railties::ControllerRuntime+ 会记录一个请求发生时调用 Active Record 所占用的时间到日志里)
+
+*+active_record.set_dispatch_hooks+* 如果 +config.cache_classes+ 设置为 +false+ 的话，重置所有可重载的数据库连接。
+
+*+action_mailer.logger+* 设置 +ActionMailer::Base.logger+ -- 如果它还没又被设置 -- 为 +Rails.logger+.
+
+*+action_mail.set_configs+* 通过使用 +config.action_mailer+ 里的设置来建立 Action Mailer. 而这个初始化程序是将方法名作为 setters +send+ 给 +ActionMailer::Base+ 并通过它传值来使用 +config.action_mailer+ 的设置的。
+
+*+action_mail.compile_config_methods+* 为指定的配置设置方法初始化，所以它们能被更快的访问。
+
+*+set_load_path+* 这个初始化程序在 +bootstrap_hook+ 之前运行。它将 +vendor+, +lib+，所有在 +app+ 路径下的目录和任何在 +config.load_paths+ 里指定的路径添加到 +$LOAD_PATH+里
+
+*+set_autoload_paths+* 这个初始化程序在 +bootstrap_hook+ 之前运行。 将 +app+ 下所有的目录和任何在 +config.autoload_paths+ 指定的目录添加到 +ActiveSupport::Denpendencies.autoload_paths+里。
+
+*+add_routing_paths+* 加载 (默认) 所有 +config/routes.rb+ (在应用程序和 railties, 包括 engines 里的) 并为应用程序建立路由。
+
+*+add_locales+* 添加 +config/locales+ 里的所有文件(来自应用程序，railties 和 engines) 到 +I18n.load_path+ 里，准备好这些文件中的翻译。
+
+*+add_view_paths+* 添加应用程序，railties 和 engines 里的 +app/views+, 所以应用程序可以在这些路径里寻找视图文件。
+
+*+load_environment_config+* 为当前环境加载加载 +config/environments+ 文件。
+
+*+append_asset_paths+* 寻找应用程序和所有附加的 railties 的资源路径，还有保存 +config.static_asset_paths+ 中可用的目录列表。
+
+*+prepend_helpers_path+* 添加用程序的 helpers 的查询路径 添加来自应用程序，railties 和 engines 的路径，应用程序在这些路径中寻找 helpers。
 
