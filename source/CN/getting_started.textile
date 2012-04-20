@@ -274,7 +274,9 @@ h3. 创建一个资源
 
 在本示例中的blog应用程序，你可以使用scaffolded产生post资源：它表现为一个简单的blog posting。要完成这些，在终端输入如下命令：
 
-
+<ruby>
+rails generate scaffold Post name:string title:string content:text
+</ruby>
 
 创建器将会在应用程序中的一些文件夹中生成一些文件，并且还会编辑 config/routes.rb。下面这些产生的文件的大概说明：
 
