@@ -1,8 +1,8 @@
 h2. 配置 Rails 应用程序程序
 
-这个指南覆盖了Rails应用程序可以使用的配置和初始化设置.通过浏览这个指南,你将能:
+这个指南覆盖了 Rails 应用程序可以使用的配置和初始化设置.通过浏览这个指南,你将能:
 
-* 控制Rails应用程序的行为
+* 控制 Rails 应用程序的行为
 * 添加在程序启动时运行的代码
 
 endprologue.
@@ -22,7 +22,7 @@ h3. 先于Rails运行代码
 
 h3. 配置 Rails 组件
 
-一般而言, 配置Rails的工作其实就是配置Rails的组件, 就像配置Rails本身一样. 配置文件+config/application.rb+ 和运行环境相关的配置文件(比如 +config/environments/production.br+) 可以让你设定一些你想传递给所有组件的设置.
+一般而言, 配置 Rails 的工作其实就是配置 Rails 的组件, 就像配置 Rails 本身一样. 配置文件+config/application.rb+ 和运行环境相关的配置文件(比如 +config/environments/production.br+) 可以让你设定一些你想传递给所有组件的设置.
 
 例如, 缺省的 +config/application.rb+ 文件包括这个设置:
 
@@ -36,7 +36,7 @@ config.filter_parameters += [:password]
 config.active_record.observers = [:hotel_observer, :review_observer]
 </ruby>
 
-Rails 将会使用那些特定的设置来配置Active Record.
+Rails 将会使用那些特定的设置来配置 Active Record.
 
 h4. 一般的Rails配置
 
@@ -62,7 +62,7 @@ config.asset_path = proc { |path| "/blog/public#{path}" }
 
 注意. 如果开启了资源通道(asset pipeline), +config.asset_path+ 配置会被忽略. 默认是开启资源通道的.
 
-* +config.autoload_once_paths+ 接受一个路径数组, 这些是Rails将会自动加载的常量的路径,所以这些常量就不会在每次请求时都被清除. 如果+config.cache_classes+是false, 这个配置将会无效, 这在开发环境下是默认的. 另外, 所有的自动加载都是发生一次. 数组所有的元素必须同时在 +autoload_paths+里.默认是空数据.
+* +config.autoload_once_paths+ 接受一个路径数组, 这些是Rails将会自动加载的常量的路径,所以这些常量就不会在每次请求时都被清除. 如果+config.cache_classes+是 false , 这个配置将会无效, 这在开发环境下是默认的. 另外, 所有的自动加载都是发生一次. 数组所有的元素必须同时在 +autoload_paths+里.默认是空数据.
 
 * +config.autoload_paths+ 接受一个路径数组, 这些是Rails将会自动加载的常量的路径. 默认所有+app+目录下的所有目录.
 
@@ -102,15 +102,15 @@ config.asset_path = proc { |path| "/blog/public#{path}" }
 
 * +config.secret_token+ 用于指定一个键, 这让应用程序的会话会对比已有的密钥被验证以防止干扰.应用程序会让+config/initializers/secret_token.rb+文件里的+config.secret_token+被初始化并产生一个随机键.
 
-* +config.serve_static_assets+ 配置 Rails 自己处理静态资源. 默认为 true, 但在生产环境是被关闭的,因为有服务器软件(e.g. Nginx 或 Apache)用于运行应用程序, 它们会处理静态资源. 不像默认的设置,将其设置为 true, 生产模式下会使用WEBrick运行(完全不建议!)或者测试你的应用. 不然你将不能使用页面缓存,还有对存在于公共目录下文件的请求都会被转给Rails应用.
+* +config.serve_static_assets+ 配置 Rails 自己处理静态资源. 默认为 true, 但在生产环境是被关闭的,因为有服务器软件(e.g. Nginx 或 Apache)用于运行应用程序, 它们会处理静态资源. 不像默认的设置,将其设置为 true, 生产模式下会使用 WEBrick 运行(完全不建议!)或者测试你的应用. 不然你将不能使用页面缓存,还有对存在于公共目录下文件的请求都会被转给 Rails 应用.
 
-* +config.session_store+ 通常在 +config/initializers/session_store.rb+ 里设置并指定使用什么类来存储会话. 可能的值会是默认的+:cookie_store+, +:mem_cache_store+, 或 +:disabled+. 最后一个告诉 RAils 不处理会话. 自定义会话存储也可以指定:
+* +config.session_store+ 通常在 +config/initializers/session_store.rb+ 里设置并指定使用什么类来存储会话. 可能的值会是默认的+:cookie_store+, +:mem_cache_store+, 或 +:disabled+. 最后一个告诉 Rails 不处理会话. 自定义会话存储也可以指定:
 
 <ruby>
 config.session_store :my_custom_store
 </ruby>
 
-这个自定义存储必须被定义为 +ActionDispatch::Session::MyCustomStore+. 根据这些符号, 它们也可以是实现了某个API的对象, 如 +ActiveRecord::SessionStore+, 这种情况就可以不指定命名域.
+这个自定义存储必须被定义为 +ActionDispatch::Session::MyCustomStore+. 根据这些符号, 它们也可以是实现了某个 API 的对象, 如 +ActiveRecord::SessionStore+, 这种情况就可以不指定命名域.
 
 h4. 配置资源
 
@@ -128,7 +128,7 @@ Rails 3.1, 默认使用 +sprockets+ gem 来管理资源。这个 gem 合并并�
 
 * +config.assets.prefix+ 指定资源目录的前缀，默认是+/assets+.
 
-* +config.assets.digest+ 使资源的名字能使用(带有)MD5指纹。 在+production.rb+默认设置为 true.
+* +config.assets.digest+ 使资源的名字能使用(带有) MD5 指纹。 在+production.rb+默认设置为 true.
 
 * +config.assets.debug+ 不合并压缩资源。在 +development.rb+ 里默认不设置为 false
 
@@ -136,9 +136,9 @@ Rails 3.1, 默认使用 +sprockets+ gem 来管理资源。这个 gem 合并并�
 
 * +config.assets.cache_store+ 指定 Sprockets 要使用的缓存存储. 默认是Rails的文件存储。
 
-* +config.assets.version+ 是一个字符串选项，用于生成MD5哈希值。可以被更改从而强制所有文件都被预编译.
+* +config.assets.version+ 是一个字符串选项，用于生成 MD5 哈希值。可以被更改从而强制所有文件都被预编译.
 
-* +config.assets.compile+ 是一个布尔值，可以用于开启让、 Sprockets 在生产环境的即时执行编译。
+* +config.assets.compile+ 是一个布尔值，可以用于让Sprockets 在生产环境的即时执行编译。
 
 * +config.assets.logger+ 接受一个遵循 Log4r 或者 Ruby 默认 +Logger+ 类接口的日志类.默认和 +config.logger+ 指定的一样。设置 +config.assets.logger+ 为 false, 就可以关闭记录资源处理的日志。
 
@@ -372,4 +372,344 @@ config.action_view.javascript_expansions[:prototype] = ['prototype', 'effects', 
 
 * +cofnig.action_view.embed_authenticity_token_in_remote_forms+ 让你设置具有 +:remote => true+ 属性的表单中是否默认带有+authenticity_token+。默认情况下这个值设置为false, 这意味着远程表单里将不包含 +authenticity_token+，这对你局部缓存表单会很有用。运程表单将通过+meta+标签获得真实性(认证), 所以所以嵌入是必要的，除非你支持没有Javascript的浏览器。在这种情况下，你可以投递 +:authenticity_token => true+ 作为表单参数或者将这个配置设置为 +true+
 
-* +config.action_view.prefix_partial_path_with_controller_namespace+ 
+#FIXME
+* +config.action_view.prefix_partial_path_with_controller_namespace+ 用来指定控制器是否从模板的子目录中根据控制器的命名空间搜索partial模板。例如，考虑某个命名为 +Admin::PostsController+ 的控制器，它渲染这个模板:
+
+<erb>
+<%= render @post %>
+</erb>
+
+默认设置为 +true+, 这样就会使用位于 +/admin/posts/_post.erb+ 的局部视图。将其值设置为 +false+ 则会渲染 +/posts/_post.erb+，这和没有命名域的控制器的渲染动作是一样的。
+
+h4. 配置 Action Mailer
+
++config.action_mailer+ 有这么些可用的设置：
+
+* +config.action_mailer.logger+ 接受一个日志类，这个类要遵循 Log4r 或者 Ruby 默认日志类的接口。这个类会被用于记录来自 Action Mailer 的信息。设置为 +nil+ 关闭日志。
+
+* +config.action_mailer.smtp_settings+ 允许详细配置 +:smtp+ 传送方法。它接受一个选项哈希数组，可以包括一下任何选项：
+** +:address+ - 允许你使用远程的邮件服务器。只要改变默认设置的"localhost"值就可以了。
+** +:port+ - 万一你的邮件服务器不是运行在 25 端口的话，改变这个它。
+** +:domain+ - 如果你需要指定一个 HELO 域名，在这里设置。
+** +:user_name+ - 如果你的邮件服务器需要认证，在这个设置里填入用户名。
+** +:password+ - 如果你的邮件服务器需要认证，在这里设置密码。
+** +:authentication+ 如果你的邮件服务器需要认证，你需要在这指定认证的类型。这是一个 symbol 值，可填入 +:plain+, +:login+, +:cram_md5+ 其中一个。
+
+* +config.action_mailer.sendmail_settings+ 允许详细配置 +sendmail+ 发送方法。它接受一个包含选项的哈希数组，包括以下任何选项：
+** +:location+ - sendmail 执行文件的位置. 默认为 +/usr/sbin/sendmail+。
+** +:arguments+ - (sendmail)命令行参数。默认为 +-i -t+。
+
+* +config.action_mailer.raise_delivery_errors+ 设定当邮件发送失败时是否抛出异常。默认为 true.
+
+* +config.action_mailer.delivery_method+ 指定发送方法。可用的值为 +:smtp+ (默认), +:sendmail+, 和 +:test+。
+
+* +config.action_mailer.perform_deliveries+ 设定邮件是否会被发送，默认为 true. 可以将其设置为 false 以方便测试。
+
+* +config.action_mailer.default+ 配置 Action Mailer 的默认值。这些默认值为:
+<ruby>
+:mime_version => "1.0",
+:charset      => "UTF-8",
+:content_type => "text/plain",
+:parts_order  => [ "text/plain", "text/enriched", "text/html" ]
+</ruby>
+
+* +config.action_mailer.observers+ 登记观察者，在邮件被发送时会作出提醒。
+<ruby>
+config.action_mailer.observers = ["MailObserver"]
+</ruby>
+
+* +config.action_mailer.interceptors+ 登记拦截器，它会在邮件发送前被调用。
+<ruby>
+config.action_mailer.interceptors = ["MailInterceptor"]
+</ruby>
+
+h4. 配置 Active Support
+
+Active Support 有如下一些可用配置选项:
+
+* +config.active_support.bare+ 是否让 +active_support/all+ 在 Rails 启动时的加载。默认为 +nil+, 意思是 +active_support/all+ 已经加载了(所以Rails不会再加载)。
+
+* +config.active_support.escape_html_entities_in_json+ 设置在 JSON 序列化中是否剔除 HTML 实体。默认为 +true+.
+
+* +config.active_support.use_standard_json_time_format+ 是否使日期序列化成 ISO 8601 格式。默认为 +false+.
+
+* +ActiveSupport::BufferedLogger.silencer+ 设为false则禁用了对代码块的缄默日志（silence logging）功能(缄默日志使得silence方法可以对指定的代码块屏蔽日志功能或者改变日志的level)。默认值为true。
+
+* +ActiveSupport::Cache::Store.logger+ 设定在缓存存储操作中的日志类。
+
+* +ActiveSupport::Deprecation.behavior+ +config.active_support.deprecation+ 可选的设置器，它能配置 Rails 废弃警告的动作。
+
+* +ActiveSupport::Deprecation.silence+ 接受一个闭包，这个闭包里的所有废弃警告都会被忽略。
+
+* +ActiveSupport::Deprecation.slienced+ 设置是否打印出废弃警告。
+
+* +ActiveSupport::Logger.silencer+ 设置为 +false+ 取消闭包中缄默日志的功能。默认为 +true+
+
+h4. 配置数据库
+
+几乎所有 Rails 应用程序都会和数据库交互。 数据库在一个叫做 +config/database.yml+ 的文件里被指定的。 如果你在一个新的 Rails 应用里打开这个文件，你会看到一个默认数据库配置默认为 SQLite3。 该文件包含三个部分，分别是不同的 Rails 运行环境：
+
+* +development+ 环境用于你的开发或本地电脑,所以你可以手动控制应用程序。
+* +test+ 环境用于运行自动测试的时候。
+* +production+ 环境用于部署应用程序给全世界用的时候。
+
+TIP: 你不必手动更新数据库配置文件。如果你注意到应用程序生成器的选项, 你会发现其中一个选项为 <tt>--database</tt>. 这个选项允许你选择一个适配器，这个适配器可以是最常用的关系型数据库。你甚至可以重复运行生成器: <tt>cd .. && rails new blog --database=mysql</tt>. 如果你确认重写 +config/database.yml+ 文件， 你的应用程序将被配置使用 MySQL 而不是 SQLite. 一般数据库连接的详细例子会在下面说到。
+
+h5. 配置 SQLite3 数据库
+
+Rails 内建支持 "SQLite3":http://www.sqlite.org, SQLite3 是一个轻量型，不需要服务器的数据库应用程序。在一个繁忙的生产环境中应该会使其过载，但在开发和测试环境会运作的很好。创建一个新项目的时候，Rails 会默认使用 SQLite 数据库，但你可以随后自行修改.
+
+下面这部分是默认配置文件中开发环境的连接信息:
+
+<yaml>
+development:
+  adapter: sqlite3
+  database: db/development.sqlite3
+  pool: 5
+  timeout: 5000
+</yaml>
+
+NOTE: Rails 默认使用 SQLite3 数据库存储数据是因为它是一个不需要配置就能工作的数据库。Rails 也支持 MySQL 和 PostgreSQL, 并且有许多其它数据库的插件。如果你在生产环境中使用数据库，Rails一般都能为其提供一个适配器.
+
+h5. 配置 MySQL 数据库
+
+如果你选择 MySQL 而不是已有的 SQLite3 数据库，+config/database.yml+ 将会有些不同。下面是开发环境部分：
+
+<yaml>
+development:
+  adapter: mysql2
+  encoding: utf8
+  database: blog_development
+  pool: 5
+  username: root
+  password:
+  socket: /tmp/mysql.sock
+</yaml>
+
+如果你的开发电脑安装的 MySQL 有一个没有密码的 root 用户，你可以使用这个配置。不然，在开发环境部分的更改相应的 username 和 password。
+
+h5. 配置 PostgreSQL 数据库
+
+如果你选择 PostgreSQL，+config/database.yml+ 要被自定义使用 PostgreSQL 数据库：
+
+<yaml>
+development:
+  adapter: postgresql
+  encoding: unicode
+  database: blog_development
+  pool: 5
+  username: blog
+  password:
+</yaml>
+
+h5. 为 JRuby 平台配置 SQLite3
+
+如果你选择使用 SQLite3 并且使用的是JRuby, +config/database.yml+ 将会有一点不同。这是开发环境部分：
+
+<yaml>
+development:
+  adapter: jdbcsqlite3
+  database: db/development.sqlite3
+</yaml>
+
+h5. 为 JRuby 平台配置 MySQL
+
+如果你选择使用 MySQL 并且使用的是JRuby, +config/database.yml+ 将会有一点不同。这是开发环境部分：
+
+<yaml>
+development:
+  adapter: jdbcmysql
+  database: blog_development
+  username: root
+  password:
+</yaml>
+
+h5. 为 JRuby 平台配置 PostgreSQL
+
+如果你选择使用 PostgreSQL 并且使用的是JRuby, +config/database.yml+ 将会有一点不同。这是开发环境部分：
+
+<yaml>
+development:
+  adapter: jdbcpostgresql
+  encoding: unicode
+  database: blog_development
+  username: blog
+  password:
+</yaml>
+
+修改 +development+ 部分相应的用户名和密码。
+
+h3. Rails 环境设置
+
+Rails 的某些部分也可以通过设置环境变量，进行外部赋值来配置。以下环境变量会被Rails的各部分识别:
+
+* +ENV["RAILS_ENV"] 定义了 Rails 的运行环境 (生产，开发，测试等等)。
+* +ENV["RAILS_RELATIVE_URL_ROOT"] 当你的应用程序部署到某个子目录下时，用它帮助路由(routing)代码识别 URLs。
+* +ENV["RAILS_ASSET_ID"] 将重写默认的 cache-busting 时间戳章，这个时间戳章是Rails 为可下载资源生成的.
+* +ENV["RAILS_CACHE_ID"]+ 和 +ENV["RAILS_APP_VERSION"]+ 用于生成 Rails 缓存代码的扩张缓存键。这可以让同一个应用程序有多个独立分开的缓存。
+
+
+h3. 使用 Initialiezer 文件
+
+加载完框架和应用程序的所有 gems 之后，Rails 会接着去加载 initializers. 一个 initializer 是存放在 +config/initializers+ 里任何一个的 Ruby 文件。你可以使用 initializers 容纳所有框架和 gems 加载完之后的要使用的配置设置，例如为这些部分配置设置的选项。
+
+NOTE: 你可以使用子文件夹来组织你的 initializers， 因为 Rails 会纵向搜索整个 initializers 文件夹。
+
+TIPS: 如果你的 initialziers 里有一组依赖，你可以根据名字控制加载循序。例如, +01_critical.rb+ 将会先于 +01_normal.rb+ 被加载。
+
+h3. 初始化事件
+
+Rails 有 5 种初始化事件, 这些事件可以被挂上钩子(列出了它们的运行顺序)
+
+* +before_configuration+: 这个和继承了 +Rails::Application+ 的应用程序常量同时运行。+config+ 回调会在这发生之前被运行。
+
+* +before_initialize+: 这个在应用程序的初始化过程之前立即运行。应用程序的初始化过程在接近 Rails 整个初始化过程的最开始出现并带有 +:bootstrap_hook+ 初始化程序。
+
+* +to_prepare+: 在所有的 initializers 和 Railties 之后运行(包括应用程序自身)，但在即时加载(eager loading)和中间件堆创建之前运行。最重要的是，在+development+环境中，会在所有的请求上运行。而在 +production+ 和 +test+ 环境只会运行一次(启动的期间)。
+
+* +before_eager_load+: 在即时加载(eager loading)发生之前立即运行，这是_生产_ 环境的默认行为，但在_开发_环境则不是。
+
+* +after_initialize+: 应用程序加载后立即运行，但在应用程序的 initializers 之前运行。
+
+在 +Rails::Application+, +Rails::Railtie+ 或者 +Rails::Engine+ 的子类里使用闭包语法, 可以为这些事件定义钩子:
+
+<ruby>
+module YourApp
+  class Application < Rails::Application
+    config.before_initialize do
+      # initialization code goes here
+    end
+  end
+end
+</ruby>
+
+可选的，你也可以通过 +Rails.application+ 对象的 +config+ 方法这么做。
+
+<ruby>
+Rails.application.config.before_initialize do
+  # initialization code goes here
+end
+</ruby>
+
+警告: 应用程序的一些部分，特别是 观察者(observers) 和 路由(routing) 在 +after_initialize+ 闭包被调用之时都还没有启动。
+
+h4. +Rails::Railtie#initializer+
+
+Rails 有数个初始化程序在(应用程序)启动的时候运行，它们都使用 +Rails::Railtie+ 的 +initializer+ 方法定义。下面是 Active Suppport 的 +initialize_whiny_nils+ 初始化程序的例子:
+
+<ruby>
+initializer "active_support.initialize_whiny_nils" do |app|
+  require 'active_support/whiny_nil' if app.config.whiny_nils
+end
+</ruby>
+
++initializer+ 方法接受三个参数，第一个初始化程序的名字，第二个是可选项的哈希数组(这里没有显示)和第三个是一个闭包。 选项哈希数组里的 +before+ 键可以指定为指定哪个初始化程序必须在这个初始化程序之前运行，而 +after+ 键则指定哪个初始化程序在这个初始化程序_之后_运行。
+
+通过 +initializer+ 方法定义的初始化程序会按照它们被定义的顺序运行，除了那个使用 +:before+ 或者 +:after+ 方法的。
+
+警告: 你应该将你的初始化程序放在其它初始化程序之前或者之后，如果有逻辑关系。比如说有 4 个初始化程序， "one" 到 "four"(按照这个顺序定义)，并且你定义"four"在"four"_之前_ 但在"three"_之后_运行。像这种无逻辑的定义Rails将不能确定它们的顺序。
+
++initializer+ 方法的闭包参数是应用程序自身的对象，所以我们能通过它使用 +config+ 方法访问配置，就像在例子里做的那样。
+
+因为 +Rails::Application+ 继承了 +Rails::Railtie+ (非直接)，你可以使用 +config/application.rb+ 里的 +initializer+ 方法去为应用程序定义初始化程序.
+
+h4. Initializers
+
+下面是一列所有能在 Rails 中找到的初始化程序，并按它们被定义的顺序排列 (也是它们运行的顺序，除非有其它设定)
+
+*+load_environment_hook+*
+作为一个占位器，所以可以让 +:load_environment_config+ 可以被定义在这之前运行。
+
+*+load_active_support+* 导入 +active_support/dependencies+ 为 Active Support 建立了基础。如果 +config.active_support.bare+ 不可确定, 也可以导入 +active_support/all+，这是默认的。
+
+*+preload_frameworks+* 如果 +config.preload_frameworks+ 为 +true+ 或者 "可确定性的"，那么将自动地加载所有 Rails 会自动加载的依赖。一般这个配置选项是关闭的。在 Rails 里，当内部的类会第一次被引用的时候才会自动加载。+:preload_frameworks+ 在初始化的时候就会一次过加载完它们。
+
+*+initialize_logger+* 初始化应用程序的日志类(一个 +ActiveSupport::BufferedLogger+ 对象) 并且让它可以通过 +Rails.logger+ 访问. 它会在在这个点之前插入的初始化程序还没有定义 +Rails.logger+ 的时候运行。
+
+*+initialize_cache+* 如果 +Rails.cache+ 还没有设置，则通过引用 +config.cache_store+ 的值并将其赋予 +Rails.cache+ 来初始化。如果该对象有 +middleware+ 方法，它的中间件将在中间件堆中被插入到 +Rack::Runtime+ 之前。
+
+*+set_clear_dependencies_hook+* 提供一个 +active_record.set_dispatch_hooks+ 可使用的 hook， 它会那个(set_clear_dependencies)初始化程序之前运行. 那个初始化程序 -- 只有在 +cache_classes+ 设置为 +false+ 的时候运行 -- 使用 +ActionDispatch::Callbacks.after+ 去除在请求中就已经被引用并来自对象空间的常量(依赖)，所以它们会在后续的请求中被重新加载。
+
+*+initialize_dependency_mechanism+* 如果 +cofnig.cache_classes+ 为 true, 配置 +ActiveSupport::Dependencies.mechanism+ 去 +require+ 依赖而不是 +load+ 它们。
+
+*+bootstrap_hook+* 运行所有配置了的 +before_initialize+ 闭包。
+
+*+i18n.callbacks+* 在开发环境中，建立一个 +to_prepare+ 回调, 如果任何一个本地化文件从最好一次请求之后有更改, 这个回调将会调用 +I18n.reload!+。
+
+*+active_support.initialize_whiny_nils+* 在 +config.whiny_nils+ 为 true 的情况下引入 +active_support/whiny_nil+ 这个文件会输出如下错误：
+
+<plain>
+  Called id for nil, which would mistakenly be 4 -- if you really wanted the id of nil, use object_id
+</plain>
+
+和:
+
+<plain>
+You have a nil object when you didn't expect it!
+You might have expected an instance of Array.
+The error occurred while evaluating nil.each
+</plain>
+
+*+active_support.deprecation_behaivor+* 为(运行)环境建立废弃报告，默认开发环境为 +:log+， 生产环境为 +:notify+ 和 测试环境的 +:stderr+。 如果 +config.active_support.deprecation+ 没有设置值，那么这个初始化程序就会提示用户去 +config/environments+ 里与当前环境对应的文件修改该行(config.active_support.deprecation)。那个值可以是一个数组。
+
+*+active_support.initialize_time_zone+* 根据 +config.tiem_zone+ 设置为应用程序设置默认的时区，默认为 "UTC".
+
+*+action_dispatch.configure+* 配置 +ActionDispatch::Http::URL.tld_length+ 的值为 +config.action_dispatch.tpl_length+ 的值。
+
+*+action_view.cache_asset_ids+* 当 Active Support 加载时，设置 +ActionView::Helpers::AssetTagHelper::AssetPatchs.cache_asset_ids+ 为 +false+, 但前提是 +config.cache_classes+ 也有加载。
+
+*+active_view.javascript_expansions+* 登记由 +config.active_view.javascript_expansions+ 和 +config.action_view.stylesheet_expansions+ 建立起来的扩展名，这个扩展名可以被 Action View 识别并且在试图中使用.
+
+*+action_controller.logger+* 设置 +ActionController::Base.logger+ -- 如果这个还没有设置 -- 为 +Rails.logger+。
+
+*+action_controller.initialize_framework_caches+* 设置 +ActionController::Base.cache_store+ -- 如果它还没有被设置 -- 为 +Rails.cache+.
+
+*+action_controller.set_configs+* 通过使用 +config.action_controller+ 里的设置来建立 Action Controller. 而这个初始化程序是将方法名作为 setters +send+ 给 +ActionController::Base+ 并通过它传值来使用 +config.action_controller+ 的设置的。
+
+*+action_controller.compile_config_methods+* 为指定的配置设置方法初始化，所以它们能被更快的访问。
+
+*+active_record.initialize_timezone+* 设置 +ActiveRecord::Base.time_zone.aware_attributes+ 为 true, 就好像设置 +ActiveRecord::Base.default_timezone+ 为 UTC. 当属性从数据库被读取的时候，它们会被转换成由 +Time.zone+ 指定的时区.
+
+*+active_record.logger+* 设置 +ActiveRecord::Base.logger+ -- 如果它还没有设置 -- 为 +Rails.logger+。
+
+*+active_record.set_configs+* 通过使用 +config.active_record+ 里的设置来建立 Action Record. 而这个初始化程序是将方法名作为 setters +send+ 给 +ActionRecord::Base+ 并通过它传值来使用 +config.active_record+ 的设置的。
+
+*+active_record.initialize_database+* 从 +config/database.yml+ 加载数据库配置(默认)并为当前环境简历连接。
+
+*+active_record.log_runtime+* 引入 +ActiveRecord::Railties::ControllerRuntime+，它会负责为请求闭包向日志器报告 Active Record 调用所使用的时间.(译者注: 就是说 +ActiveRecord::Railties::ControllerRuntime+ 会记录一个请求发生时调用 Active Record 所占用的时间到日志里)
+
+*+active_record.set_dispatch_hooks+* 如果 +config.cache_classes+ 设置为 +false+ 的话，重置所有可重载的数据库连接。
+
+*+action_mailer.logger+* 设置 +ActionMailer::Base.logger+ -- 如果它还没又被设置 -- 为 +Rails.logger+.
+
+*+action_mail.set_configs+* 通过使用 +config.action_mailer+ 里的设置来建立 Action Mailer. 而这个初始化程序是将方法名作为 setters +send+ 给 +ActionMailer::Base+ 并通过它传值来使用 +config.action_mailer+ 的设置的。
+
+*+action_mail.compile_config_methods+* 为指定的配置设置方法初始化，所以它们能被更快的访问。
+
+*+set_load_path+* 这个初始化程序在 +bootstrap_hook+ 之前运行。它将 +vendor+, +lib+，所有在 +app+ 路径下的目录和任何在 +config.load_paths+ 里指定的路径添加到 +$LOAD_PATH+里
+
+*+set_autoload_paths+* 这个初始化程序在 +bootstrap_hook+ 之前运行。 将 +app+ 下所有的目录和任何在 +config.autoload_paths+ 指定的目录添加到 +ActiveSupport::Denpendencies.autoload_paths+里。
+
+*+add_routing_paths+* 加载 (默认) 所有 +config/routes.rb+ (在应用程序和 railties, 包括 engines 里的) 并为应用程序建立路由。
+
+*+add_locales+* 添加 +config/locales+ 里的所有文件(来自应用程序，railties 和 engines) 到 +I18n.load_path+ 里，准备好这些文件中的翻译。
+
+*+add_view_paths+* 添加应用程序，railties 和 engines 里的 +app/views+, 所以应用程序可以在这些路径里寻找视图文件。
+
+*+load_environment_config+* 为当前环境加载加载 +config/environments+ 文件。
+
+*+append_asset_paths+* 寻找应用程序和所有附加的 railties 的资源路径，还有保存 +config.static_asset_paths+ 中可用的目录列表。
+
+*+prepend_helpers_path+* 添加用程序的 helpers 的查询路径 添加来自应用程序，railties 和 engines 的路径，应用程序在这些路径中寻找 helpers。
+
+*+load_config_initializers+* 加载应用程序，railties 和 engines +config/initializers+ 目录下的所有 Ruby 文件。这些文件用于容纳在框架加载完毕后被使用的配置设置。
+
+*+engines_blanik_point+* 提供初始化过程中的某个点来放置 hook， 然后你就可以让任何东西在 engines 之前被加载。在这个点之后，才轮到所有的 railtie 和 engine 运行。
+
+*+add_generator_templates+* 搜寻位于 +lib/templates+ 为生成器所用的模板，这用于应用程序，所有的 railtie 和 engine 还有那些添加到 +config.gengrators.templates+ 设置里的模板。这让所有这些模板都可被所有的生成器引用。
+
+*+ensure_autoload_once_paths_as_subset+* 确保 +config.autoload_once_paths+ 只包含来自 +config.autoload_paths+ 的路径。如果它包含其它路径，那么将会抛出一个异常。
+
+*+add_to_prepare_blocks+* 在应用程序，一个railtie 或者 engine 里的所有 +config.to_prepare+ 调用的闭包会被添加到 +to_prepare+ 所有 Action Dispatch 回调中去。这些回调在开发环境中的每个请求发生时都会运行，或者在生产环境中在只有在第一次请求发生时运行。
+
+*+add_builtin_route+* 如果应用程序运行在开发环境下，那么它会将 +rails/info

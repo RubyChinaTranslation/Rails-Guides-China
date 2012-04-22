@@ -1,9 +1,9 @@
 #coding: utf-8
 - 
-  name: 起步
+  name: 起步(Start Here) 
   documents:
     -
-      name: 与Rails的第一次接触 
+      name: Rails 初上手指南
       url: getting_started.html
       contributor: jhjguxin
       description: 关于安装和建立一个全新的 Rails 程序你所需要知道的一切.
@@ -14,9 +14,8 @@
     -
       name: Rails 数据迁移
       url: migrations.html 
-      work_in_progress: true
       contributor: zernel
-      description: This guide covers how you can use Active Record migrations to alter your database in a structured and organized manner.
+      description: 这篇文章将会教会你如何使用 Active Record 来进行数据迁移，如何用结构化的语言来组织、更新你的数据库。
     -
       name: Active Record 校验与回调
       url: active_record_validations_callbacks.html
@@ -24,8 +23,10 @@
       contributor: reyesyang
       description: This guide covers how you can use Active Record validations and callbacks.
     -
-      name: Active Record Associations
+      name: Active Record 数据表关联
       url: association_basics.html
+      work_in_progress: true
+      contributor: sanatir
       description: This guide covers all the associations provided by Active Record.
     -
       name: Active Record Query Interface
@@ -50,7 +51,7 @@
       url: action_controller_overview.html
       description: This guide covers how controllers work and how they fit into the request cycle in your application. It includes sessions, filters, and cookies, data streaming, and dealing with exceptions raised by a request, among other topics.
     - 
-      name: 深出浅入说路由 
+      name: 深入浅出说路由 
       url: routing.html
       work_in_progress: true
       contributor: Tassandar	
@@ -88,7 +89,7 @@
       contributor: Tassandar	
       description: 这份文章介绍了几种对一个 Ruby on Rails 应用进行性能测试的方法。
     - 
-      name: Configuring Rails Applications
+      name: Rails 应用配置指南
       url: configuring.html
       work_in_progress: true
       contributor: ichord
@@ -106,9 +107,11 @@
       url: asset_pipeline.html
       description: This guide documents the asset pipeline.
     - 
-      name: Getting Started with Engines
+      name: Engine 入门
       url: engines.html
-      description: This guide explains how to write a mountable engine.     
+      work_in_progress: true
+      contributor: jhjguxin
+      description: 这是一个解释如何编写一个可挂载的 engine 的教程。
     - 
       name: The Rails Initialization Process
       url: initialization.html
