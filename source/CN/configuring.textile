@@ -712,4 +712,32 @@ The error occurred while evaluating nil.each
 
 *+add_to_prepare_blocks+* 在应用程序，一个railtie 或者 engine 里的所有 +config.to_prepare+ 调用的闭包会被添加到 +to_prepare+ 所有 Action Dispatch 回调中去。这些回调在开发环境中的每个请求发生时都会运行，或者在生产环境中在只有在第一次请求发生时运行。
 
-*+add_builtin_route+* 如果应用程序运行在开发环境下，那么它会将 +rails/info
+*+add_builtin_route+* 如果应用程序运行在开发环境下，那么它会将 +rails/info/properties+ 的路由添加到应用程序的路由中去. 一般的Rails应用里,这个路由提供了诸如 Rails 和 Ruby 的版本之类的信息显示于 +public/index.html+.
+
+*+build_middleware_stack+* 建造应用程序的中间件堆栈, 返回一个又 +call+ 方法的对象,这个方法带有请求的一个 Rack 环境对象.
+
+*+eager_load!+* 如果 +config.cache_classes+ 为 true, 运行 +config.before_eager_load+ hook 然后调用 +eager_load!+, 它将会加载 +config.eager_load_paths+ 里的所有 Ruby 文件.
+
+*+finisher_hook+* 为应用程序初始化过程完成后提供一个 hook, 和为应用程序, 所有的 railtie 和 engine 运行所有的 +config.after_initialize+ 闭包一样.
+
+*+set_routes_reloader+* 配置 Action Dispatch 通过使用 +ActionDispatch::Callbacks.to_prepare+ 重新加载所有的路由文件.
+
+*+disable_dependency_loading+* 如果 +config.cache_classes+ 设置为 true 并且 +config.dependency_loading+ 设置为 false, 那么取消自动加载依赖.
+
+h3. 数据库连接池
+
+Active Record 数据库连接是由 +ActiveRecord::ConnectionAdapters::ConnectionPool+ 来管理的, 它会确保多个线程能同时访问有限的数据库连接. 这个限制默认是 5 个,可以在 +database.yml+ 里配置.
+
+<ruby>
+development:
+  adapter: sqlite3
+  database: db/development.sqlite3
+  pool: 5
+  timeout: 5000
+</ruby>
+
+因为连接池是默认由 ActiveRecord 内部处理的, 所有的应用程序服务器(Thin, mongrel, Unicorn 等等) 应该表现得一样. 最初, 数据库连接池是空的而且将会创建附加的连接作为它们增长的需求,知道它达到连接池的限制.
+
+所有的请求在第一次需要访问数据库的时候都会签出一个连接, 随后将会将连接签入回去. 在请求结束的时候,也就意味着该附加连连接槽应该可以给队列中的下一个请求使用.
+
+NOTE. 如果你启用了 +Rails.threadsafe!+ 模式, 那么就有机会又数个线程同时访问多个连接. 所有根据你当前的请求量, 有多个线程竞争数量有限的连接也是没问题的.
