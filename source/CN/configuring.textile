@@ -702,3 +702,14 @@ The error occurred while evaluating nil.each
 
 *+prepend_helpers_path+* 添加用程序的 helpers 的查询路径 添加来自应用程序，railties 和 engines 的路径，应用程序在这些路径中寻找 helpers。
 
+*+load_config_initializers+* 加载应用程序，railties 和 engines +config/initializers+ 目录下的所有 Ruby 文件。这些文件用于容纳在框架加载完毕后被使用的配置设置。
+
+*+engines_blanik_point+* 提供初始化过程中的某个点来放置 hook， 然后你就可以让任何东西在 engines 之前被加载。在这个点之后，才轮到所有的 railtie 和 engine 运行。
+
+*+add_generator_templates+* 搜寻位于 +lib/templates+ 为生成器所用的模板，这用于应用程序，所有的 railtie 和 engine 还有那些添加到 +config.gengrators.templates+ 设置里的模板。这让所有这些模板都可被所有的生成器引用。
+
+*+ensure_autoload_once_paths_as_subset+* 确保 +config.autoload_once_paths+ 只包含来自 +config.autoload_paths+ 的路径。如果它包含其它路径，那么将会抛出一个异常。
+
+*+add_to_prepare_blocks+* 在应用程序，一个railtie 或者 engine 里的所有 +config.to_prepare+ 调用的闭包会被添加到 +to_prepare+ 所有 Action Dispatch 回调中去。这些回调在开发环境中的每个请求发生时都会运行，或者在生产环境中在只有在第一次请求发生时运行。
+
+*+add_builtin_route+* 如果应用程序运行在开发环境下，那么它会将 +rails/info
