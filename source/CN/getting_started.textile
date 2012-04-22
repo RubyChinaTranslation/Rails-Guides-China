@@ -1,4 +1,4 @@
-h2. 与 Rails 的第一次接触
+h2. Rails 初上手指南
 
 本指导手册涉及了使用和运行 Ruby on Rails，通过阅读本指导，你会了解到：
 
@@ -9,7 +9,7 @@ h2. 与 Rails 的第一次接触
 
 endprologue.
 
-警告. 这个指导手册适用与 Rails 3.1，有些代码在 Rails 早期版本可能无法正常运行。
+WARNING.  这个指导手册适用与 Rails 3.1，有些代码在 Rails 早期版本可能无法正常运行。
 
 h3. 手册假设
 
@@ -32,7 +32,7 @@ Rails 是一个基于 Ruby 程序语言的 web 程序框架。如果你没有预
 
 h3. Rails 是什么
 
-提示: 这个章节开始就 Rails 框架的背景和来源做一个详细的描述。你可以安全的跳过这个章节并且在以后再回过头来看它。第三节你会开始你的的 Rails 之旅上的第一个 Rails 应用程序。
+TIP: 这个章节开始就 Rails 框架的背景和来源做一个详细的描述。你可以安全的跳过这个章节并且在以后再回过头来看它。第三节你会开始你的的 Rails 之旅上的第一个 Rails 应用程序。
 
 Rails是一个使用 Ruby 语言编写的的 web 框架应用程序。其设计目的是为了让每个着手开始编写 web 应用程序的开发人员更加容易的完成工作。它允许你写最少的代码完成超过其他任何语言和框架所完成的工作。经验丰富的 Rails 开发人员还告诉我们通过 Rails 使设计 web 应用程序更快乐。
 
@@ -274,7 +274,9 @@ h3. 创建一个资源
 
 在本示例中的blog应用程序，你可以使用scaffolded产生post资源：它表现为一个简单的blog posting。要完成这些，在终端输入如下命令：
 
-
+<ruby>
+rails generate scaffold Post name:string title:string content:text
+</ruby>
 
 创建器将会在应用程序中的一些文件夹中生成一些文件，并且还会编辑 config/routes.rb。下面这些产生的文件的大概说明：
 
