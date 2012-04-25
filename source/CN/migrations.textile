@@ -1,16 +1,16 @@
 h2. Rails 数据库迁移(Migrations)
 
 数据库迁移（Migrations）提供了一些便利的方法让你有条理地修改数据库。虽然说直接
-编写SQL也能修改数据库，但是这样你就得通知其他的开发者去执行一样的步骤。另外，你
+编写SQL也能修改数据库，但是这样你不但必须通知其他的开发者去执行一样的步骤，而且你
 也得一直注意下次部署的时候和在正式上线的产品版服务器上面追踪并执行这些操作。
 
-Active Record会自动追踪哪些migrations已经执行过、哪些还没执行。所以，你只要更新
-你本地的代码然后执行+rake db:migrate+，其他的就交给Active Record，它会自己搞懂该
-跑哪些migrations。还有，它也会自动更新+db/schema.rb+文件跟修改后的数据库结构同步。
+Active Record 会自动追踪哪些 Migrations 已经执行过、哪些还没执行。所以，你只要更新
+你本地的代码然后执行 +rake db:migrate+ ，其他的就交给 Active Record ，它会自己搞懂该
+跑哪些 Migrations 。还有，它也会自动更新 +db/schema.rb+ 文件，让它与修改后的数据库结构同步。
 
-有了migrations，你就可以用Ruby来写这些数据库变更。一件很棒的事情是migration是独立
-于数据库系统的（和大多数Active Record的功能一样），也就是说，你不用烦恼各种数据
-库的语法差异，像是+SELECT *+的各种写法之类的。（当然，如果要针对某个特定的数据库
+有了 Migrations ，你就可以用Ruby来写这些数据库变更。一件很棒的事情是 Migration 是独立
+于数据库系统的（和大多数 Active Record 的功能一样），也就是说，你不用烦恼各种数据
+库的语法差异，像是 +SELECT *+ 的各种写法之类的。（当然，如果要针对某个特定的数据库
 系统编写特定的功能的话，你也可以直接编写原始的SQL语句）。例如，你可以在开发阶段
 使用SQLite3，在正式上线阶段则使用MySQL，它会自动处理好两者间的语法细节。
 
@@ -21,10 +21,11 @@ Active Record会自动追踪哪些migrations已经执行过、哪些还没执行
 * 用于操纵migrations的Rake任务
 * Migrations跟数据库纲要文件（+schema.rb+）的关联
 
+endprologue.
 
-h3. 剖析Migration的构造
+h3. 剖析迁移任务的构造
 
-在我们深入介绍migration的细节之前，我们先看下列例子看下我们能怎么写migration:
+在我们深入介绍migration的细节之前，我们先看下列例子，了解我们能怎么写 迁移任务:
 
 <ruby>
 class CreateProducts < ActiveRecord::Migration
@@ -43,15 +44,12 @@ class CreateProducts < ActiveRecord::Migration
 end
 </ruby>
 
-这个migration建立了一张叫+products+的数据库表，这张表中包含一个名为+name+的string
-类型字段和一个名为+description+的text类型字段。一个名为+id+的字段也同时被添加，
-这个字段是默认添加的因而我们不需要另外请求。
+这个迁移任务建立了一张叫 +products+ 的数据库表，这张表中包含一个名为 +name+ 的 string
+类型字段和一个名为 +description+ 的 text 类型字段。与此同时，一个名为 +id+ 的字段也会被添加，这个字段是默认添加，我们不需要另外请求。
 
-另外Active Record所需要的时间戳(timestamp)字段(create_at和update_at)也会被自动
-添加。而要取消这个migration只需简单地把这张表删除掉即可。
+另外 Active Record 所需要的时间戳( timestamp )字段( created_at 和 updated_at )也会被自动添加。而要取消这个任务只需简单地把这张表删除掉即可。
 
-Migrations不仅用于修改数据库架构。你还可以用它来修复数据库中的错误数据或者添加新
-字段。
+数据迁移不仅可以胜任修改数据库架构，你还可以用它来修复数据库中的错误数据或者添加新字段。
 
 <ruby>
 class AddReceiveNewsletterToUsers < ActiveRecord::Migration
@@ -68,13 +66,13 @@ class AddReceiveNewsletterToUsers < ActiveRecord::Migration
 end
 </ruby>
 
-NOTE: 在migrations中使用Models的一些"警告":#using-models-in-your-migrations
+NOTE: 在迁移任务中使用 Models 的一些"警告":#using-models-in-your-migrations
 
-这个migration为+users+表添加了一个+receive_newsletter+字段，并设定新的user创建
-时它的默认值为+false+，对于数据库中已存在的users我们使用User模型来把他们的这个
-标志位设为true。
+这个迁移为 +users+ 表添加了一个 +receive_newsletter+ 字段，并设定新的 user 创建
+时它的默认值为 +false+ ，对于数据库中已存在的 users 我们使用 User 模型来把他们的这个
+标志位设为 true。
 
-Rails 3.1为migrations提供了<tt>change</tt>方法使它变得更精简。这个方法主要用于一
+Rails 3.1 为数据迁移提供了 <tt>change</tt> 方法使它变得更精简。这个方法主要用于一
 些构造性的migrations（例如添加新字段或者新的表），它能知道怎么样迁移你的数据库
 并在你需要回滚的时候恢复回去而并不需要写一个分开的down方法。
 
@@ -93,10 +91,10 @@ end
 
 h4. Migrations也是类
 
-Migration是继承<tt>ActiveRecord::Migration</tt>的一个子类，它实现了两个方法：
-+up+(执行需要的改变)和+down+(恢复所做的改变)
+Migration 是继承 <tt>ActiveRecord::Migration</tt> 的一个子类，它实现了两个方法：
++up+ (执行需要的改变)和 +down+ (恢复所做的改变)
 
-Active Record提供以下独立于数据库的方法，用来执行普通数据定义任务的方法:
+Active Record 提供以下独立于数据库的方法，用来执行普通数据定义任务的方法:
 
 * +add_column+
 * +add_index+
@@ -109,31 +107,31 @@ Active Record提供以下独立于数据库的方法，用来执行普通数据�
 * +remove_index+
 * +rename_column+
 
-如果你需要为你的数据库完成一些特殊的任务（例如创建一个强制的"外键":#active-record-and-referential-integrity ），
-这时候+execute+方法允许你执行任意的SQL语句。一个migration同时也是一个规则的Ruby类，
+如果你需要为你的数据库完成一些特殊的任务（例如强制创建一个 "外键":#7 ），
+这时候 +execute+ 方法允许你执行任意的 SQL 语句。一个migration同时也是一个规则的 Ruby 类，
 因而你不限于使用以上的方法。例如在添加完新字段后你可以编写代码去为数据库中已经
-存在的记录设定这个字段的值(有需要的话利用你的models)。
+存在的记录设定这个字段的值(有需要的话利用你的 Models )。
 
-某些数据库支持变更数据库纲要(schema)的语句的事务(transactions)，例如PostgreSQL
-或SQLite3，它们的migrations就会包含在事务中处理。相反的，若你的数据库系统(如MySQL)
-不支持的话，那么当migration失败了，发到一半的schema，并不会随着事务的取消而自动
+某些数据库支持变更数据库纲要( schema )的语句的事务( transactions )，例如 PostgreSQL
+ 或 SQLite3 ，它们的 migrations 就会包含在事务中处理。相反的，若你的数据库系统(如 MySQL )
+不支持的话，那么当 migration 失败了，发到一半的 schema ，并不会随着事务的取消而自动
 回滚(roll back)。你必须手动挑出这些已经改动的部分。
 
 
 h4. 关于文件名
 
-Migrations是以文件形式存储在+db/migrate+目录中，每一个migration都作为一个文件。
-文件名的格式为+YYYYMMDDHHMMSS_create_products.rb+，文件名前面是一个UTC时间截，
-接下来以下划线连接migration的名称。migration的类名是遵循驼峰式命名格式，它跟
-文件名的后半部分是一样的。例如+20080906120000_create_products.rb+这一个migration
-应该定义了一个名为+CreateProducts+的类，而+20080906120001_add_details_to_products.rb+
-则定义了一个+AddDetailsToProducts+的类。如果你需要修改文件名，你就<em>必须</em>
-修改文件中的类名，不然会报missing class的错误。
+Migrations 是以文件形式存储在 +db/migrate+ 目录中，每一个迁移任务都作为一个文件。
+文件名的格式为 +YYYYMMDDHHMMSS_create_products.rb+ ，文件名前面是一个UTC时间截，
+接下来以下划线连接 migration 的名称。migration 的类名是遵循驼峰式命名格式，它跟
+文件名的后半部分是一样的。例如 +20080906120000_create_products.rb+ 这一个 migration
+应该定义了一个名为 +CreateProducts+ 的类，而 +20080906120001_add_details_to_products.rb+
+则定义了一个+AddDetailsToProducts+的类。如果你需要修改文件名，你就 <em>必须</em>
+ 修改文件中的类名，不然会报 missing class 的错误。
 
-Rails内部在辨别migration的时候只会用到编号（前面的时间截）的部分。在Rails2.1之前
-的版本，migration的编号是从1开始递增的，这样做法，在多人开发时很容易造成编号冲突，
-一旦冲突了就需要将migration回滚(rollback)并重新编号。如果你坚持想要用回原来的这种
-编号结构，可以在+config/application.rb+中加入下面这一行。
+Rails 内部在辨别 migration 的时候只会用到编号（前面的时间截）的部分。在 Rails2.1 之前
+的版本， migration 的编号是从1开始递增的，这样做法，在多人开发时很容易造成编号冲突，
+一旦冲突了就需要将 migration 回滚(rollback)并重新编号。如果你坚持想要用回原来的这种
+编号结构，可以在 +config/application.rb+ 中加入下面这一行：
 
 <ruby>
 config.active_record.timestamped_migrations = false
@@ -141,33 +139,32 @@ config.active_record.timestamped_migrations = false
 
 通过时间截和记录已执行过哪些migrations的特性，让Rails能够应付多人开发的状况。
 
-举例来说：爱丽丝新增了+20080906120000+和+20080906123000+这两个migration，而鲍勃
-接下来新增了+20080906124500+并执行了它。当艾丽丝完成并提交后，鲍勃同步了最新的
-代码。这时鲍勃执行+rake db:migrate+，虽然鲍勃新增的migraion的时间截比较新，但
+举例来说：爱丽丝新增了 +20080906120000+ 和 +20080906123000+ 这两个 migration ，而鲍勃
+接下来新增了 +20080906124500+ 并执行了它。当艾丽丝完成并提交后，鲍勃同步了最新的
+代码。这时鲍勃执行 +rake db:migrate+，虽然鲍勃新增的 migraion 的时间截比较新，但
 Rails会知道艾丽丝的这两个migration还没执行，它会自动执行对应的方法。
 
 Of course this is no substitution for communication within the team. For
 example, if Alice's migration removed a table that Bob's migration assumed to
 exist, then trouble would certainly strike.
-当然，团队内的沟通是必不可少的。例如爱丽丝的migration移除了鲍勃的migration会用到
+当然，团队内的沟通是必不可少的。例如爱丽丝的 migration 移除了鲍勃的 migration 会用到
 的表，那肯定会出问题的。
 
-h4. 变更 Migrations
+h4.  迁移任务变更
 
-有时你在写migration的时候可能会不小心写错，如果你已经执行了这个migration，那么，
-你就不能单纯地把它修改一下再重新执行一次，Rails会认为这个migration已经执行过了，
-所以执行+rake db:migrate+时不会做任何操作。你应该先把写错的那个migration回滚回来
-（可以执行 +rake db:rollback+），然后修改你的migration再执行+rake db:migrate+去
+有时你在写迁移任务的时候可能会不小心写错，如果你已经执行了这个迁移任务，那么，
+你就不能单纯地把它修改一下再重新执行一次， Rails 会认为这个迁移任务已经执行过了，
+所以执行 +rake db:migrate+ 时不会做任何操作。你应该先把写错的那个迁移任务回滚（可以执行 +rake db:rollback+），然后修改你的migration再执行 +rake db:migrate+ 去
 执行正确的版本。
 
-一般来说，最好不要修改现有的migrations，因为这样做可能会会为你跟你的同事带来很多
-麻烦，特别是这个migration已经在正式上线的服务器上执行过的话。你应该写一个新的
-migration来做数据库变更。如果这个migration还没有进入版本控制（也就是说这些变更还
+一般来说，最好不要修改现有的迁移任务，因为这样做可能会给你跟你的同事带来很多
+麻烦，特别是这个迁移任务已经在正式上线的服务器上执行过的话。你应该写一个新的
+迁移任务来做数据库变更。如果这个迁移任务还没有进入版本控制（也就是说这些变更还
 没有发布出去），那么直接修改还是可以的。
 
 h4. 支持的数据类型
 
-Active Record支持的数据类型包括：
+Active Record 支持的数据类型包括：
 
 * +:binary+
 * +:boolean+
@@ -182,7 +179,7 @@ Active Record支持的数据类型包括：
 * +:time+
 * +:timestamp+
 
-这些类型会自动对应到数据库，例如在MySQL下，+:string+类型会对应到+VARCHAR(255)+。
+这些类型会自动对应到数据库，例如在MySQL下，+:string+ 类型会对应到 +VARCHAR(255)+。
 如果你要建立Active Recore不支持的数据类型，那可以用「non-sexy」语法，比方说：
 
 <ruby>
@@ -193,7 +190,7 @@ end
 
 不过，这样就失去了不同数据库系统之间的通用性。
 
-h3. 创建一个 Migration
+h3. 创建一个迁移任务
 
 h4. 建立一个 Model
 
@@ -205,7 +202,7 @@ Model和 scaffold的generators(生成器)在新建model的时候会自动生成�
 $ rails generate model Product name:string description:text
 </shell>
 
-将会生成的migration如下:
+将会生成的迁移任务如下:
 
 <ruby>
 class CreateProducts < ActiveRecord::Migration
@@ -220,20 +217,20 @@ class CreateProducts < ActiveRecord::Migration
 end
 </ruby>
 
-如果有需要的话你可以追加更多的"名称/类型"字段。默认会生成的migration都会包含
-+t.timestamps+（这个会生成+updated_at+和+created_at+字段，而Active Record会在
+如果有需要的话你可以追加更多的"名称/类型"字段。默认会生成的迁移任务都会包含
++t.timestamps+（这个会生成 +updated_at+ 和 +created_at+ 字段，而 Active Record 会在
 新增数据和更新时自动更新时间）。
 
-h4. 建立一个独立的 Migration
+h4. 建立一个独立的迁移任务
 
-如果你建立migrations不是为了新增model，而是为了其他目的（例如为现在的数据库表添加
-字段），那可以只用migration的生成器：
+如果你建立迁移任务不是为了新增 Model，而是为了其他目的（例如为现在的数据库表添加
+字段），那可以只用迁移任务的生成器：
 
 <shell>
 $ rails generate migration AddPartNumberToProducts
 </shell>
 
-这样会建立一个空白的但已经命名好的migration:
+这样会建立一个空白的但已经命名好的迁移任务:
 
 <ruby>
 class AddPartNumberToProducts < ActiveRecord::Migration
@@ -242,9 +239,8 @@ class AddPartNumberToProducts < ActiveRecord::Migration
 end
 </ruby>
 
-如果migration的文件名命名为"AddXXXToYYY"或"RemoveXXXFromYYY"这类格式，后面再加上
-一串字段名和类型的清单，那么这个migration就会含有对应的+add_column+和+remove_column+
-语句。
+如果迁移任务的文件名命名为 +"AddXXXToYYY"+ 或 +"RemoveXXXFromYYY"+ 这类格式，后面再加上
+一串字段名和类型的清单，那么这个migration就会含有对应的 +add_column+ 和 +remove_column+ 语句。
 
 <shell>
 $ rails generate migration AddPartNumberToProducts part_number:string
@@ -297,19 +293,19 @@ class AddDetailsToProducts < ActiveRecord::Migration
 end
 </ruby>
 
-通常来说，这些自动生成的migration只是起点，我们接下来可以直接修改文件直到我们满意。
+通常来说，这些自动生成的迁移任务只是起点，我们接下来可以直接修改文件直到我们满意。
 
 NOTE: The generated migration file for destructive migrations will still be
 old-style using the +up+ and +down+ methods. This is because Rails needs to know
 the original data types defined when you made the original changes.
 
-h3. 编写一个 Migration
+h3. 编写一个迁移任务
 
 当你建立一个migration文件时，接下来就是我们要做的了。
 
 h4. 建立数据表
 
-一般要建立数据表可以用migration的create_table方法。典型的用法如下：
+一般要建立数据表可以用迁移任务的 +create_table+ 方法。典型的用法如下：
 
 <ruby>
 create_table :products do |t|
@@ -317,7 +313,7 @@ create_table :products do |t|
 end
 </ruby>
 
-这样会建立了一个名为+products+的数据表，里面包含一个名为name的字段（如之前所说，
+这样会建立了一个名为 +products+ 的数据表，里面包含一个名为 +name+ 的字段（如之前所说，
 这里也会自动加上一个+id+字段）。
 
 这段代码块可以让你在数据表中新增字段。新增的的方法有格式，第一种，也是相对传统的
@@ -329,7 +325,7 @@ create_table :products do |t|
 end
 </ruby>
 
-第二种格式，就是所谓的"sexy"写法，把column去掉了，用+string+和+integer+等方法来
+第二种格式，就是所谓的"sexy"写法，把 column 去掉了，用 +string+ 和 +integer+ 等方法来
 建立对应类型的字段。至于在后面添加的参数是一样的。
 
 <ruby>
@@ -338,10 +334,10 @@ create_table :products do |t|
 end
 </ruby>
 
-默认在+create_table+时新增的主键名为+id+，要改主键的名称，你需要加上+:primary_key+
-这个选项（不要忘了更新对应model的格式）。如果你根本就不要主键（例如使用多对多连接
-HABTM的数据表时），那就传入+:id => false+。另外，如果要传入某个特定数据表的设定，
-你可以在+:options+选项中加上一个SQL片段。例如：
+默认在 +create_table+ 时新增的主键名为 +id+，要改主键的名称，你需要加上 +:primary_key+
+这个选项（不要忘了更新对应 Model 的格式）。如果你根本就不要主键（例如使用多对多连接
+HABTM的数据表时），那就传入 +:id => false+ 。另外，如果要传入某个特定数据表的设定，
+你可以在 +:options+ 选项中加上一个SQL片段。例如：
 
 <ruby>
 create_table :products, :options => "ENGINE=BLACKHOLE" do |t|
@@ -349,42 +345,41 @@ create_table :products, :options => "ENGINE=BLACKHOLE" do |t|
 end
 </ruby>
 
-这样在建立数据表的SQL语句中就会加入+ENGINE=BLACKHOLE+。（如果是用MySQL的话，预设
-是+ENGINE=InnoDB+）
+这样在建立数据表的SQL语句中就会加入 +ENGINE=BLACKHOLE+ 。（如果是用 MySQL 的话，预设
+是 +ENGINE=InnoDB+）
 
 h4. 创建连接表
 
-Migration的+create_join_table+方法可以创建一张多对多的连接表，经典的写法如下：
+迁移任务的 +create_join_table+ 方法可以创建一张多对多的连接表，经典的写法如下：
 
 <ruby>
 create_join_table :products, :categories
 </ruby>
 
-这里创建了一张名为+categories_products+的连接表，里面包含+category_id+和
-+product_id+这两个字段。
+这里创建了一张名为 +categories_products+ 的连接表，里面包含 +category_id+ 和
+ +product_id+ 这两个字段。
 
-你可以通过+:table_name+字段去定义自己想要的数据表名称。例如：
+你可以通过 +:table_name+ 字段去定义自己想要的数据表名称。例如：
 
 <ruby>
 create_join_table :products, :categories, :table_name => :categorization
 </ruby>
 
-这里将会创建一张名为+categorization+的数据表。
+这里将会创建一张名为 +categorization+ 的数据表。
 
-默认情况下，+create_join_table+将会创建两个不包含参数的字段，不过你也可以通过
-+:column_options+来指定这些参数。例如：
+默认情况下，+create_join_table+ 将会创建两个不包含参数的字段，不过你也可以通过
++:column_options+ 来指定这些参数。例如：
 
 <ruby>
 create_join_table :products, :categories, :column_options => {:null => true}
 </ruby>
 
-will create the +product_id+ and +category_id+ with the +:null+ option as +true+.
 这里将会创建允许为空的+product_id+和+category_id+字段。
 
 h4. 变更数据表
 
-要变更现有的数据表，可以用+create_table+的类似方法+change_table+。它的用法跟
-+create_table+差不多，但它的代码块有更多的方式。例如：
+要变更现有的数据表，可以用 +create_table+ 的类似方法 +change_table+。它的用法跟
+ +create_table+ 差不多，但它的代码块有更多的方式。例如：
 
 <ruby>
 change_table :products do |t|
@@ -395,12 +390,12 @@ change_table :products do |t|
 end
 </ruby>
 
-移除了两个字段+description+和+name+，创建了一个+part_number+的字符串类型字段并
-为其添加了索引。最后重命名了+upccode+字段。
+移除了两个字段 +description+ 和 +name+，创建了一个 +part_number+ 的字符串类型字段并
+为其添加了索引。最后重命名了 +upccode+ 字段。
 
 h4. 特殊方法
 
-有些功能很常用，例如+created_at+和+updated_at+字段，为此，Active Record提供了一
+有些功能很常用，例如 +created_at+ 和 +updated_at+ 字段，为此，Active Record 提供了一
 些捷径：
 
 <ruby>
@@ -409,7 +404,7 @@ create_table :products do |t|
 end
 </ruby>
 
-以上会建立一个新的products数据表，并包含+created_at+和+updated_at+字段(当然还有id)。
+以上会建立一个新的名为 products 数据表，并包含 +created_at+ 和 +updated_at+ 字段(当然还有id)。
 此外：
 
 <ruby>
@@ -419,7 +414,7 @@ end
 </ruby>
 则会在原来的数据表中加入这两个字段。
 
-另一个特殊的方法是+references+（也可以写成+belongs_to+）。它最基本的的功能就是
+另一个特殊的方法是 +references+ （也可以写成 +belongs_to+ ）。它最基本的的功能就是
 增加可读性。
 
 <ruby>
@@ -428,9 +423,9 @@ create_table :products do |t|
 end
 </ruby>
 
-以上会建立一个+category_id+的字段，并给它一个适当的类型。要注意这里要输入的是model
-的名称而不是字段名。Active Record会自动在model名称的后面加上+_id+。若你需要用到
-多态的+belongs_to+关联时，那么+references+会把两个所需的字段都加进去。
+以上会建立一个 +category_id+ 的字段，并给它一个适当的类型。要注意这里要输入的是model
+的名称而不是字段名。Active Record 会自动在model名称的后面加上 +_id+ 。若你需要用到
+多态的 +belongs_to+ 关联时，那么 +references+ 会把两个所需的字段都加进去。
 
 <ruby>
 create_table :products do |t|
@@ -438,8 +433,8 @@ create_table :products do |t|
 end
 </ruby>
 
-以上会建立一个+attachment_id+字段和一个默认值为'Photo'的+attachment_type+字段。
-+references+同时允许你直接定义索引而不用另外在+create_table+中执行+add_index+
+以上会建立一个 +attachment_id+ 字段和一个默认值为'Photo'的 +attachment_type+ 字段。
+ +references+ 同时允许你直接定义索引而不用另外在 +create_table+ 中执行 +add_index+
 方法:
 
 <ruby>
@@ -448,10 +443,10 @@ create_table :products do |t|
 end
 </ruby>
 
-以上将会创建一个索引，跟`add_index :products, :category_id`所做的一样。
+以上将会创建一个索引，跟 `add_index :products, :category_id` 所做的一样。
 
-NOTE: +references+辅助方法实际上不会帮你建立外键约束。你可能需要通过+execute+方法
-或者用能够加入"外键支持":#active-record-and-referential-integrity 的插件。
+NOTE: +references+ 辅助方法实际上不会帮你建立外键约束。你可能需要通过+execute+方法
+或者用能够加入"外键支持":#7 的插件。
 
 如果Active Record提供的辅助方法不能满足你的需求，你可以使用+execute+方法来执行任意
 的SQL语句。
@@ -790,8 +785,7 @@ Active Record对象属性的信息并不在model的代码中，而且可能会�
 
 h4. 数据库纲要(Schema)的导出类型
 
-导出的schema有+:sql+和+:ruby+两种方式，可以通过+config/application.rb+文件中的
-+config.active_record.schema_format+来设置。
+导出的schema有 +:sql+ 和 +:ruby+ 两种方式，可以通过 +config/application.rb+ 文件中的 +config.active_record.schema_format+ 来设置。
 
 如果设定成+:ruby+的话，schema就会存在+db/schema.rb+里面。这个文件看起来像是一个
 超大的migration。
@@ -839,16 +833,15 @@ h4. 导出数据库纲要(Schema)以及版本控制
 
 h3. Active Record 与 Referential Integrity(参照完整性)
 
-所谓的Active Record之道，认为有头脑的应该是models，而不是数据库。因此，像是触发
-（triggers）或外键约束(foreign key constraints)这类偏向数据库功能，在Rails中就
+所谓的 Active Record 之道，认为有头脑的应该是 models ，而不是数据库。因此，像是触发器
+（triggers）或外键约束(foreign key constraints)这类偏向数据库功能，在 Rails 中就
 比较不常使用。
 
-在model里面要确保数据库完整性，可以用+validates :foreign_key, :uniqueness => true+
-来做验证。Model里面，数据库关联(associations)上有个+:dependent+的选项，可以设定
+在 model里面要确保数据库完整性，可以用 +validates :foreign_key, :uniqueness => true+ 来做验证。Model里面，数据库关联(associations)上有个+:dependent+的选项，可以设定
 成当父对象删除(destroy)的时候，自动连其子对象也一起删除。不过就像其他应用程式层级
 操作的东西一样，这并不能保证数据表之间的参照完整性，所以有些人用外键约束来增进
 这个功能。
 
-关于外建约束的功能，Active Record并没有提供可以直接编辑它的工具，不过还是可以用
-+execute+方法来执行任意的SQL。也有不少的插件，可以帮Active Record加上外键的支持
-（还可以把外键的设定全部显示在db/schema.rb），像是这个"foreigner":https://github.com/matthuhiggins/foreigner
+关于外建约束的功能，Active Record 并没有提供可以直接编辑它的工具，不过还是可以用
++execute+ 方法来执行任意的 SQL。也有不少的插件，可以帮 Active Record 加上外键的支持
+（还可以把外键的设定全部显示在 db/schema.rb），像是这个"foreigner":https://github.com/matthuhiggins/foreigner
