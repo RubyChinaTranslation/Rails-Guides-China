@@ -208,13 +208,13 @@ h4. 配置中间件
 * +Rack::Sendfile+ 拦截所有正文(HTTP 正文)用于处理文件的响应(responses)，并将其替换成一个服务器指定的 X-Sendfile 头部(HTTP 头部). 可以在 +config.action_dispatch.x_sendfile_header+ 配置.
 * +ActionDispatch::Callbacks+ 在处理请求之前运行预先准备的回调。
 * +ActiveRecord::ConnectionAdapters::ConnectionManagement+ 在每次请求完成后清除连接，除非 +rack.test+ 键在请求的环境设置中设置为 +true+
-* +ActiveRecord::QueryCache+ 缓存所有请求中产生的 SELECT 查询。如果换成任何 INSERT 或者 UPDATE 则缓存会被清除.
+* +ActiveRecord::QueryCache+ 缓存请求中产生的 SELECT 查询。如果换成任何 INSERT 或者 UPDATE 则缓存会被清除.
 * +ActionDispatch::Cookies+ 为请求设置 cookies.
-* +ActionDispatch::Session::CookieStore+ 负责存储cookies中的会话。通过根据可选值修改 +config.action_controller.session_store+，可以使用其它中间件. 另外，传递给这个中间件的参数可以在 +config.action_controller.session_options+ 配置.
+* +ActionDispatch::Session::CookieStore+ 负责存储cookies中的会话。修改 +config.action_controller.session_store+ 为那些可选值，可以使用其它可选的中间件. 另外，传递给这个中间件的参数可以在 +config.action_controller.session_options+ 配置.
 * +ActionDispatch::Flash+ 设置 +flash+ 的键值。只有在 +config.action_controller.session_store+ 设置为某个值才会起作用
-* +ActionDispatch::ParamsParser+ 将请求中的参数解析成+params+
-* +Rack::MethodOverride+ 允许方法被重写，如果有对 +params[:_method]+ 进行设置。这是提供 PATCH, PUT 和 DELETE 的 HTTP方法类型处理支持的中间件.
-* +ActionDispatch::Head+ 将所有HEAD请求转换成GET请求，然后再处理。
+* +ActionDispatch::ParamsParser+ 将请求中的参数解析到 +params+ 里.
+* +Rack::MethodOverride+ 如果 +params[:_method]+ 有设置值,那么允许方法被重写。这个中间件支持 PATCH, PUT 和 DELETE 的 HTTP方法类型.
+* +ActionDispatch::Head+ 将所有 HEAD 请求转换成 GET 请求，然后再处理。
 * +ActionDispatch::BestStandardsSupport+ 启用 "最好的标准支持" 所以IE8能正确的渲染元素.
 
 除了这些常用的中间件，你可以通过 +config.middleware.use+ 方法添加自己的:
@@ -242,55 +242,56 @@ config.middleware.swap ActionDispatch::BestStandardsSupport, Magical::Unicorns
 </ruby>
 
 它们也能完全从堆栈中被移除.
+
 <ruby>
 config.middleware.delete ActionDispatch::BestStandardsSupport
 </ruby>
 
-除了这些操作堆栈的方法，如果你的应用程序只作为一个API端的话，中间件堆栈可以像这样设置:
+除了这些操作堆栈的方法，如果你的应用程序只作为一个 API 端的话，中间件堆栈可以像这样设置:
 
 <ruby>
 config.middleware.http_only!
 </ruby>
 
-通过这样做，Rails将会创建一个更小的中间件堆栈，这个堆栈中不会添加一些通常对浏览器访问很有用的中间件, 比如 Cookies, 会话，闪存(Flash), BestStandardsSupport 和 MethodOverride. 你可以手动添加它们。查阅 "API App docs":api_app.html 可以获得更多关于如何设置你API应用程序的信息。
+通过这样做，Rails将会创建一个更小的中间件堆栈，这个堆栈中不会添加一些通常对浏览器访问有用的中间件, 比如 Cookies, 会话，闪存(Flash), BestStandardsSupport 和 MethodOverride. 你可以手动添加它们。查阅 "API App docs":api_app.html 可以获得更多关于如何设置你API应用程序的信息。
 
 h4. 配置 i18n
 
-* +config.i18n.default_locale+ 设置某个使用i18n应用程序的默认本地语言环境。默认为 +:en+
+* +config.i18n.default_locale+ 设置某个使用 i18n 应用程序的默认本地语言环境。默认为 +:en+
 
-* +config.i18n.load_path+ 设置Rails用来搜索本地化文件的路径。默认为 +config/locales/*.{yml,rb}+
+* +config.i18n.load_path+ 设置 Rails 用来搜索本地化文件的路径。默认为 +config/locales/*.{yml,rb}+
 
 h4. 配置 Active Record
 
 <tt>config.active_record</tt> 包括了下列配置选项:
 
-* +config.active_record.logger+ 接受一个符合 Log4r 或者 Ruby 默认日志类 接口的日志类, 并会被传递给任何新建立的数据库连接. 你可以通过调用某个Active Record模型类或者某个Active Record模型示例的 +logger+ 对象来取得这个日志类. 默认设置为 +nil+ 来取消日志记录.
+* +config.active_record.logger+ 接受一个符合 Log4r 或者 Ruby 默认日志类 接口的日志类, 并会被传递给任何新建立的数据库连接. 你可以通过调用 Active Record 模型类或者示例的 +logger+ 来取得这个日志类. 默认设置为 +nil+ 以取消日志记录.
 
-* +config.active_record.primary_key_prefix_type+ 让你调整主键栏的名字。默认情况下， Rails假设主键栏是被命名为+id+(这个配置选项不需要设置。) 这有两个其它选择:
-** +:table_name+ 会使用自定义的 +customerid+ 类来生成主键
-** +:table_name_with_underscore+ 会使用自定义的 +customer_id+ 来生成主键
+* +config.active_record.primary_key_prefix_type+ 让你调整主键栏的名字。默认情况下， Rails 假设主键栏被命名为+id+(这个配置选项不需要设置。) 。还有两个其它选择:
+** +:table_name+ 将 Customer 类的主键栏命名为 +customerid+。
+** +:table_name_with_underscore+ 将 Customer 类的主键栏命名为 +customer_id+。
 
-* +config.active_record.table_name_prefix+ 让你设置一个全局字符串加入到表明中. 如果你这个字符串设置为 +northwest_+, 那么Customer类将找 +northwest_customers+ 表作为它的表. 默认是一个空字符串.
+* +config.active_record.table_name_prefix+ 让你设置一个全局字符串附加到表名前面. 如果你这个字符串设置为 +northwest_+, 那么 Customer 类将寻找 +northwest_customers+ 表作为它的表. 默认是一个空字符串.
 
-* +config.active_record.table_name_suffix+ 让你为设置一个全局字符串加入到表名中. 如果你将它设置为 +_northwest+, 那么Customer类将会找到 ++customers_northwest+ 作为它的表. 默认是一个空字符串.
+* +config.active_record.table_name_suffix+ 让你设置一个全局字符串附加到表名后面. 如果你将它设置为 +_northwest+, 那么 Customer 类将会找到 +customers_northwest+ 作为它的表. 默认是一个空字符串.
 
-* +config.active_record.pluralize_table_names+ 指定Rails是否在数据库中寻找表名是单数的表,还是表名是复数的表. 如果设置为 true (默认值), 那么 Customer 类将会使用 +customers+ 表. 如果设置为 false, 那么 Customer 类将会使用 +customer+ 表.
+* +config.active_record.pluralize_table_names+ 指定 Rails 是否以使用单复数的表名. 如果设置为 true (默认值), 那么 Customer 类将会使用 +customers+ 表. 如果设置为 false, 那么 Customer 类将会使用 +customer+ 表.
 
-* +config.active_record.default_timezone+ 当从数据库获取日期和时间时,决定是否使用 +Time.local+ (如果设置为 +:local+) 还是 +Time.utc+ (如果设置为 +:utc+). 虽然动作记载(Active Record)在Rails以外默认为 +:local+, 但在Rails中默认为 +:utc+. 
+* +config.active_record.default_timezone+ 当从数据库获取日期和时间时,决定是否使用 +Time.local+ (如果设置为 +:local+) 还是 +Time.utc+ (如果设置为 +:utc+). 虽然 Active Record 在 Rails 以外使用时默认为 +:local+, 但在 Rails 中默认为 +:utc+. 
 
-* +config.active_record.schema_format+ 控制将数据库结构导出到文件的格式。选项是 +:ruby+(默认)，这是与数据库无关的选项但依赖于迁移(中间件). 或者是 +:sql+, 一连串 (很可能是数据库依赖的) SQL 语句.
+* +config.active_record.schema_format+ 控制将数据库结构导出到文件的格式。选项分别是 +:ruby+(默认)，与数据库无关的选项但与 migrations 相关. 或者是 +:sql+, 一连串 (大部分情况是与数据库相关的) SQL 语句.
 
-* +config.active_record.timestamped_migrations+ 控制所有迁移脚本的命名中是否带有序列或者时间戳. 如果有多个开发者开发同一个应用程序，建议使用默认的时间戳.
+* +config.active_record.timestamped_migrations+ 控制所有迁移脚本 (migrations) 的命名中是否带有序列或者时间戳. 如果有多个开发者开发同一个应用程序，建议使用默认的时间戳.
 
-* +config.active_record.lock_optimistically+ 控制活动日志(Active Record)是否使用乐观锁， 默认是使用的。
+* +config.active_record.lock_optimistically+ 控制 Active Record 是否使用乐观锁， 默认是使用的。
 
-* +config.active_record.whitelist_attributes+ 将会创建一个空白白名单，这个名单包含了用于批量赋值(mass assignment)防护措施的模型属性，并对应用程序里所有模型有效。
+* +config.active_record.whitelist_attributes+ 将会创建一个空白的白名单，这个名单包含了在批量赋值 (mass assignment) 防护下可进行批量赋值的模型属性，并对应用程序里所有模型有效。
 
-* +config.active_record.auto_explain_threshold_in_seconds+ 配置自动执行(sql指令)+EXPLAIN+的临界值。所有逼近临界值的查询会把它们的查询计划进行日志记录。在开发模式下默认是0.5。
+* +config.active_record.auto_explain_threshold_in_seconds+ 配置自动执行(sql指令)+EXPLAIN+的临界值。所有逼近临界值的查询会把它们的查询计划进行日志记录。在开发模式下默认是 0.5。
 
 * +config.active_record.dependent_restrict_raises+ 当某个具有 <tt>:dependent => :restrict</tt> 关联关系的对象被删除时，控制该行为。设置为false将会阻止抛出+DeleteRestrictionError+异常,并且会将错误信息添加入到模型对象里。在开发模式下默认为flase.
 
-* +config.active_record.mass_assignment_sanitizer+ 将会判断Rails中对批量赋值(mass assignment)清理的严格程度。默认为 +:strict+. 在这个模式下，调用 +create+ 或者 +update_attributes+ 并对任何不是+attr_accessible+的属性进行批量赋值的话，将会抛出一个异常。如果设置这个选项为 +:logger+的话，只会将某个属性被赋值时的异常信息打印到日志文件，并不抛出异常。
+* +config.active_record.mass_assignment_sanitizer+ 将会判断 Rails 中对批量赋值(mass assignment)清理的严格程度。默认为 +:strict+. 在这个模式下，调用 +create+ 或者 +update_attributes+ 并对任何不是+attr_accessible+的属性进行批量赋值的话，将会抛出一个异常。如果设置这个选项为 +:logger+的话，只会将某个属性被赋值时的异常信息打印到日志文件，并不抛出异常。
 
 MySQL 适配器的一个附加配置选项：
 
@@ -298,35 +299,35 @@ MySQL 适配器的一个附加配置选项：
 
 结构导出器(Schema Dumper)的一个附加配置选项：
 
-* +ActiveRecord::SchemaDumper.ignore_tables+ 接受一组表，任何产生的(数据库)结构(schema)文件都_不_会包含这些表。这个设置会被忽略除非 +config.active_record.schema_format == :ruby+
+* +ActiveRecord::SchemaDumper.ignore_tables+ 接受一组表，任何产生的(数据库)结构(schema)文件都_不_会包含这些表。如果 +config.active_record.schema_format == :ruby+, 那么这个设置会被忽略.
 
-h4. 配置活动控制器
+h4. 配置 Action Controller
 
 <tt>config.action_controller</tt> 包括了这些配置设置：
 
-* +config.action_controller.asset_host+ 设置资源主机。当CDNs被用于资源主机时很有用，比应用程序自己处理资源有用得多.
+* +config.action_controller.asset_host+ 设置资源主机。当CDNs被用于资源主机而不是应用程序自己处理资源时很有用.
 
-* +config.action_controller.asset_path+ 接受一个代码块，这个代码块配置去哪找资源文件。更简短的版本是 +config.asset_path+.
+* +config.action_controller.asset_path+ 接受一个代码块，这个代码块配置在哪里可以找到资源文件。更简短的版本是 +config.asset_path+.
 
-* +config.action_controller.page_cache_directory+ 是web服务器的文档的根目录，设置值使用<tt>Base.page_cache_directory = "/document/root"</tt>.在Rails中，这个目录已经被设置为 +Rails.public_path+ (它的值通常设置为<tt>Rails.root + "/public"</tt>)。改变这个值对防止<tt>public</tt>里的文件名冲突很有用，但这么做需要配置你的web服务器从新的地方寻找缓存文件。
+* +config.action_controller.page_cache_directory+ 是 web 服务器的文档的根目录，使用<tt>Base.page_cache_directory = "/document/root"</tt>的值.在 Rails 中，这个目录已经被设置为 +Rails.public_path+ (它的值通常设置为<tt>Rails.root + "/public"</tt>)。改变这个值对防止<tt>public</tt>里的文件名冲突很有用，但这么做需要配置你的 web 服务器从新的地方寻找缓存文件。
 
-* +config.action_controller.page_cache_extension+ 配置保存在 +page_cache_directory+ 的缓存页面是否是用扩展名。默认为 +.html+
+* +config.action_controller.page_cache_extension+ 配置保存在 +page_cache_directory+ 的缓存页面使用的扩展名。默认为 +.html+
 
 * +config.action_controller.perform_caching+ 配置应用程序是否进行缓存。开发模式默认关闭，在生产模式默认开启.
 
 * +config.action_controller.default_charset+ 规定所有渲染器的字符编码。默认是 "utf-8"。
 
-* +config.action_controller.logger+ 接受一个符合 Log4r 或者 Ruby 默认日志类的接口的日志类，这个日志类用于记录来自活动控制器的信息。设置为 +nil+ 以不进行记录。
+* +config.action_controller.logger+ 接受一个符合 Log4r 或者 Ruby 默认日志类的接口的日志类，这个日志类用于记录来自 Action Controller 的信息。设置为 +nil+ 则不进行记录。
 
-* +config.action_controller.request_forgery_protection_token+ 为 RequestForgery 设置一个令牌的参数名。调用 +protect_from_forgery+ 默认将其设置为+authenticity_token+。
+* +config.action_controller.request_forgery_protection_token+ 为 RequestForgery 设置令牌的参数名。调用 +protect_from_forgery+ 默认将其设置为+authenticity_token+。
 
-* +config.action_controller.allow_forgery_protection_token+ 使用或者不使用 CSRF 保护。默认在测试模式下使用，其它模式不使用。
+* +config.action_controller.allow_forgery_protection_token+ 是否使用 CSRF 保护。默认在测试模式下使用，其它模式不使用。
 
-* +config.action_controller.relative_url_root+ 可以被用于告诉Rails你要部署到某个子目录。默认为 +ENV['RAILS_RELATIVE_URL_ROOT']+。
+* +config.action_controller.relative_url_root+ 用于告诉 Rails 你要部署到某个子目录。默认为 +ENV['RAILS_RELATIVE_URL_ROOT']+。
 
 缓存代码的两个附加设置：
 
-* +ActionController::Base.page_cache_directory+ 设置缓存页面的存放目录，这些页面是Rails为你的web服务器创建的。默认为 +Rails.public_path+(通常设置为 <tt>Rails.root + "/public"</tt>).
+* +ActionController::Base.page_cache_directory+ 设置缓存页面的存放目录，这些页面是 Rails 为你的web服务器创建的。默认为 +Rails.public_path+(通常设置为 <tt>Rails.root + "/public"</tt>).
 
 * +ActionController::Base.page_cache_extensions+ 设置缓存页(文件)的扩展名(如果请求已经有扩展名，那将忽略这个设置)。默认为 +.html+。
 
@@ -334,15 +335,15 @@ Active Record 会话存储也可以这样配置：
 
 * +ActiveRecord::SessionStore::Session.table_name+ 设置会话存储使用的表名。默认为 +session+。
 
-* +ActiveRecord::SessionStore::Session.primary_key+ 设置会话存储使用的表的ID栏的名字。默认为 +session_id+。
+* +ActiveRecord::SessionStore::Session.primary_key+ 设置会话存储表 ID 栏的名字。默认为 +session_id+。
 
 * +ActiveRecord::SessionStore::Session.data_column_name+ 设置存放汇集了会话数据那栏的名字。默认为 +data+。
 
-h4. 配置活动调度
+h4. 配置 Action Dispatch
 
-* +config.action_dispatch.session_store+ 设置会话数据存储的名字。默认是 +:cookie_store+；其它可选的包括 +:active_record_store+, +:men_cache_store+ 或者你自己定义的类的名字。
+* +config.action_dispatch.session_store+ 设置会话数据存储的名字。默认是 +:cookie_store+；其它可选的包括 +:active_record_store+, +:men_cache_store+ 或者你自己定义的类名。
 
-* +config.action_dispatch.tld_length+ 设置应用程序TLD(顶级域)的长度.默认为 +1+.
+* +config.action_dispatch.tld_length+ 设置应用程序 TLD (顶级域)的长度.默认为 +1+.
 
 * +ActionDispatch::Callbacks.before+ 接受一个代码块，在请求之前运行。
 
@@ -350,11 +351,11 @@ h4. 配置活动调度
 
 * +ActionDispatch::Callbacks.after+ 接受一个代码块，在请求之后运行。
 
-h4. 配置活动视图
+h4. 配置 Action View
 
 <tt>config.action_view</tt> 包括了这些配置设置:
 
-* +config.action_view.field_error_proc+ 提供一个HTML生成器，用于显示来自动作记载(Active Record)的错误信息。默认为
+* +config.action_view.field_error_proc+ 提供一个 HTML 生成器，用于显示 Active Record 的错误信息。默认为
 
 <ruby>
 Proc.new { |html_tag, instance| %Q(<div class="field_with_errors">#{html_tag}</div>).html_safe }
@@ -362,11 +363,12 @@ Proc.new { |html_tag, instance| %Q(<div class="field_with_errors">#{html_tag}</d
 
 * +config.action_view.default_form_builder+ 告诉Rails默认使用哪个表格创建器。默认为 +ActionView::Helpers::FormBuilder+.
 
-* +config.action_view.logger+ 接受一个日志类，这个类要遵循 Log4r 或者 Ruby 默认日志类的接口。该类会被用于记录来自活动视图的信息。设置为 +nil+ 来关闭日志。
+* +config.action_view.logger+ 接受一个日志类，这个类要遵循 Log4r 或者 Ruby 默认日志类的接口。该类会被用于记录来自 Action View 的信息。设置为 +nil+ 来关闭日志。
 
 * +config.action_view.erb_trim_mode+ 给出被ERB使用的修剪模式。默认为 +'-'+。更多信息查阅 "ERB documentation":http://www.ruby-doc.org/stdlib/libdoc/erb/rdoc/
+(译者注: +<%= content -%>+ 将清除 content 首尾的空白)
 
-* +config.action_view.javascript_expansions+ 是一个包含了扩展的哈希数组。这些扩张可以通过JavaScript引入标签被导入使用。默认情况下是这么定义的:
+* +config.action_view.javascript_expansions+ 是一个包含了扩展的哈希数组。这些扩展可以通过 JavaScript 导入标签被导入使用。默认情况下是这么定义的:
 
 <ruby>
 config.action_view.javascript_expansions = { :defaults => %w(jquery jquery_ujs) }
@@ -378,7 +380,7 @@ config.action_view.javascript_expansions = { :defaults => %w(jquery jquery_ujs) 
 config.action_view.javascript_expansions[:prototype] = ['prototype', 'effects', 'dragdrop', 'controls']
 </ruby>
 
-并且可以在试图里像这样进行引用:
+并且可以在视图里像这样进行引用:
 
 <ruby>
 <%= javascript_include_tag :prototype %>
@@ -390,11 +392,10 @@ config.action_view.javascript_expansions[:prototype] = ['prototype', 'effects', 
 <%= stylesheet_link_tag :special %>
 </ruby>
 
-* +config.action_view.cache_asset_ids+ 当启用缓存时，资源标签助手会进行几个高耗的文件系统调用(默认进行文件系统时间戳检查)。然而这样可以防止当服务器运行时修改任何资源文件。
+* +config.action_view.cache_asset_ids+ 当启用缓存时，资源标签助手(helper)会进行几个高耗的文件系统调用(默认进行文件系统时间戳检查)。然而这样可以防止当服务器运行时修改任何资源文件。
 
-* +cofnig.action_view.embed_authenticity_token_in_remote_forms+ 让你设置具有 +:remote => true+ 属性的表单中是否默认带有+authenticity_token+。默认情况下这个值设置为false, 这意味着远程表单里将不包含 +authenticity_token+，这对你局部缓存表单会很有用。运程表单将通过+meta+标签获得真实性(认证), 所以所以嵌入是必要的，除非你支持没有Javascript的浏览器。在这种情况下，你可以投递 +:authenticity_token => true+ 作为表单参数或者将这个配置设置为 +true+
+* +cofnig.action_view.embed_authenticity_token_in_remote_forms+ 让你设置具有 +:remote => true+ 属性的表单中是否默认带有 +authenticity_token+。默认情况下这个值设置为 false , 这意味着远程表单里将不包含 +authenticity_token+，这对你局部缓存表单会很有用。运程表单将通过 +meta+ 标签获得真实性(认证), 所以嵌入是必要的，除非你支持没有 Javascript 的浏览器。在这种情况下，你可以投递 +:authenticity_token => true+ 作为表单参数或者将这个配置设置为 +true+
 
-#FIXME
 * +config.action_view.prefix_partial_path_with_controller_namespace+ 用来指定控制器是否从模板的子目录中根据控制器的命名空间搜索partial模板。例如，考虑某个命名为 +Admin::PostsController+ 的控制器，它渲染这个模板:
 
 <erb>
@@ -410,8 +411,8 @@ h4. 配置 Action Mailer
 * +config.action_mailer.logger+ 接受一个日志类，这个类要遵循 Log4r 或者 Ruby 默认日志类的接口。这个类会被用于记录来自 Action Mailer 的信息。设置为 +nil+ 关闭日志。
 
 * +config.action_mailer.smtp_settings+ 允许详细配置 +:smtp+ 传送方法。它接受一个选项哈希数组，可以包括一下任何选项：
-** +:address+ - 允许你使用远程的邮件服务器。只要改变默认设置的"localhost"值就可以了。
-** +:port+ - 万一你的邮件服务器不是运行在 25 端口的话，改变这个它。
+** +:address+ - 允许你使用远程的邮件服务器。只要改变默认设置的 "localhost" 值就可以了。
+** +:port+ - 万一你的邮件服务器不是运行在 25 端口的话，在这进行修改。
 ** +:domain+ - 如果你需要指定一个 HELO 域名，在这里设置。
 ** +:user_name+ - 如果你的邮件服务器需要认证，在这个设置里填入用户名。
 ** +:password+ - 如果你的邮件服务器需要认证，在这里设置密码。
@@ -419,7 +420,7 @@ h4. 配置 Action Mailer
 
 * +config.action_mailer.sendmail_settings+ 允许详细配置 +sendmail+ 发送方法。它接受一个包含选项的哈希数组，包括以下任何选项：
 ** +:location+ - sendmail 执行文件的位置. 默认为 +/usr/sbin/sendmail+。
-** +:arguments+ - (sendmail)命令行参数。默认为 +-i -t+。
+** +:arguments+ - 命令行参数。默认为 +-i -t+。
 
 * +config.action_mailer.raise_delivery_errors+ 设定当邮件发送失败时是否抛出异常。默认为 true.
 
@@ -455,7 +456,7 @@ Active Support 有如下一些可用配置选项:
 
 * +config.active_support.use_standard_json_time_format+ 是否使日期序列化成 ISO 8601 格式。默认为 +false+.
 
-* +ActiveSupport::BufferedLogger.silencer+ 设为false则禁用了对代码块的缄默日志（silence logging）功能(缄默日志使得silence方法可以对指定的代码块屏蔽日志功能或者改变日志的level)。默认值为true。
+* +ActiveSupport::BufferedLogger.silencer+ 设为 +false+ 则禁止取消代码块里的日志记录。默认为 +true+。
 
 * +ActiveSupport::Cache::Store.logger+ 设定在缓存存储操作中的日志类。
 
@@ -465,17 +466,17 @@ Active Support 有如下一些可用配置选项:
 
 * +ActiveSupport::Deprecation.slienced+ 设置是否打印出废弃警告。
 
-* +ActiveSupport::Logger.silencer+ 设置为 +false+ 取消代码块中缄默日志的功能。默认为 +true+
+* +ActiveSupport::Logger.silencer+ 设为 +false+ 则禁止取消代码块里的日志记录。默认为 +true+。
 
 h4. 配置数据库
 
-几乎所有 Rails 应用程序都会和数据库交互。 数据库在一个叫做 +config/database.yml+ 的文件里被指定的。 如果你在一个新的 Rails 应用里打开这个文件，你会看到一个默认数据库配置默认为 SQLite3。 该文件包含三个部分，分别是不同的 Rails 运行环境：
+几乎所有 Rails 应用程序都会和数据库交互。 数据库在一个叫做 +config/database.yml+ 的文件里被指定的。 如果你在一个新的 Rails 应用里打开这个文件，你会看到一个默认数据库配置为 SQLite3。 该文件包含三个部分，分别是不同的 Rails 运行环境：
 
 * +development+ 环境用于你的开发或本地电脑,所以你可以手动控制应用程序。
 * +test+ 环境用于运行自动测试的时候。
 * +production+ 环境用于部署应用程序给全世界用的时候。
 
-TIP: 你不必手动更新数据库配置文件。如果你注意到应用程序生成器的选项, 你会发现其中一个选项为 <tt>--database</tt>. 这个选项允许你选择一个适配器，这个适配器可以是最常用的关系型数据库。你甚至可以重复运行生成器: <tt>cd .. && rails new blog --database=mysql</tt>. 如果你确认重写 +config/database.yml+ 文件， 你的应用程序将被配置使用 MySQL 而不是 SQLite. 一般数据库连接的详细例子会在下面说到。
+提示: 你不必手动更新数据库配置文件。如果你查看应用程序生成器的选项, 你会发现其中一个选项为 <tt>--database</tt>. 这个选项允许你选择一个适配器，这个适配器可以是最常用的关系型数据库。你甚至可以重复运行生成器: <tt>cd .. && rails new blog --database=mysql</tt>. 如果你确认重写 +config/database.yml+ 文件， 你的应用程序将被配置使用 MySQL 而不是 SQLite. 常用数据库连接的详细例子会在下面说到。
 
 h5. 配置 SQLite3 数据库
 
@@ -491,7 +492,7 @@ development:
   timeout: 5000
 </yaml>
 
-NOTE: Rails 默认使用 SQLite3 数据库存储数据是因为它是一个不需要配置就能工作的数据库。Rails 也支持 MySQL 和 PostgreSQL, 并且有许多其它数据库的插件。如果你在生产环境中使用数据库，Rails一般都能为其提供一个适配器.
+注意: Rails 默认使用 SQLite3 数据库存储数据是因为它是一个不需要配置就能工作的数据库。Rails 也支持 MySQL 和 PostgreSQL, 并且有许多其它数据库的插件。如果你在生产环境中使用数据库，Rails 通常都能为其提供一个适配器.
 
 h5. 配置 MySQL 数据库
 
@@ -563,35 +564,35 @@ development:
 
 h3. Rails 环境设置
 
-Rails 的某些部分也可以通过设置环境变量，进行外部赋值来配置。以下环境变量会被Rails的各部分识别:
+Rails 的某些部分也可以通过设置环境变量，进行外部赋值来配置。以下环境变量会被 Rails 的各部分识别:
 
 * +ENV["RAILS_ENV"] 定义了 Rails 的运行环境 (生产，开发，测试等等)。
 * +ENV["RAILS_RELATIVE_URL_ROOT"] 当你的应用程序部署到某个子目录下时，用它帮助路由(routing)代码识别 URLs。
-* +ENV["RAILS_ASSET_ID"] 将重写默认的 cache-busting 时间戳章，这个时间戳章是Rails 为可下载资源生成的.
-* +ENV["RAILS_CACHE_ID"]+ 和 +ENV["RAILS_APP_VERSION"]+ 用于生成 Rails 缓存代码的扩张缓存键。这可以让同一个应用程序有多个独立分开的缓存。
+* +ENV["RAILS_ASSET_ID"] 将重写默认的 cache-busting 时间戳章，这个时间戳章是 Rails 为可下载资源生成的.
+* +ENV["RAILS_CACHE_ID"]+ 和 +ENV["RAILS_APP_VERSION"]+ 用于生成 Rails 缓存代码的扩展缓存键。这可以让同一个应用程序有多个独立分开的缓存。
 
 
 h3. 使用 Initialiezer 文件
 
-加载完框架和应用程序的所有 gems 之后，Rails 会接着去加载 initializers. 一个 initializer 是存放在 +config/initializers+ 里任何一个的 Ruby 文件。你可以使用 initializers 容纳所有框架和 gems 加载完之后的要使用的配置设置，例如为这些部分配置设置的选项。
+加载完框架和应用程序的所有 gems 之后，Rails 会接着去加载所有的初始化程序. 初始化程序是存放在 +config/initializers+ 里任何的一个 Ruby 文件。你可以使用 initializers 容纳所有待配置选项和设置，它们会在所有框架和 gems 加载完之后进行配置和设置，例如为这些部分配置设置的选项。
 
-NOTE: 你可以使用子文件夹来组织你的 initializers， 因为 Rails 会纵向搜索整个 initializers 文件夹。
+注意: 你可以使用子文件夹来组织你的初始化程序， 因为 Rails 会纵向搜索整个 initializers 文件夹。
 
-TIPS: 如果你的 initialziers 里有一组依赖，你可以根据名字控制加载循序。例如, +01_critical.rb+ 将会先于 +01_normal.rb+ 被加载。
+提示: 如果你的 initialziers 里有一组依赖，你可以根据名字控制加载循序。例如, +01_critical.rb+ 将比 +01_normal.rb+ 先被加载。
 
 h3. 初始化事件
 
-Rails 有 5 种初始化事件, 这些事件可以被挂上 hook (列出了它们的运行顺序)
+Rails 有 5 种初始化事件, 这些事件可以被挂上 hook (以下列出了它们的运行顺序)
 
-* +before_configuration+: 这个和继承了 +Rails::Application+ 的应用程序常量同时运行。+config+ 回调会在这发生之前被运行。
+* +before_configuration+: 这个和继承了 +Rails::Application+ 的应用程序常量同时运行。+config+ 回调会在这发生之前生成。
 
-* +before_initialize+: 这个在应用程序的初始化过程之前立即运行。应用程序的初始化过程在接近 Rails 整个初始化过程的最开始出现并带有 +:bootstrap_hook+ 初始化程序。
+* +before_initialize+: 这个在应用程序的初始化过程之前立即运行。应用程序的初始化过程出现于接近 Rails 整个初始化过程的最开始，并带有 +:bootstrap_hook+ 初始化程序。
 
-* +to_prepare+: 在所有的 initializers 和 Railties 之后运行(包括应用程序自身)，但在即时加载(eager loading)和中间件堆创建之前运行。最重要的是，在+development+环境中，会在所有的请求上运行。而在 +production+ 和 +test+ 环境只会运行一次(启动的期间)。
+* +to_prepare+: 在所有为 Railties 运行(包括应用程序自身)的初始化程序之后运行，但在即时加载(eager loading)和中间件堆创建之前运行。最重要的是，在+development+环境中，会在所有的请求上运行。而在 +production+ 和 +test+ 环境只会运行一次(启动的期间)。
 
-* +before_eager_load+: 在即时加载(eager loading)发生之前立即运行，这是_生产_ 环境的默认行为，但在_开发_环境则不是。
+* +before_eager_load+: 在即时加载(eager loading)发生之前立即运行. 这是_生产_ 环境的默认行为，但在_开发_环境则不是。
 
-* +after_initialize+: 应用程序加载后立即运行，但在应用程序的 initializers 之前运行。
+* +after_initialize+: 应用程序加载后立即运行，但在应用程序的初始化程序之前运行。
 
 在 +Rails::Application+, +Rails::Railtie+ 或者 +Rails::Engine+ 的子类里使用代码块语法, 可以为这些事件定义 hook :
 
@@ -629,7 +630,7 @@ end
 
 通过 +initializer+ 方法定义的初始化程序会按照它们被定义的顺序运行，除了那个使用 +:before+ 或者 +:after+ 方法的。
 
-警告: 你应该将你的初始化程序放在其它初始化程序之前或者之后，如果有逻辑关系。比如说有 4 个初始化程序， "one" 到 "four"(按照这个顺序定义)，并且你定义"four"在"four"_之前_ 但在"three"_之后_运行。像这种无逻辑的定义Rails将不能确定它们的顺序。
+警告: 如果初始化程序运行有逻辑关系，你应该将一个初始化程序放在另一个之前或者之后。比如说有 4 个初始化程序， "one" 到 "four"(按照这个顺序定义)，并且你定义"four"在"four"_之前_ 但在"three"_之后_运行。像这种无逻辑的定义Rails将不能确定它们的顺序。
 
 +initializer+ 方法的代码块参数是应用程序自身的对象，所以我们能通过它使用 +config+ 方法访问配置，就像在例子里做的那样。
 
@@ -640,23 +641,23 @@ h4. Initializers
 下面是一列所有能在 Rails 中找到的初始化程序，并按它们被定义的顺序排列 (也是它们运行的顺序，除非有其它设定)
 
 *+load_environment_hook+*
-作为一个占位器，所以可以让 +:load_environment_config+ 可以被定义在这之前运行。
+作为一个占位器，所以让 +:load_environment_config+ 可以被定义在这之前运行。
 
-*+load_active_support+* 导入 +active_support/dependencies+ 为 Active Support 建立了基础。如果 +config.active_support.bare+ 不可确定, 也可以导入 +active_support/all+，这是默认的。
+*+load_active_support+* 导入 +active_support/dependencies+ 为 Active Support 建立基础。如果 +config.active_support.bare+ 不可确定, 也可以导入 +active_support/all+，这是默认的。
 
-*+preload_frameworks+* 如果 +config.preload_frameworks+ 为 +true+ 或者 "可确定性的"，那么将自动地加载所有 Rails 会自动加载的依赖。一般这个配置选项是关闭的。在 Rails 里，当内部的类会第一次被引用的时候才会自动加载。+:preload_frameworks+ 在初始化的时候就会一次过加载完它们。
+*+preload_frameworks+* 如果 +config.preload_frameworks+ 为 +true+ 或者 "可确定性的"，那么将自动地加载所有 Rails 会自动加载的依赖。一般这个配置选项是关闭的。在 Rails 里，内部的类第一次被引用的时候才会自动加载。+:preload_frameworks+ 在初始化的时候就会一次过加载完它们。
 
-*+initialize_logger+* 初始化应用程序的日志类(一个 +ActiveSupport::BufferedLogger+ 对象) 并且让它可以通过 +Rails.logger+ 访问. 它会在在这个点之前插入的初始化程序还没有定义 +Rails.logger+ 的时候运行。
+*+initialize_logger+* 初始化应用程序的日志类(一个 +ActiveSupport::BufferedLogger+ 对象) 并且让它可以通过 +Rails.logger+ 访问. 当在这个点之前插入的初始化程序还没有定义 +Rails.logger+ 的时候运行。
 
-*+initialize_cache+* 如果 +Rails.cache+ 还没有设置，则通过引用 +config.cache_store+ 的值并将其赋予 +Rails.cache+ 来初始化。如果该对象有 +middleware+ 方法，它的中间件将在中间件堆中被插入到 +Rack::Runtime+ 之前。
+*+initialize_cache+* 如果 +Rails.cache+ 还没有设置，则通过引用 +config.cache_store+ 的值并将其赋予 +Rails.cache+ 来初始化。如果该对象有 +middleware+ 方法，它的中间件将被插入到 +Rack::Runtime+ 之前.
 
-*+set_clear_dependencies_hook+* 提供一个 +active_record.set_dispatch_hooks+ 可使用的 hook， 它会那个(set_clear_dependencies)初始化程序之前运行. 那个初始化程序 -- 只有在 +cache_classes+ 设置为 +false+ 的时候运行 -- 使用 +ActionDispatch::Callbacks.after+ 去除在请求中就已经被引用并来自对象空间的常量(依赖)，所以它们会在后续的请求中被重新加载。
+*+set_clear_dependencies_hook+* 提供一个给 +active_record.set_dispatch_hooks+ 使用的 hook， 它会在这个初始化程序之前运行. 这个初始化程序 -- 只有在 +cache_classes+ 设置为 +false+ 的时候运行 -- 使用 +ActionDispatch::Callbacks.after+ 去除在请求中就已经被引用并来自对象层面的常量(依赖)，所以它们会在后续的请求中被重新加载。
 
-*+initialize_dependency_mechanism+* 如果 +cofnig.cache_classes+ 为 true, 配置 +ActiveSupport::Dependencies.mechanism+ 去 +require+ 依赖而不是 +load+ 它们。
+*+initialize_dependency_mechanism+* 如果 +config.cache_classes+ 为 true, 配置 +ActiveSupport::Dependencies.mechanism+ 去 +require+ 依赖而不是 +load+ 它们。
 
-*+bootstrap_hook+* 运行所有配置了的 +before_initialize+ 代码块。
+*+bootstrap_hook+* 运行所有配置了 +before_initialize+ 的代码块。
 
-*+i18n.callbacks+* 在开发环境中，建立一个 +to_prepare+ 回调, 如果任何一个本地化文件从最好一次请求之后有更改, 这个回调将会调用 +I18n.reload!+。
+*+i18n.callbacks+* 在开发环境中，建立一个 +to_prepare+ 回调, 如果任何一个本地化文件从最后一次请求之后有更改, 这个回调将会调用 +I18n.reload!+。
 
 *+active_support.initialize_whiny_nils+* 在 +config.whiny_nils+ 为 true 的情况下引入 +active_support/whiny_nil+ 这个文件会输出如下错误：
 
@@ -680,7 +681,7 @@ The error occurred while evaluating nil.each
 
 *+action_view.cache_asset_ids+* 当 Active Support 加载时，设置 +ActionView::Helpers::AssetTagHelper::AssetPatchs.cache_asset_ids+ 为 +false+, 但前提是 +config.cache_classes+ 也有加载。
 
-*+active_view.javascript_expansions+* 登记由 +config.active_view.javascript_expansions+ 和 +config.action_view.stylesheet_expansions+ 建立起来的扩展名，这个扩展名可以被 Action View 识别并且在试图中使用.
+*+active_view.javascript_expansions+* 登记由 +config.active_view.javascript_expansions+ 和 +config.action_view.stylesheet_expansions+ 建立起来的扩展名，这个扩展名可以被 Action View 识别并且在视图中使用.
 
 *+action_controller.logger+* 设置 +ActionController::Base.logger+ -- 如果这个还没有设置 -- 为 +Rails.logger+。
 
@@ -696,7 +697,7 @@ The error occurred while evaluating nil.each
 
 *+active_record.set_configs+* 通过使用 +config.active_record+ 里的设置来建立 Action Record. 而这个初始化程序是将方法名作为 setters +send+ 给 +ActionRecord::Base+ 并通过它传值来使用 +config.active_record+ 的设置的。
 
-*+active_record.initialize_database+* 从 +config/database.yml+ 加载数据库配置(默认)并为当前环境简历连接。
+*+active_record.initialize_database+* 从 +config/database.yml+ 加载数据库配置(默认)并为当前环境建立连接。
 
 *+active_record.log_runtime+* 引入 +ActiveRecord::Railties::ControllerRuntime+，它会负责为请求代码块向日志器报告 Active Record 调用所使用的时间.(译者注: 就是说 +ActiveRecord::Railties::ControllerRuntime+ 会记录一个请求发生时调用 Active Record 所占用的时间到日志里)
 
@@ -762,4 +763,4 @@ development:
 
 所有的请求在第一次需要访问数据库的时候都会签出一个连接, 随后将会将连接签入回去. 在请求结束的时候,也就意味着该附加连连接槽应该可以给队列中的下一个请求使用.
 
-NOTE. 如果你启用了 +Rails.threadsafe!+ 模式, 那么就有机会又数个线程同时访问多个连接. 所有根据你当前的请求量, 有多个线程竞争数量有限的连接也是没问题的.
+注意. 如果你启用了 +Rails.threadsafe!+ 模式, 那么就有机会又数个线程同时访问多个连接. 所有根据你当前的请求量, 有多个线程竞争数量有限的连接也是没问题的.
