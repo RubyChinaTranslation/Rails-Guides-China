@@ -93,9 +93,8 @@
     - 
       name: Rails 应用配置指南
       url: configuring.html
-      work_in_progress: true
       contributor: ichord
-      description: 这个指南覆盖Rails应用的所有基本配置.
+      description: 这个指南是一份全面的 Rails 应用基本配置指南.
     - 
       name: Rails Command Line Tools and Rake Tasks
       url: command_line.html
