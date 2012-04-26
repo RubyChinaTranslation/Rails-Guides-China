@@ -2,8 +2,8 @@
 
 如果你也想为 Ruby on Rails 社区出一份力就从这里开始吧！
 
-http://www.railschina.org/
- 
+http://guides.ruby-china.org
+
 ## Rails Guides 中文
  
 Rails Guides 中文是由 [docrails](https://github.com/lifo/docrails) 中的 guides 修改而来，你可以在[这里](http://guides.rubyonrails.org) 找到官方的原版 Ruby on Rails Guides。Rails Guides 中文目前开源的共享在 [github](https://github.com/RubyChinaTranslation/rails-guides-china)上，你可以根据协议使用并且修改它，Rails Guides 中文希望能为任何热爱 Ruby on Rails 的朋友提供一个共享的文档平台，文章的作者对文章保有一切权利。
