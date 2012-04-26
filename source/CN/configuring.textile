@@ -177,7 +177,7 @@ end
 
 可以在这个代码块里使用的所有方法列表如下:
 
-* +assets+ 允许在创建一个脚手架(scaffold)时候创建资源文件。默认是 +true+
+* +assets+ 允许在创建一个 scaffold 时候创建资源文件。默认是 +true+
 * +force_plural+ 运行将数据模型(model)的名字都变成复数。默认是 +false+
 * +helper+ 指定是否要创建 helpers. 默认是 +true+
 * +integration_tool+ 指定使用哪个集成工具。默认是 +nil+
@@ -396,7 +396,7 @@ config.action_view.javascript_expansions[:prototype] = ['prototype', 'effects', 
 
 * +cofnig.action_view.embed_authenticity_token_in_remote_forms+ 让你设置具有 +:remote => true+ 属性的表单中是否默认带有 +authenticity_token+。默认情况下这个值设置为 false , 这意味着远程表单里将不包含 +authenticity_token+，这对你局部缓存表单会很有用。运程表单将通过 +meta+ 标签获得真实性(认证), 所以嵌入是必要的，除非你支持没有 Javascript 的浏览器。在这种情况下，你可以投递 +:authenticity_token => true+ 作为表单参数或者将这个配置设置为 +true+
 
-* +config.action_view.prefix_partial_path_with_controller_namespace+ 用来指定控制器是否从模板的子目录中根据控制器的命名空间搜索partial模板。例如，考虑某个命名为 +Admin::PostsController+ 的控制器，它渲染这个模板:
+* +config.action_view.prefix_partial_path_with_controller_namespace+ 用来指定控制器是否从模板的子目录中根据控制器的命名空间搜索 partial 模板。例如，考虑某个命名为 +Admin::PostsController+ 的控制器，它渲染这个模板:
 
 <erb>
 <%= render @post %>
