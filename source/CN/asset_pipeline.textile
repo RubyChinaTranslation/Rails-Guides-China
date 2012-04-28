@@ -49,4 +49,28 @@ asset pipline 的第三个功能是它能你使用更高级的语言来编写资
 
 h4. 什么是指纹识别和为什么我们要关心
 
-指纹识别是一项使一个文件的名字根据文件的内容而定的技术。当文件的内容改变了，文件名也会变。
+指纹识别是一项使一个文件的名字根据文件的内容而定的技术。当文件的内容改变了，文件名也会变。 这提供了辨别两个版本的文件是同一个文件的方法，即使是跨越不同的服务器和部署日期。
+
+当一个文件的名字是唯一的并且基于它的内容， HTTP 头部可以被设定为在任何地方缓存(无论是在 CDNs, 在 ISPs, 在网络设备里，或者是在网页浏览器里)去保存它们自己内容的副本。当内容更新了，指纹识别也会变更。这会引起远端客户端发出一个新的请求获得内容。这一般被叫做 _cache busting_.
+
+Rails 用于指纹识别的技术是将内容的 hash 插入到名字里，通常在尾部。例如 +global.css+ CSS文件可以被重命名为一个带有它的内容的 MD5 digest:
+
+<plain>
+global-908e25f4bf641868d8683022a5b62f54.css
+</plain>
+
+这是 Rails asset pipline 所使用的测录俄。
+
+#FIXME in the source
+Rails 的旧策略是为每个资源附加一个以日期为基础的查询字符串，这些 asset 都关联这一个内建的 helper. 源文件生成的代码看起来像这样:
+
+<plain>
+/stylesheets/global.css?1309495796
+</plain>
+
+这个查询字符串策略有这些弊端:
+
+<ol>
+  <li>
+    <strong>当文件名只是查询参数部分的不同，不是所有的缓存都会确实地缓存了内容。<br>
+    "Steve Souders recommends":http://www.stevesouders.com/blog/2008/08/23/revving-filenames-dont-use-querystring/, ""
