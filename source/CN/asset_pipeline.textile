@@ -39,8 +39,7 @@ pipline 的第一个功能就是合并资源。这在生产环境非常重要，
 
 Rails 2.x 介绍了将 +:cache => true+ 放置到 +javascript_include_tag+ 或 +stylesheet_link_tag+ 方法的尾部能合并 JavaScript 或 CSS 资源。但这个技术有些不足。例如，它不能预先产生缓存和它不能显式调用由第三方库提供的资源。
 
-#FIXME： so that...
-从 3.1 版开始， Rails 默认将所有的 JavaScript 文件合并成一个主要的 +.js+ 文件，和将所有的 CSS 文件合并成一个主要的 +.css+ 文件。 你将可以在本指南后面学习到如何自定义管理这些文件的策略。在生产环境中， 文件被网页浏览器缓存后，Rails 给每个文件名插入一个 MD5 指纹。你通过修改指纹使缓存无效，这在你修改文件后会自动发生。
+从 3.1 版开始， Rails 默认将所有的 JavaScript 文件合并成一个主要的 +.js+ 文件，和将所有的 CSS 文件合并成一个主要的 +.css+ 文件。 你将可以在本指南后面学习到如何自定义管理这些文件的策略。在生产环境中， Rails 给每个文件名插入一个 MD5 指纹,以便文件被网页浏览器缓存。你通过修改指纹使缓存无效，这在你修改文件后会自动发生。
 
 #FIXME: a set of build.
 asset pipline 的第二个功能是资源的缩小或者压缩。对于 CSS 文件，是通过去除空格和注释来实现的。对于 JavsScript, 会有更多的复杂过程。你可以选择一系列可选的构建或者你自己指定。
@@ -73,4 +72,95 @@ Rails 的旧策略是为每个资源附加一个以日期为基础的查询字�
 <ol>
   <li>
     <strong>当文件名只是查询参数部分的不同，不是所有的缓存都会确实地缓存了内容。<br>
-    "Steve Souders recommends":http://www.stevesouders.com/blog/2008/08/23/revving-filenames-dont-use-querystring/, ""
+    "Steve Souders recommends":http://www.stevesouders.com/blog/2008/08/23/revving-filenames-dont-use-querystring/, "...避免对可缓存资源使用查询字符串"。它发现在这种情况下有 5-20% 的请求都不会被缓存。特别是针对一些CDNs的独立缓存，查询字符串起不到太大的作用。。
+  </li>
+  <li>
+    <strong>在多服务器环境中，文件名可以在不同的节点之间改变。</strong><br>
+    Rails 2.x 默认的查询字符是根据于文件的修改时间来。当资源被部署到某个集群，不能确定时间戳会是一样的。这会导致随着处理请求的服务器的不同而使用不同的值。
+  </li>
+  <li>
+    <strong>过多的独立缓存</strong><br/>
+    每当静态资源随着新版本的代码部署时，_所有_这些文件的 mtime 都会改变，迫使所有的远程客户端重新刷新它们，即使这些资源的内容没有发生改变。
+  </li>
+</ol>
+
+指纹识别没有使用查询字符串而且确保了文件名与其内容保持同步，所以解决了这些问题。
+
+指纹识别在生产环境下是默认开启的，而在所有其它的环境下是关闭的。你可以通过配置文件的 +config.assets.digest+ 选参去开启或者关闭它。
+
+更多读物:
+
+* "Optimize caching":http://code.google.com/speed/page-speed/docs/caching.html
+* "Revving Filenames: don’t use querystring":http://www.stevesouders.com/blog/2008/08/23/revving-filenames-dont-use-querystring/
+
+h3. 如何使用 Asset Pipeline
+
+在 Rails 之前的版本里，所有的资源都放置在 +public+ 的子目录下比如 +images+, +javascript+ 和 +stylesheets+. 对于 asset pipline, 这些资源现在被指定到 +app/assets+ 目录。这个目录下的所有文件都被交由 Sprockets 中间件处理，这个中间件通过引入 sprockets gem 使用。
+
+资源依然可以被放置在 +public+ 目录下。 所有位于 +public+ 目录下的文件都会作为静态资源由应用程序或者 web 服务器处理。在可用之前必须作一些预处理的文件要放在 +app/assets+ 里。
+
+在生产中，Rails 默认预编译这些文件到 +public/assets+。 预编译过后的副本会被web 服务器用作静态资源。在生产中，+app/assets+ 里的文件从不被直接使用。
+
+当你创建一个 scaffold 或者一个控制器时，Rails 也会为该控制器创建一个 JavaScript 文件 (或者 CoffeeScript 文件，如果 +Gemfile+ 里有 +coffee-rails+ gem 的话) 和一个层叠式样式表文件 (或者 SCSS 文件，如果 +Gemfile+ 里有 +sass-rails+的话)
+
+例如，如果你生成一个 +ProjectsController+, Rails 会同时添加一个新文件位于 +app/assets/javascripts/projects.js.coffee+ 和另一个位于 +app/assets/stylesheets/projects.css.scss+。你应该将针对某个控制器的 Javascript 和 CSS 放置到它们各自的资源文件里，以便这些文件可以只为这些控制器被加载, 使用诸如 +<%= javascript_include_tag params[:controller] %>+ 或者 +<%= stylesheet_link_tag params[:controller] %>+ 进行加载.
+
+NOTE: 为了使用 CoffeeScript， 你必须有一个 "ExecJS":https://github.com/sstephenson/execjs#readme 支持的运行时。如果你使用 Mac OS X 或者 Windows，那你的操作系统已经安装好一个 Javascript 运行时了。 查阅 "ExecJS":https://github.com/sstephenson/execjs#readme 文档了解更多支持的 JavaScript 运行时。
+
+h4. 资源组织
+
+Pipeline assets 可以被放置到一个应用程序中这三个位置中的一个: +app/assets+, +lib/assets+ 或者 +vendor/assets+.
+
++app/assets+ 放置属于应用程序的资源，比如自选图像，JavaScript 文件和样式文件。
+
++lib/assets+ 用于不在应用程序范围内的自有函式库，或者那些跨应用程序共通的函式。
+
++vendor/assets+ 用于属于外部实体的资源，比如 JavaScript 插件和 CSS 框架的代码。
+
+h5. 搜寻路径
+
+当一个文件在 manifest 或者 helper 中被指引，Sprockets 会在三个不同的资源地址去搜寻它.
+
+默认的位置是: +app/assets/images+ 和那三个资源地址下的所有 +javascripts+， +stylesheets+ 子目录。
+
+例如，这三个文件:
+
+<plain>
+app/assets/javascripts/home.js
+lib/assets/javascripts/moovinator.js
+vendor/assets/javascripts/slider.js
+</plain>
+
+会在 manifest 里被指引如下:
+
+<plain>
+//= require home
+//= require moovinator
+//= require slider
+</plain>
+
+子目录下的资源同样也可以被访问。
+
+<plain>
+app/assets/javascripts/sub/something.js
+</plain>
+
+会像这样被指引:
+
+<plain>
+//= require sub/something
+</plain>
+
+你可以在 Rails console 里检阅 +Rails.application.config.assets.paths+，就可以看到那些搜寻路径了。
+
+附加的(完全有资格的)路径可以在 +config/application.rb+ 里被添加到 pipeline。例如:
+
+<ruby>
+config.assets.paths << Rails.root.join("app", "assets", "flash")
+</ruby>
+
+路径会按找在搜寻路径中出现的顺序被历遍。
+
+有一点非常重要要注意的是，你像在 manifest 外引用的文件必须加载预编译数组里，否则它们在生产环境将不可以用。
+
+h5. 使用索引文件
