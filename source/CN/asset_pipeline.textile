@@ -164,3 +164,53 @@ config.assets.paths << Rails.root.join("app", "assets", "flash")
 有一点非常重要要注意的是，你像在 manifest 外引用的文件必须加载预编译数组里，否则它们在生产环境将不可以用。
 
 h5. 使用索引文件
+
+Sprockets 对一些特殊的用途会使用名为 +index+ (使用相关扩展) 的文件。
+
+#FIXME manifest
+例如，如果你的许多模块都要使用某个 jQuery 函式库，这个函式库存放在 +lib/assets/library_name+。 +lib/assets/library_name/index.js+ 会作为这个库的所有文件的 manifest. 这个文件可以按顺序包含一组需要使用的文件，或者一个简单的 <tt>require_tree</tt> 指令。
+
+这个函式库可以作为一个整体被网站应用程序的 manifest 像这样访问：
+
+<plain>
+//= require library_name
+</plain>
+
+通过让相关的代码在被其它地方引用之前组织起来，简化了组织结构而且保持事务清晰。
+
+h4. 连接资源的代码。
+
+Sprockets 不添加任何新方法去访问你的资源 - 你依旧使用熟悉的 +javascript_include_tag+ 和 +stylesheet_link_tag+.
+
+<erb>
+<%= stylesheet_link_tag "application" %>
+<%= javascript_include_tag "application" %>
+</erb>
+
+在一般的视图里，你可以这样访问 +assets/images+ 目录下的图片：
+
+<erb>
+<%= image_tag "rails.png" %>
+</erb>
+
+这在你的应用程序使用了 pipeline (并且在当前的环境上下文中没有被关闭)时才会提供，这些文件通过 Sprockets 获得。 如果文件位于 +public/assets/rails.png+ 那么它将通过 web 服务器获得。
+
+另一种情况是，请求一个带有 MD5 哈希值的文件如 +public/assets/rails-af27b6a414e6da00003503148be9b409.png+ 会被同样对待。 在本指南后续的 "In Production":#in-production 章节会介绍这些哈希值是如何生成的。
+
+Sprockets 也会搜寻在 +config.assets.paths+ 指定的所有路径，这些路径包括常规的应用程序路径和任何被 Rails engines 添加进来的路径。
+
+如果需要，图片也可以被组织到子目录里，然后在标签中通过指定目录名来访问它们:
+
+<erb>
+<%= image_tag "icons/rails.png" %>
+</erb>
+
+h5. CSS 和 ERB
+
+asset pipeline 会自动解析 ERB. 这意味着如果你添加 +erb+ 扩展名到一个 CSS 资源 (例如， +application.css.erb+), 那么 helpers 如 +asset_path+ 就可以在你的 CSS 规则中使用:
+
+<plain>
+.class { background-image: url(<%= asset_path 'image.png' %>) }
+</plain>
+
+这会写入被指定的资源的路径。在这个例子中，它可以是任何
