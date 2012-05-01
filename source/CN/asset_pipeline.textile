@@ -276,4 +276,139 @@ NOTE. 在 Rails 3.1 里， +jquery-rails+ gem 通过 asset pipline 提供了 +jq
 
 +require_tree+ 指令告诉 Sprockets 递归地去包含在指定目录下_所有_ 的 JavaScript 文件到输出里。 这些路径必须在 manifest 文件中有相关的指定。 有也可以使用 +require_directory+ 指令，它会将在某个特定目录下所有的 JavaScript 文件包含进去，但不递归。
 
-指令会从上到下进行处理， 但是通过 +require_tree+ 包含进来的文件的顺序就没有规定。
+#FIXME: include
+指令会从上到下进行处理， 但是通过 +require_tree+ 包含进来的文件的顺序就没有规定。你不应该在它们中安排顺序。如果你想在合并起来的文件中确保某个 JavaScript 文件内容在其它之前结束， 先将首要的文件在 manifest 加入。 注意 +require+ 指令家族会防止文件被重复包含到输出里。
+
+Rails 也会创建一个默认的 +app/assets/stylesheets/application.css+ 文件，包含以下内容：
+
+<plain>
+/* ...
+*= require_self
+*= require_tree .
+*/
+</plain>
+
+在 JavaScript 文件里可用的指令也可用于 stylesheets (当然是包含 stylesheets 文件而不是 JavaScript 文件). +require_tree+ 指令在 CSS manifest 中的用法和在 JavaScript 的用法是一样的，就是加入当前目录下的所有 stylesheets 文件。
+
+#FIXME: all
+在这个例子中使用了 +require_self+。 这将文件中的 CSS (如果有) 放置到 +require_self+ 调用的准确位置。如果 =require_self+ 被调用超过一次，只有最后一次调用有效。
+
+NOTE. 如果你像使用多个 Sass 文件，你通常可以使用 "Sass +@import+ rule":http://sass-lang.com/docs/yardoc/file.SASS_REFERENCE.html#import 替代这些 Sprockets 指令。使用 Sprockets 指令的话，所有在 Sass 文件中定义的变量和 mixins 都只能在其被定义的文档中可用.(译者注: 虽然合并成同一个文件，但定义的变量等是相对独立的。而用 +@import+ 的话则可以在所有关联的 Sass 文件中通用.)
+
+你可以有和你需要的一样多的 manifest 文件。例如 +admin.css+ 和 +admin.js+ manifest 可以包括被用于应用程序管理部分的 JS 和 CSS 文件.
+
+排序方式和前面提到的一样。特殊情况下， 你可以指定独立的文件然后它们就会被按照指定的顺序编译。例如，你会通过这个方法合并三个 CSS 文件：
+
+<plain>
+/* ...
+*= require reset
+*= require layout
+*= require chrome
+*/
+</plain>
+
+#FIXME: 预加工?
+h4. 预处理
+
+文件的扩展名被用于判断某个资源文件要进入哪个预处理。当一个控制器或者一个 scaffold 是由 Rails 默认的 gemset 生成时， CoffeeScript 文件和 SCSS 文件会代替 常规的 JavaScript 和 CSS 文件被生成。 前面的使用过例子的控制器为 "projects"，它会生成一个 +app/assets/javascripts/projects.js.coffee+ 和一个 +app/assets/stylesheets/project.css.scss+ 文件。
+
+当这些文件被请求时，它们会分别被 +coffee-script+ 和 +sass+ gem 提供的处理器处理，然后编译好的 JavaScript 和 CSS 文件送回给浏览。
+
+其它层的预处理可以通过添加其它的扩展被加入，扩展的处理顺序按是从右到左。这应该用于需要按顺序处理的过程。例如，一个名为 +app/assets/stylesheets/project.css.scss.erb+ 的式样文件是被当作 ERB 处理，然后是 SCSS，最后为 CSS。对应用到 JavaScript 文件也是同样的 -- +app/assets/javascript/projects.js.coffee.erb+ 显示作为 ERB, 然后是 CoffeScript, 接着就是 JavaScript了。
+
+谨记这些处理器的顺序是很重要的。例如，如果调用你的 JavaScript 文件 +app/assets/javascripts/projects.js.erb.coffee+， 那么现由 CoffeeScript 拦截器先处理。它不能解析 ERB 所以你会碰到问题。
+
+h3. 在开发中
+
+在开发环境中，资源文件按照在 manifest 文件中的指定顺序分开处理。
+
+这个 manifest +app/assets/javascript/application.js+：
+
+<plain>
+//= require core
+//= require projects
+//= require tickets
+</plain>
+
+会生成如下 HTML:
+
+<html>
+<script src="/assets/core.js?body=1"></script>
+<script src="/assets/projects.js?body=1"></script>
+<script src="/assets/tickets.js?body=1"></script>
+</html>
+
+Sprockets 需要 +body+ 参数.
+
+h4. 关闭调试
+
+你可以通过如下更新 +config/enviorments/development.rb+文件以关闭调式模式:
+
+<ruby>
+config.assets.debug = false
+</ruby>
+
+当调试模式关闭后，Sprockets 对所有的文件进行必要的预处理和合并。随着调试模式的关闭，相对与上面 manifest会生成:
+
+<html>
+<script src="/assets/application.js"></script>
+</html>
+
+在服务器启动后，资源在第一次请求时被编译并缓存。Sprockets 设置 +must-revalidate+ Cache-Control 的 HTTP 头部去防止在后续的请求开销 -- 浏览器会获得一个 304 (Not Modified) 的回应。
+
+如果在各请求之间，任何在 manifest 里的文件发生了变更，服务器会返回一个重新编译的文件。
+
+调试模式也可以通过 Rails 的 helper 方法开启：
+
+<erb>
+<%= stylesheet_link_tag "application", :debug => true %>
+<%= javascript_include_tag "application", :debug => true %>
+</erb>
+
+如果调试模式已经开启，+:debug+ 选项则是多余的。
+
+#FIXME: potentially
+你也可以在开发模式中部分开启压缩以作一个健全检查，还可以在需要调试时按需关闭。
+
+h3. 在生产中
+
+在生产环境中，Rails 使用上面提到过的指纹识别结构。默认情况下，Rails 认为资源已经预编译过并且将会由 web 服务器以静态资源处理。
+
+在预编译阶段，MD5 是从已编译的内容生成的，然后在文件写入到磁盘时插入到文件名中。这些指纹识别过的名字都被用于 Rails helpers 替代 manifest 的名字。
+
+例如这个:
+
+<erb>
+<%= javascript_include_tag "application" %>
+<%= stylesheet_link_tag "application" %>
+</erb>
+
+生成像这样的东西：
+
+<html>
+<script src="/assets/application-908e25f4bf641868d8683022a5b62f54.js"></script>
+<link href="/assets/application-4dd5b109ee3439da54f5bdfd78a80473.css" media="screen" rel="stylesheet" />
+</html>
+
+这个指纹识别动作是由 Rails 的 +config.assets.digest+ 设置控制的 (默认除了在生产环境中为 +true+ 外，其它环境都为 +false+).
+
+#FIXME: digests
+NOTE: 一般情况下默认选项不应该被改变。如果文件名里没有 digests，而且 far-futrue 头部也没有设置的话，远程客户端永远都不会在它们的内容变更时去刷新它们。
+
+h4. 预编译资源
+
+Rails 本身绑定了一个 rake 任何去编译资源 manifest 和 pipeline 中的其它文件到磁盘里。
+
+编译后的资源都被写入到了在 +config.assets.prefix+ 指定的位置里。默认情况下，是 +pulibc/assets+ 目录。
+
+在开发期间你可以在服务器调用这个任务以直接在服务器上生成已编译版本的资源文件。 如果你对生产环境的文件系统没有写入权限， 你可以在本地调用这个任务然后部署编译好的资源。
+
+这个 rake 任何是:
+
+<plain>
+bundle exec rake assets:precompile
+</plain>
+
+为了更快速的预编译资源，你可以在 +config/application.rb+ 里将 +config.assets.initialize_on_precompile+ 设置为 +false+ 去部分加载你的应用程序。虽然这么做模板会看不到应用程序对象和方法。 *Heroku 要求这个为 false.*
+
+WARNING: 
