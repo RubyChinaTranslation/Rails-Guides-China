@@ -411,4 +411,52 @@ bundle exec rake assets:precompile
 
 为了更快速的预编译资源，你可以在 +config/application.rb+ 里将 +config.assets.initialize_on_precompile+ 设置为 +false+ 去部分加载你的应用程序。虽然这么做模板会看不到应用程序对象和方法。 *Heroku 要求这个为 false.*
 
-WARNING: 
+#FIXME: Should be reviewed
+WARNING: 如果你设置 +config.assets.initialize_on_precomile+ 为 false, 请在部署之前确保在本地测试 +rake assets:precompile+. 这应该会因为你的资源引用了应用程序对象或者方法而报错, 因为在开发模式范围内会忽略这个标记的值. 改变这个标记也会影响到 engines. Engines 也可以指定预编译资源. 因为完整的环境还没有加载完, engines (或者其他的 gems) 也不会被加载, 这会引起资源丢失.
+
+Capistrano (v2.8.0 或以上) 包含了一个处理这个情况的方法. 把下面这行加到 +Capfile+:
+
+<erb>
+load 'deploy/assets'
+</erb>
+
+这把在 +config.assets.prefix+ 里指定的目录链接到 +shared/assets+. 如果你已经使用了这个共享文件夹, 那你就需要自己写一个部署任务了.
+
+#FIXME: life of the cacehd page
+这个目录在开发过程之间共享是很重要的, 因为这样做可以让远程地缓存页面(引用旧的已编译资源)依然对有已缓存页面的 life 作用.
+
+NOTE. 如果你在本地预编译资源, 你可以在服务器上使用 +bundle install --without assets+ 去避免安装资源 gem ( Gemfile 里资源分组的 gems).
+
+编译文件的默认匹配器包括 +application.js+, +application.css+ 和所有非 JS/CSS 文件 (会自动包含所有的图像资源):
+
+<ruby>
+[ Proc.new{ |path| !File.extname(path).in?(['.js', '.css']) }, /application.(css|js)$/ ]
+</ruby>
+
+NOTE. 那些匹配器 (和其它在预编译数组里的成员; 看下面) 适用已经最后编译好的文件名. 也就是说所有要编译成 JS/CSS 的文件都不会被包含, 要和 JS/CSS 文件一样; 例如, +.coffee+ 和 +.scss+ 文件都*不*会被自动包含进去,因为它们要编译成 JS/CSS.
+
+如果又其它的 manifests 或者单独的式样和 JavaScript 文件要包含, 你应该将它们添加到 +precompile+ 数组里:
+
+<erb>
+config.assets.precompile += ['admin.js', 'admin.css', 'swfObject.js']
+</erb>
+
+rake 任务也会生成一个 +manifest.yml , 这个文件包含了所有资源和它们各自的指纹识别列表. 这被 Rails helper 方法用于避免将匹配请求调回给 Sprockets. 常规的 manifest 文件像这样:
+
+<plain>
+---
+rails.png: rails-bd9ad5a560b5a3a7be0808c5cd76a798.png
+jquery-ui.min.js: jquery-ui-7e33882a28fc84ad0e0e47e46cbf901c.min.js
+jquery.min.js: jquery-8a50feed8d29566738ad005e19fe1c2d.min.js
+application.js: application-3fdab497b8fb70d20cfc5495239dfc29.js
+application.css: application-8af74128f904600e41a6e39241464e03.css
+</plain>
+
+manifest 的默认位置是 +config.assets.prefix+ (默认为 '/assets') 指定的位置.
+这可以在 +config.assets.manifest+ 选项更改, 并且必须指定一个完整的路径:
+
+<erb>
+config.assets.manifest = '/path/to/some/other/location'
+</erb>
+
+NOTE: 如果在生产环境中有已预编译资源的丢失, 你将会得到一个 <tt> Sprockets::Helpers::RailsHelper::AssetPaths::AssetNotPrecompiledError</tt> 异常去指明丢失的文件.
