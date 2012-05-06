@@ -459,4 +459,62 @@ manifest 的默认位置是 +config.assets.prefix+ (默认为 '/assets') 指定�
 config.assets.manifest = '/path/to/some/other/location'
 </erb>
 
-NOTE: 如果在生产环境中有已预编译资源的丢失, 你将会得到一个 <tt> Sprockets::Helpers::RailsHelper::AssetPaths::AssetNotPrecompiledError</tt> 异常去指明丢失的文件.
+NOTE: 如果在生产环境中有已预编译资源的丢失, 你将会得到一个 <tt> Sprockets::Helpers::RailsHelper::AssetPaths::AssetNotPrecompiledError</tt> 异常去指明丢失的文件名.
+
+h5. Far-future Expires header
+
+已预编译的资源存在于文件系统里并且直接由你的 web 服务器提供。它们默认不具有 far-future 头部， 由于指纹识别的影响，你不得不更改你的服务器配置去添加它们。
+
+对于 Apache:
+
+<plain>
+<LocationMatch "^/assets/.*$">
+  # Use of ETag is discouraged when Last-Modified is present
+  Header unset ETag
+  FileETag None
+  # RFC says only cache for 1 year
+  ExpiresActive On
+  ExpiresDefault "access plus 1 year"
+</LocationMatch>
+</plain>
+
+对于 nginx:
+
+<plain>
+location ~ ^/assets/ {
+  expires 1y;
+  add_header Cache-Control public;
+
+  add_header ETag "";
+  break;
+}
+</plain>
+
+h5. GZip 压缩器
+
+当文件被预编译时， Sprockets 也会创建一个 "gzipped":http://en.wikipedia.org/wiki/Gzip (.gz) 版本的资源文件。 Web 服务器一般会配置使用一个适当的压缩率作为折衷方案，但由于预编译只发生一次，Sprockets 使用最大的压缩比率。 这样可以使传输的数据达到最小值。另外， web 服务器可以配置成直接从磁盘获取压缩内容， 而不用自己压缩这些未压缩文件。
+
+Nginx 会在开启 +gzip_static+ 时自动这么做：
+
+<plain>
+location ~ ^/(assets)/  {
+  root /path/to/public;
+  gzip_static on; # to serve pre-gzipped version
+  expires max;
+  add_header Cache-Control public;
+}
+</plain>
+
+这个指令在提供了该功能的核心模块被编译进 web 服务器时可用。 Ubuntu 的软件包, 即使是 +nginx-light+ 也有编译这个模块。不然， 你就需要自己手动编译：
+
+<plain>
+./configure --with-http_gzip_static_module
+</plain>
+
+如果你用 Phusion Passenger 编译 nginx， 那么你需要在提示这个选项时让它通过。
+
+强制配置 Apache 是可行的，但棘手。 请 Google。 (或者请更新这个指南，如果你有对 Apache 很好的配置示例)
+
+h4. 即时编译
+
+
