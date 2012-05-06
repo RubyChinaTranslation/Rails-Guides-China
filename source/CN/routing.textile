@@ -46,36 +46,36 @@ h4. 用代码生成 URL 和 路径
 
 h3. Resource 路由规则: Rails 之道
 
-Resource 路由规则能让你迅速地声明一个 resourceful 的控制器所需常用路由规则。
-Resource routing allows you to quickly declare all of the common routes for a given resourceful controller. Instead of declaring separate routes for your +index+, +show+, +new+, +edit+, +create+, +update+ and +destroy+ actions, a resourceful route declares them in a single line of code.
+Resource 路由规则能让你迅速地构建出 resourceful 的控制器所需常用路由规则，它可以自动地为你生成 +index+, +show+, +new+, +edit+, +create+, +update+ 和 +destroy+ 行为，而一个 Resourceful 的路由声明只需要一行代码。
+ 
 
-h4. Resources on the Web
+h4. web 与 Resource
 
-Browsers request pages from Rails by making a request for a URL using a specific HTTP method, such as +GET+, +POST+, +PATCH+, +PUT+ and +DELETE+. Each method is a request to perform an operation on the resource. A resource route maps a number of related requests to actions in a single controller.
+浏览器向 Rails 的一个页面发起请求 URL 的时候必须要指定一个 HTTP 请求方法，例如 +GET+, +POST+, +PATCH+, +PUT+ and +DELETE+.这些方法将会对 Rails 中的资源进行不同的操作。而一个 Resource 的路由规则将会为一个控制器自动匹配多种相关方法。
 
-When your Rails application receives an incoming request for
+例如，当你的 Rails 程序接收到了这样的请求：
 
 <plain>
 DELETE /photos/17
 </plain>
 
-it asks the router to map it to a controller action. If the first matching route is
+它会向 路由请求匹配到一个控制器行为上，这里假设匹配上了我们路由上的这条规则
 
 <ruby>
 resources :photos
 </ruby>
 
-Rails would dispatch that request to the +destroy+ method on the +photos+ controller with <tt>{ :id => "17" }</tt> in +params+.
+Rails 就将会把这个请求分发到 +photos+ 控制器下的 +destroy+ 方法下，并且把 <tt>{ :id => "17" }</tt> 作为 +params+ 的值.
 
-h4. CRUD, Verbs, and Actions
+h4. CRUD, Verbs, Actions
 
-In Rails, a resourceful route provides a mapping between HTTP verbs and URLs to controller actions. By convention, each action also maps to particular CRUD operations in a database. A single entry in the routing file, such as
+对于 Rails 一个 Resourceful 的路由提供了一组 HTTP 和 控制器行为的对应关系。它还约定了与每个行为相对应的 CRUD 的数据库操作。例如这样的一个 简单的 路由记录：
 
 <ruby>
 resources :photos
 </ruby>
 
-creates seven different routes in your application, all mapping to the +Photos+ controller:
+将会在应用中生成七个不同的路由记录，他们都会匹配到 +Photos+ 控制器上去。
 
 |_. HTTP Verb |_.Path            |_.action |_.used for                                   |
 |GET          |/photos           |index    |display a list of all photos                 |
@@ -86,30 +86,31 @@ creates seven different routes in your application, all mapping to the +Photos+ 
 |PATCH/PUT    |/photos/:id       |update   |update a specific photo                      |
 |DELETE       |/photos/:id       |destroy  |delete a specific photo                      |
 
-NOTE: Rails routes are matched in the order they are specified, so if you have a +resources :photos+ above a +get 'photos/poll'+ the +show+ action's route for the +resources+ line will be matched before the +get+ line. To fix this, move the +get+ line *above* the +resources+ line so that it is matched first.
+NOTE: Rails 路由的匹配是按照规则顺序匹配的，所以如果在你的路由规则中有一句 +resources :photos+，接着一句 +get 'photos/poll'+， 这样的话 +resources+ 定义的 +show+ 这个行为会比 +get+ 方法优先完成匹配。如果这样并非是你的本意，你只要将 +get 'photos/poll'+ 调到 +resources+ 那行的前面就可以先行指定特别的匹配规则。
 
-h4. Paths and URLs
+h4.  URL 和 Path
 
-Creating a resourceful route will also expose a number of helpers to the controllers in your application. In the case of +resources :photos+:
+建立一个 Resourceful 的路由的同时也会为你的应用自动添加一系列的 Helper 方法。以上面的 +resources :photos+ 路由规则为例：
 
-* +photos_path+ returns +/photos+
-* +new_photo_path+ returns +/photos/new+
-* +edit_photo_path(:id)+ returns +/photos/:id/edit+ (for instance, +edit_photo_path(10)+ returns +/photos/10/edit+)
-* +photo_path(:id)+ returns +/photos/:id+ (for instance, +photo_path(10)+ returns +/photos/10+)
+* +photos_path+ 会返回 +/photos+
+* +new_photo_path+ 返回 +/photos/new+
+* +edit_photo_path(:id)+ 返回 +/photos/:id/edit+ (例如, +edit_photo_path(10)+ 返回 +/photos/10/edit+)
+* +photo_path(:id)+ 返回 +/photos/:id+ (例如, +photo_path(10)+ returns +/photos/10+)
 
-Each of these helpers has a corresponding +_url+ helper (such as +photos_url+) which returns the same path prefixed with the current host, port and path prefix.
+同时，这些 +_path+ Helper 方法还有一个对应的 +_url+ Helper (例如 +photos_url+) 
+后者将会返回包含了主机，端口等信息的绝对路径地址。
 
-NOTE: Because the router uses the HTTP verb and URL to match inbound requests, four URLs map to seven different actions.
+NOTE: 因为路由器可以使用 HTTP 动词 加上一个 URL 来匹配受到的请求，所以四个不同的 URL 可以组合出7种不同的行为。
 
-h4. Defining Multiple Resources at the Same Time
+h4. 同时定义多个 Resource  
 
-If you need to create routes for more than one resource, you can save a bit of typing by defining them all with a single call to +resources+:
+如果你想在路由表中建立多个 Resource， 你可以把他们写到一行里面去，这样只需要调用一个 +resources+ ，同时为你节约点输入时间：
 
 <ruby>
 resources :photos, :books, :videos
 </ruby>
 
-This works exactly the same as
+它和下面这样写的效果是一样的：
 
 <ruby>
 resources :photos
@@ -117,21 +118,21 @@ resources :books
 resources :videos
 </ruby>
 
-h4. Singular Resources
+h4. 单件 Resources
 
-Sometimes, you have a resource that clients always look up without referencing an ID. For example, you would like +/profile+ to always show the profile of the currently logged in user. In this case, you can use a singular resource to map +/profile+ (rather than +/profile/:id+) to the +show+ action.
+有时候，你并不需要一个能够根据ID查询个体的 resource 。例如，你可能会想用 +/profile+ 来显示当前登录用户的简介，这时候你可以用 map +/profile+ (或者 +/profile/:id+) 一个单体化的 Resource 来匹配 show 行为。
 
 <ruby>
-match "profile" => "users#show"
+match "profile" => "users#show"                           
 </ruby>
-
-This resourceful route
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+或者这样来声明一个 Resourceful 的资源：
 
 <ruby>
 resource :geocoder
 </ruby>
 
-creates six different routes in your application, all mapping to the +Geocoders+ controller:
+它会为你的应用建立六个不同的 routes ，都将匹配到 +Geocoders+ 控制器:
 
 |_.HTTP Verb |_.Path         |_.action |_.used for                                    |
 |GET         |/geocoder/new  |new      |return an HTML form for creating the geocoder |
@@ -141,19 +142,19 @@ creates six different routes in your application, all mapping to the +Geocoders+
 |PATCH/PUT   |/geocoder      |update   |update the one and only geocoder resource     |
 |DELETE      |/geocoder      |destroy  |delete the geocoder resource                  |
 
-NOTE: Because you might want to use the same controller for a singular route (+/account+) and a plural route (+/accounts/45+), singular resources map to plural controllers.
+NOTE: 因为你可能要在路由中同时使用单数 (+/account+) 和 复数 （+/accounts/45+） 而想要对应同一个控制器，所以单件 Resource 命令也是对应复数的控制器。
 
-A singular resourceful route generates these helpers:
+一个 单件 Resourceful 路由生成这些 Helper 方法：
 
-* +new_geocoder_path+ returns +/geocoder/new+
-* +edit_geocoder_path+ returns +/geocoder/edit+
-* +geocoder_path+ returns +/geocoder+
+* +new_geocoder_path+ 返回 +/geocoder/new+
+* +edit_geocoder_path+ 返回 +/geocoder/edit+
+* +geocoder_path+ 返回 +/geocoder+
 
-As with plural resources, the same helpers ending in +_url+ will also include the host, port and path prefix.
+同复数的 resources 命令一样，以 +_url+ 结尾的  Hepler 将会包括主机名，端口值和其他的相关路径前缀。
 
-h4. Controller Namespaces and Routing
+h4. 控制器、命名空间(Namespaces),和路由
 
-You may wish to organize groups of controllers under a namespace. Most commonly, you might group a number of administrative controllers under an +Admin::+ namespace. You would place these controllers under the +app/controllers/admin+ directory, and you can group them together in your router:
+有时，你可以想要把一些同类的控制器组织到一个命名空间下面去，其中最常见的就是我们会把一组管理功能的控制器放到 +Admin::+ 下，然后把这个空间下的控制器都放在 +app/controllers/admin+ 目录下，并且统一在路由中配置：
 
 <ruby>
 namespace :admin do
@@ -161,7 +162,7 @@ namespace :admin do
 end
 </ruby>
 
-This will create a number of routes for each of the +posts+ and +comments+ controller. For +Admin::PostsController+, Rails will create:
+这样将会为每一个 +posts+ 和 +comments+ 方法建立一个路由规则，对于 +Admin::PostsController+， Rails 会建立这些路由表规则：
 
 |_.HTTP Verb |_.Path                |_.action |_.named helper             |
 |GET         |/admin/posts          |index    | admin_posts_path          |
@@ -172,7 +173,7 @@ This will create a number of routes for each of the +posts+ and +comments+ contr
 |PATCH/PUT   |/admin/posts/:id      |update   | admin_post_path(:id)      |
 |DELETE      |/admin/posts/:id      |destroy  | admin_post_path(:id)      |
 
-If you want to route +/posts+ (without the prefix +/admin+) to +Admin::PostsController+, you could use
+如果你想要把路由 +/posts+ (不以 +/admin+ 作前缀) 匹配到 +Admin::PostsController+，你就需要这样了：
 
 <ruby>
 scope :module => "admin" do
@@ -180,13 +181,13 @@ scope :module => "admin" do
 end
 </ruby>
 
-or, for a single case
+或者对单个 Resource 匹配的时候
 
 <ruby>
 resources :posts, :module => "admin"
 </ruby>
 
-If you want to route +/admin/posts+ to +PostsController+ (without the +Admin::+ module prefix), you could use
+而你如果想要把路由：+/admin/posts+ 给匹配到 +PostsController+ (控制器中没有 +Admin::+ 这个模块作为前缀)，你可以用
 
 <ruby>
 scope "/admin" do
@@ -194,13 +195,13 @@ scope "/admin" do
 end
 </ruby>
 
-or, for a single case
+或者在为单个 Resource 匹配的时候这么写：
 
 <ruby>
 resources :posts, :path => "/admin/posts"
 </ruby>
 
-In each of these cases, the named routes remain the same as if you did not use +scope+. In the last case, the following paths map to +PostsController+:
+在这些例子里面，可以发现 scope 并不会改变 routes 的生成的路径名称的（译者注：named routes，这里指的是生成的Helper的名称。） ，例如在最后一个例子里面，会生成匹配到  +PostsController+的规则:
 
 |_.HTTP Verb |_.Path               |_.action |_.named helper      |
 |GET         |/admin/posts         |index    | posts_path         |
@@ -211,9 +212,9 @@ In each of these cases, the named routes remain the same as if you did not use +
 |PATCH/PUT   |/admin/posts/:id     |update   | post_path(:id)     |
 |DELETE      |/admin/posts/:id     |destroy  | post_path(:id)     |
 
-h4. Nested Resources
+h4. 嵌套(Nested)数组
 
-It's common to have resources that are logically children of other resources. For example, suppose your application includes these models:
+通常，一个 Resource 常常有数个逻辑上的子 Resource 。例如，你的应用有这样一个模型：
 
 <ruby>
 class Magazine < ActiveRecord::Base
@@ -233,7 +234,7 @@ resources :magazines do
 end
 </ruby>
 
-In addition to the routes for magazines, this declaration will also route ads to an +AdsController+. The ad URLs require a magazine:
+在这里，对于每一个 magazines 的路径下面都需要能够有 ad 作为 Resource 匹配到+AdsController+。 这时候每一组 ad 都需要指定一个 magzine 作为前缀。
 
 |_.HTTP Verb |_.Path                               |_.action |_.used for                                                                 |
 |GET         |/magazines/:magazine_id/ads          |index    |display a list of all ads for a specific magazine                          |
@@ -244,11 +245,11 @@ In addition to the routes for magazines, this declaration will also route ads to
 |PATCH/PUT   |/magazines/:magazine_id/ads/:id      |update   |update a specific ad belonging to a specific magazine                      |
 |DELETE      |/magazines/:magazine_id/ads/:id      |destroy  |delete a specific ad belonging to a specific magazine                      |
 
-This will also create routing helpers such as +magazine_ads_url+ and +edit_magazine_ad_path+. These helpers take an instance of Magazine as the first parameter (+magazine_ads_url(@magazine)+).
+这样生成的路由 Hepler 就会是  +magazine_ads_url+ 和 +edit_magazine_ad_path+。这个帮助方法会把第一个参数当作指定 Magazine 的实例(例如 +magazine_ads_url(@magazine)+)。
 
-h5. Limits to Nesting
+h5. 嵌套 Resources 的限制
 
-You can nest resources within other nested resources if you like. For example:
+你可以把多个 Resources 一起嵌套起来。例如：
 
 <ruby>
 resources :publishers do
@@ -258,19 +259,19 @@ resources :publishers do
 end
 </ruby>
 
-Deeply-nested resources quickly become cumbersome. In this case, for example, the application would recognize paths such as
+但是多层的嵌套很快会让你的路由变得笨重。例如上面那个例子里，你需要这样来访问一个照片：
 
 <pre>
 /publishers/1/magazines/2/photos/3
 </pre>
 
-The corresponding route helper would be +publisher_magazine_photo_url+, requiring you to specify objects at all three levels. Indeed, this situation is confusing enough that a popular "article":http://weblog.jamisbuck.org/2007/2/5/nesting-resources by Jamis Buck proposes a rule of thumb for good Rails design:
+相关的路由 helper 会变成 +publisher_magazine_photo_url+ ，而且需要在参数中传入指定的每一个实例。事实上，这种令人郁闷的情形已经被很多人讨论过了，Jamis Buck 在 "这里":http://weblog.jamisbuck.org/2007/2/5/nesting-resources 有一份很火的 _Rails 路由设计简则_ ，这个问题或许可以在那里找到答案。
 
-TIP: _Resources should never be nested more than 1 level deep._
+TIP: _事实上，你无法建立超过一层深的嵌套 Resources._
 
-h4. Creating Paths and URLs From Objects
+h4. 从对象到路径 URL
 
-In addition to using the routing helpers, Rails can also create paths and URLs from an array of parameters. For example, suppose you have this set of routes:
+关于 路由 Helper, Rails 还可以通过传入一组参数来建立 路径或 URL，例如，你设置了这样的一组路由：
 
 <ruby>
 resources :magazines do
@@ -278,45 +279,45 @@ resources :magazines do
 end
 </ruby>
 
-When using +magazine_ad_path+, you can pass in instances of +Magazine+ and +Ad+ instead of the numeric IDs.
+当你使用 +magazine_ad_path+ 时，你可以把  +Magazine+ 和 +Ad+ 实例传入作参数来作为 ID。
 
 <erb>
 <%= link_to "Ad details", magazine_ad_path(@magazine, @ad) %>
 </erb>
 
-You can also use +url_for+ with a set of objects, and Rails will automatically determine which route you want:
+你也可以用 +url_for+ 带上一组对象，Rails 将会自动地生成正确的路由。
 
 <erb>
 <%= link_to "Ad details", url_for([@magazine, @ad]) %>
 </erb>
 
-In this case, Rails will see that +@magazine+ is a +Magazine+ and +@ad+ is an +Ad+ and will therefore use the +magazine_ad_path+ helper. In helpers like +link_to+, you can specify just the object in place of the full +url_for+ call:
+在这里，Rails 将会把 +@magazine+ 对应到 +Magazine+， +@ad+ 对应到 +Ad+ 上去，然后决定使用 +magazine_ad_path+ 这个 Helper。而如果你用的是 +link_to+ 这样的Helper，你可以和调用 +url_for+ 一样用对象作参数:
 
 <erb>
 <%= link_to "Ad details", [@magazine, @ad] %>
 </erb>
 
-If you wanted to link to just a magazine:
+如果你并没有用嵌套式的路由，只要这样就可以访问一个对象的 show 方法：
 
 <erb>
 <%= link_to "Magazine details", @magazine %>
 </erb>
 
-For other actions, you just need to insert the action name as the first element of the array:
+如果你要指定对象的其他动作的话你也可以这样：
 
 <erb>
 <%= link_to "Edit Ad", [:edit, @magazine, @ad] %>
 </erb>
 
-This allows you to treat instances of your models as URLs, and is a key advantage to using the resourceful style.
+这样就能把你的模型和 URL 有效的结合起来了，而且这也是一个很棒很 Resourceful 的特性。
 
-h4. Adding More RESTful Actions
+h4. 加入额外的 RESTful 行为
 
-You are not limited to the seven routes that RESTful routing creates by default. If you like, you may add additional routes that apply to the collection or individual members of the collection.
+除了7个默认创建的 RESTful 路由之外，如果你喜欢，你可以将一些额外的路由应用到你的物件集合或者单个的物件下面。
 
-h5. Adding Member Routes
+h5. 成员(Member)路由
 
-To add a member route, just add a +member+ block into the resource block:
+加入一个成员路由只需要在你的 +resource+ 代码块中加入你一个 +member+ 代码块就好：
 
 <ruby>
 resources :photos do
@@ -326,9 +327,9 @@ resources :photos do
 end
 </ruby>
 
-This will recognize +/photos/1/preview+ with GET, and route to the +preview+ action of +PhotosController+. It will also create the +preview_photo_url+ and +preview_photo_path+ helpers.
+这样将会把 +/photos/1/preview+ 的 GET 动作识别出来，然后路由会匹配到 +PhotosController+ 控制器下面的 +preview+ 行为中。它同样会建立两个Helper：+preview_photo_url+ 和 +preview_photo_path+。
 
-Within the block of member routes, each route name specifies the HTTP verb that it will recognize. You can use +get+, +patch+, +put+, +post+, or +delete+ here. If you don't have multiple +member+ routes, you can also pass +:on+ to a route, eliminating the block:
+当你使用了路由中的 Member 代码块时，你可以任意指定一个HTTP动词： +get+, +patch+, +put+, +post+, 或者 +delete+ 。如果你并没有太多的 Member 路由规则，可以用  +:on+ 作为后缀来把代码块替换掉：
 
 <ruby>
 resources :photos do
@@ -336,9 +337,9 @@ resources :photos do
 end
 </ruby>
 
-h5. Adding Collection Routes
+h5. 集合(Collection)路由
 
-To add a route to the collection:
+要想加入一个集合路由：
 
 <ruby>
 resources :photos do
@@ -348,9 +349,9 @@ resources :photos do
 end
 </ruby>
 
-This will enable Rails to recognize paths such as +/photos/search+ with GET, and route to the +search+ action of +PhotosController+. It will also create the +search_photos_url+ and +search_photos_path+ route helpers.
+上面这段代码将会让 Rails 用 GET 方法匹配路径 +/photos/search+。并且这个 +search+ 行为将会匹配到 +PhotosController+下，它将会创建  +search_photos_url+ 和 +search_photos_path+ 两个路由Helper。
 
-Just as with member routes, you can pass +:on+ to a route:
+同成员路由一样，你可以传入一个 +:on+ 选项。
 
 <ruby>
 resources :photos do
@@ -358,57 +359,58 @@ resources :photos do
 end
 </ruby>
 
-h5. A Note of Caution
+h5. 注意事项
 
-If you find yourself adding many extra actions to a resourceful route, it's time to stop and ask yourself whether you're disguising the presence of another resource.
+如果你发现自己对 Resourceful 路由加入了太多的额外规则，是时候停下来好好审视下你是不是应该创建另一个 resource。
 
-h3. Non-Resourceful Routes
+h3. 非 Resourceful 路由
 
-In addition to resource routing, Rails has powerful support for routing arbitrary URLs to actions. Here, you don't get groups of routes automatically generated by resourceful routing. Instead, you set up each route within your application separately.
+对于 Resourceful 的路由，Rails 有着一整套强大的路由和行为支持，即使如此，你有时候可能也会需要一些不是由 Rails 成组生成的路由，这时候，你就需要把规则手动地一个一个输入到你的应用中去了。
 
-While you should usually use resourceful routing, there are still many places where the simpler routing is more appropriate. There's no need to try to shoehorn every last piece of your application into a resourceful framework if that's not a good fit.
+虽然 Resourceful 的路由规则功能强大，但是在很多时候使用一个简单路由规则更为合适。如果你觉得简单路由规则更合适，你并没有必要把应用中的每个规则都往 Resourceful 框架上套。
 
-In particular, simple routing makes it very easy to map legacy URLs to new Rails actions.
+特别是在你为一个控制器添加上了新的行为的时候，添加一条简单路由规则往往更方便一些。
 
-h4. Bound Parameters
+h4. 相关参数
 
-When you set up a regular route, you supply a series of symbols that Rails maps to parts of an incoming HTTP request. Two of these symbols are special: +:controller+ maps to the name of a controller in your application, and +:action+ maps to the name of an action within that controller. For example, consider one of the default Rails routes:
+当你为你的路由设置了一条规则的时候，你就需要提供一组符号字面量来让 Rails 能更好的识别并匹配收到的 HTTP 请求。其中有两个符号量尤其的特别：+:controller+ 位置会匹配到你应用中名字对应的控制器，+:action+ 有匹配到你应用中对应的控制器中的行为。举个例子，下面这个默认的 Rails 路由规则：
 
 <ruby>
 match ':controller(/:action(/:id))'
 </ruby>
 
-If an incoming request of +/photos/show/1+ is processed by this route (because it hasn't matched any previous route in the file), then the result will be to invoke the +show+ action of the +PhotosController+, and to make the final parameter +"1"+ available as +params[:id]+. This route will also route the incoming request of +/photos+ to +PhotosController#index+, since +:action+ and +:id+ are optional parameters, denoted by parentheses.
+如果收到的请求是 +/photos/show/1+ （前提是它还没有被其他的前面的路由规则匹配），那么按照这个规则 Rails 将会调用 +PhotosController+ 控制器中的 +show+ 行为，然后把后面的参数 +"1"+ 放到 +params[:id]+ 中以供使用。因为 +:action+ 和 +:id+ 被圆括号包围，所以，他俩可以被忽略，所以这条规则同样能够将 +/photos+ 匹配到 +PhotosController#index+ 。
 
-h4. Dynamic Segments
 
-You can set up as many dynamic segments within a regular route as you like. Anything other than +:controller+ or +:action+ will be available to the action as part of +params+. If you set up this route:
+h4. 动态部分
+
+你可以设置一条路由规则有任意多的动态部分，除了+:controller+ 或 +:action+ ，其他的片段都将会被转换成 +params+ 的一部分。如果你写了这样的一条路由：
 
 <ruby>
 match ':controller/:action/:id/:user_id'
 </ruby>
 
-An incoming path of +/photos/show/1/2+ will be dispatched to the +show+ action of the +PhotosController+. +params[:id]+ will be +"1"+, and +params[:user_id]+ will be +"2"+.
-
-NOTE: You can't use +:namespace+ or +:module+ with a +:controller+ path segment. If you need to do this then use a constraint on :controller that matches the namespace you require. e.g:
+如果收到了 +/photos/show/1/2+ 这样的请求，将会分发到  +PhotosController+ 下的 +show+ 行为中，而 +params[:id]+ 会是 +"1"+, +params[:user_id]+ 是 +"2"+.
+ 
+NOTE: 当你使用了 +:controller+ 来匹配路径时你就无法使用 +:namespace+ 和 +:module+ 了。如果你需要像 Resourceful 路由规则一样使用它就需要加上一些正则条件，例如:
 
 <ruby>
 match ':controller(/:action(/:id))', :controller => /admin\/[^\/]+/
 </ruby>
 
-TIP: By default dynamic segments don't accept dots - this is because the dot is used as a separator for formatted routes. If you need to use a dot within a dynamic segment add a constraint which overrides this - for example +:id+ => /[^\/]+/ allows anything except a slash.
+TIP: 默认情况下 动态部分无法接收句点————这是因为“点”这个符号已经被用作了匹配类型的分隔符。如果你需要在规则的动态部分中使用句点你就需要加入一些特殊的正则条件来覆写原本的匹配方法 ———— 例如+:id+ => /[^\/]+/ 将会让你的 +:id+ 能够匹配除了 斜杠以外的任何字符。
 
-h4. Static Segments
+h4. 静态部分
 
-You can specify static segments when creating a route:
+你可以在创建路由规则的时候指定一个静态的部分：
 
 <ruby>
 match ':controller/:action/:id/with_user/:user_id'
 </ruby>
 
-This route would respond to paths such as +/photos/show/1/with_user/2+. In this case, +params+ would be <tt>{ :controller => "photos", :action => "show", :id => "1", :user_id => "2" }</tt>.
+这个路由将会生成像这样的路径 +/photos/show/1/with_user/2+。在这个例子里， +params+ 是 <tt>{ :controller => "photos", :action => "show", :id => "1", :user_id => "2" }</tt>. 
 
-h4. The Query String
+h4. 字符串队列
 
 The +params+ will also include any parameters from the query string. For example, with this route:
 
@@ -416,96 +418,96 @@ The +params+ will also include any parameters from the query string. For example
 match ':controller/:action/:id'
 </ruby>
 
-An incoming path of +/photos/show/1?user_id=2+ will be dispatched to the +show+ action of the +Photos+ controller. +params+ will be <tt>{ :controller => "photos", :action => "show", :id => "1", :user_id => "2" }</tt>.
+如果接收到的路径为 +/photos/show/1?user_id=2+ ，那么 Rails 会把它分发到 +Photos+ 控制器下面的  +show+ 行为中去，+params+ 会是 <tt>{ :controller => "photos", :action => "show", :id => "1", :user_id => "2" }</tt>. 
 
-h4. Defining Defaults
+h4. 设置默认值
 
-You do not need to explicitly use the +:controller+ and +:action+ symbols within a route. You can supply them as defaults:
+如果你需要一个默认的匹配值，你可以用一个没有指定 +:controller+ 和 +:action+ 的路由规则来实现。像这样：
 
 <ruby>
 match 'photos/:id' => 'photos#show'
 </ruby>
 
-With this route, Rails will match an incoming path of +/photos/12+ to the +show+ action of +PhotosController+.
+Rails 将会因为这条规则而把接收到的路径 +/photos/12+ ，匹配到 +PhotosController+ 下面的 +show+ 里面去。
 
-You can also define other defaults in a route by supplying a hash for the +:defaults+ option. This even applies to parameters that you do not specify as dynamic segments. For example:
+你还可以通过提供一个 +:defaults+ 的散列来指定一个你默认存在的动态片段。例如：
 
 <ruby>
 match 'photos/:id' => 'photos#show', :defaults => { :format => 'jpg' }
 </ruby>
 
-Rails would match +photos/12+ to the +show+ action of +PhotosController+, and set +params[:format]+ to +"jpg"+.
+这样 +photos/12+ 的路径就会匹配到 +PhotosController+ 的 +show+ 行为， +params[:format]+ 会被设置为  +"jpg"+。
 
-h4. Naming Routes
+h4. 命名路由
 
-You can specify a name for any route using the +:as+ option.
+你可以用 +:as+ 参数来定义一个路由的名字。
 
 <ruby>
 match 'exit' => 'sessions#destroy', :as => :logout
 </ruby>
 
-This will create +logout_path+ and +logout_url+ as named helpers in your application. Calling +logout_path+ will return +/exit+
+这样在应用程序中产生的 Helper 就将会是 create +logout_path+ 和 +logout_url+。而调用了 +logout_path+ 就会返回 +/exit+ 路径。
 
-h4. HTTP Verb Constraints
+h4. HTTP 动词约定
 
-You can use the +:via+ option to constrain the request to one or more HTTP methods:
+你可以用 +:via+ 选项来限定一个请求能相应的一个或者多个 HTTP 方法：
 
 <ruby>
 match 'photos/show' => 'photos#show', :via => :get
 </ruby>
 
-There is a shorthand version of this as well:
+简写作：
 
 <ruby>
 get 'photos/show'
 </ruby>
 
-You can also permit more than one verb to a single route:
+你也可以将多个动词行为绑定到一条路由规则上去：
 
 <ruby>
 match 'photos/show' => 'photos#show', :via => [:get, :post]
 </ruby>
 
-h4. Segment Constraints
+h4. 部分正则约定
 
-You can use the +:constraints+ option to enforce a format for a dynamic segment:
+你可以使用 +:constraints+ 选项来对动态路径部分强制性的匹配：
 
 <ruby>
 match 'photos/:id' => 'photos#show', :constraints => { :id => /[A-Z]\d{5}/ }
 </ruby>
 
-This route would match paths such as +/photos/A12345+. You can more succinctly express the same route this way:
+这个路由将会匹配像 +/photos/A12345+ 这样的路由。你可以用如此更简洁的方式来写出这个规则：
 
 <ruby>
 match 'photos/:id' => 'photos#show', :id => /[A-Z]\d{5}/
 </ruby>
 
-+:constraints+ takes regular expressions with the restriction that regexp anchors can't be used. For example, the following route will not work:
+在 +:constraints+ 选项中使用正则表达式有一个限制，就是在正则匹配中无法使用锚元素来匹配，像这样的路由规则是无效的：
 
 <ruby>
 match '/:id' => 'posts#show', :constraints => {:id => /^\d/}
 </ruby>
 
-However, note that you don't need to use anchors because all routes are anchored at the start.
+总之，确定你没有在路由正则中使用锚元素。因为每个路由规则在匹配的时候就已经用到了锚元素。
 
-For example, the following routes would allow for +posts+ with +to_param+ values like +1-hello-world+ that always begin with a number and +users+ with +to_param+ values like +david+ that never begin with a number to share the root namespace:
+例如，下面的路由 +posts+ 和 +users+ 控制器共享了一个命名空间，他们根据 +to_param+ 值的首字符是否是数字来区分，像 +1-hello-world+ 这样的会匹配到 +posts+ 下面去，而像 +david+ 就会匹配到 +users+ 下面去。
 
 <ruby>
 match '/:id' => 'posts#show', :constraints => { :id => /\d.+/ }
 match '/:username' => 'users#show'
 </ruby>
 
-h4. Request-Based Constraints
+h4. 请求限制 
 
-You can also constrain a route based on any method on the <a href="action_controller_overview.html#the-request-object">Request</a> object that returns a +String+.
+您还可以在原有路由规则的基础上限定任何的<a href="action_controller_overview.html#the-request-object">Request</ a>的对象，它将返回 +String+。
 
-You specify a request-based constraint the same way that you specify a segment constraint:
+你可以用一个 +constraint+ 关键字指定一个请求限制：
 
 <ruby>
 match "photos", :constraints => {:subdomain => "admin"}
 </ruby>
 
-You can also specify constraints in a block form:
+你也可以用代码块的形式来体现这样的限制
 
 <ruby>
 namespace :admin do
@@ -515,9 +517,9 @@ namespace :admin do
 end
 </ruby>
 
-h4. Advanced Constraints
+h4. 高级限定
 
-If you have a more advanced constraint, you can provide an object that responds to +matches?+ that Rails should use. Let's say you wanted to route all users on a blacklist to the +BlacklistController+. You could do:
+如果你需要更为高级的限定，你只要为 Rails 提供一个能相应 +matches?+ 方法的对象就可以。例如你想要把所有在黑名单中的用户都被路由过滤到 +BlacklistController+ 里面去。 你可以：
 
 <ruby>
 class BlacklistConstraint
@@ -536,74 +538,76 @@ TwitterClone::Application.routes.draw do
 end
 </ruby>
 
-h4. Route Globbing
+h4. 通配路由匹配
 
-Route globbing is a way to specify that a particular parameter should be matched to all the remaining parts of a route. For example
+通配路由规则能够指定一个参数让任意部分匹配。例如：
 
 <ruby>
 match 'photos/*other' => 'photos#unknown'
 </ruby>
 
-This route would match +photos/12+ or +/photos/long/path/to/12+, setting +params[:other]+ to +"12"+ or +"long/path/to/12"+.
+这样这个路由将会匹配 +photos/12+ 或 +/photos/long/path/to/12+,并且把  +params[:other]+ 设置成 +"12"+ 或 +"long/path/to/12"+.
 
-Wildcard segments can occur anywhere in a route. For example,
+
+通配字符串可以放在路由规则的任意部分,例如：
 
 <ruby>
 match 'books/*section/:title' => 'books#show'
 </ruby>
 
-would match +books/some/section/last-words-a-memoir+ with +params[:section]+ equals +"some/section"+, and +params[:title]+ equals +"last-words-a-memoir"+.
+这样将会把像 +books/some/section/last-words-a-memoir+ 这样的字符串匹配后并将 +params[:section]+ 设置为 +"some/section"+， +params[:title]+ 设置为 +"last-words-a-memoir"+。
 
-Technically a route can have even more than one wildcard segment. The matcher assigns segments to parameters in an intuitive way. For example,
+从技术上来说你是可以将超过一个统配的字符串加在你的路由规则中的，但是请记住，通配符总是会用贪婪地（尽可能多地匹配）将字符串匹配到路径上。例如：
 
 <ruby>
 match '*a/foo/*b' => 'test#index'
 </ruby>
 
+将会把 +zoo/woo/foo/bar/baz+ 的参数 +params[:a]+ 设置成 +"zoo/woo"+, 然后参数 +params[:b]+ 设置成 +"bar/baz"+.
 would match +zoo/woo/foo/bar/baz+ with +params[:a]+ equals +"zoo/woo"+, and +params[:b]+ equals +"bar/baz"+.
 
-NOTE: Starting from Rails 3.1, wildcard routes will always match the optional format segment by default. For example if you have this route:
+NOTE: 从 Rails 3.1 开始，通配路由总是会自动地将格式字符串默认匹配，例如下面这个路由：
 
 <ruby>
 match '*pages' => 'pages#show'
 </ruby>
 
-NOTE: By requesting +"/foo/bar.json"+, your +params[:pages]+ will be equals to +"foo/bar"+ with the request format of JSON. If you want the old 3.0.x behavior back, you could supply +:format => false+ like this:
+NOTE: 如果你发起了这样的一个请求，你的参数 +params[:pages]+ 将会是 +"foo/bar"+ ，而你的请求格式会识别为 JSON 。 如果你想要在旧的 3.0.x 中有同样的特性，你需要提供一个散列参数+:format => false+,像这样
 
 <ruby>
 match '*pages' => 'pages#show', :format => false
 </ruby>
 
-NOTE: If you want to make the format segment mandatory, so it cannot be omitted, you can supply +:format => true+ like this:
+NOTE: 如果你想要强制地被指定一种格式，（其无法被忽略），你可以像这样加上 +:format => true+ 参数：
 
 <ruby>
 match '*pages' => 'pages#show', :format => true
 </ruby>
 
-h4. Redirection
+h4. 重定向
 
-You can redirect any path to another path using the +redirect+ helper in your router:
+你可以在路由规则中通过 +redirect+ 指定一个路径重定向到另一个路由中的路径：
 
 <ruby>
 match "/stories" => redirect("/posts")
 </ruby>
 
-You can also reuse dynamic segments from the match in the path to redirect to:
+你同样可以把一条 +match+ 命令中的动态部分的错误处理（rescue）进行重定向：
 
 <ruby>
 match "/stories/:name" => redirect("/posts/%{name}")
 </ruby>
 
-You can also provide a block to redirect, which receives the params and (optionally) the request object:
+你同样可以为你的重定向函数加入一个代码块，代码块接收的变量是 params 和 请求对象（后者是可选的）：
 
 <ruby>
 match "/stories/:name" => redirect {|params| "/posts/#{params[:name].pluralize}" }
 match "/stories" => redirect {|p, req| "/posts/#{req.subdomain}" }
 </ruby>
 
-Please note that this redirection is a 301 "Moved Permanently" redirect. Keep in mind that some web browsers or proxy servers will cache this type of redirect, making the old page inaccessible.
+请注意，这里的重定向都将是 301 标志 “永久重定向”。在某些浏览器或者代理服务器中这个标识码将会使旧的页面失效。
 
-In all of these cases, if you don't provide the leading host (+http://www.example.com+), Rails will take those details from the current request.
+在这些例子里，如果你事先没有为 Rails 提供一个主机地址，Rails 将会给予当前请求地址进行细节的处理。
 
 h4. Routing to Rack Applications
 
@@ -617,30 +621,30 @@ As long as +Sprockets+ responds to +call+ and returns a <tt>[status, headers, bo
 
 NOTE: For the curious, +"posts#index"+ actually expands out to +PostsController.action(:index)+, which returns a valid Rack application.
 
-h4. Using +root+
-
-You can specify what Rails should route +"/"+ to with the +root+ method:
+h4. 使用 +root+
+ 
+你可以用 +root+ 方法来指定 Rails 如何匹配 +"/"+ 路由：
 
 <ruby>
 root :to => 'pages#main'
 root 'pages#main' # shortcut for the above
 </ruby>
 
-You should put the +root+ route at the top of the file, because it is the most popular route and should be matched first. You also need to delete the +public/index.html+ file for the root route to take effect.
+你可以将 +root+ 规则放在文件的最上方，这样这条规则能第一个进行匹配，因为这恐怕将会是最常用的的规则了。你同样需要删除文件 +public/index.html+ 来让这个规则发挥效用
 
-h3. Customizing Resourceful Routes
+h3. 定制 Resourceful 的路由规则
 
-While the default routes and helpers generated by +resources :posts+ will usually serve you well, you may want to customize them in some way. Rails allows you to customize virtually any generic part of the resourceful helpers.
+虽然通过 +resources :posts+ 生成的默认的路由和 Helper 方法给你带来了很大的方便。你可能还是需要从某些时候定制这样的路由规则。 Rails 允许你用某种方法定制或者仅生成部分Helper。
 
-h4. Specifying a Controller to Use
+h4. 指定使用控制器。
 
-The +:controller+ option lets you explicitly specify a controller to use for the resource. For example:
++:controller+ 选项能够让你选择与 resource 关联的控制器。例如：
 
 <ruby>
 resources :photos, :controller => "images"
 </ruby>
 
-will recognize incoming paths beginning with +/photos+ but route to the +Images+ controller:
+它将会接收 +/photos+开头的路径然后匹配到 +Images+ 控制器上：
 
 |_.HTTP Verb |_.Path           |_.action |_.named helper        |
 |GET         |/photos          |index    | photos_path          |
@@ -651,19 +655,19 @@ will recognize incoming paths beginning with +/photos+ but route to the +Images+
 |PATCH/PUT   |/photos/:id      |update   | photo_path(:id)      |
 |DELETE      |/photos/:id      |destroy  | photo_path(:id)      |
 
-NOTE: Use +photos_path+, +new_photo_path+, etc. to generate paths for this resource.
+NOTE: 使用 +photos_path+, +new_photo_path+,等等 生成路径到这个 resource 上。
 
-h4. Specifying Constraints
+h4. 指定限制：
 
-You can use the +:constraints+ option to specify a required format on the implicit +id+. For example:
+你可以用 +:constraints+ 选项来限定 +id+ 的格式。例如：
 
 <ruby>
 resources :photos, :constraints => {:id => /[A-Z][A-Z][0-9]+/}
 </ruby>
 
-This declaration constrains the +:id+ parameter to match the supplied regular expression. So, in this case, the router would no longer match +/photos/1+ to this route. Instead, +/photos/RR27+ would match.
+这个声明限制了 +:id+ 必须与参数里的正则匹配。所以，在这个例子里，路由将不再匹配 +/photos/1+ ，而只有  +/photos/RR27+ 这样的才会被匹配。
 
-You can specify a single constraint to apply to a number of routes by using the block form:
+你可以用一个代码块来把单个正则限制运用到多条规则上去。
 
 <ruby>
 constraints(:id => /[A-Z][A-Z][0-9]+/) do
@@ -672,19 +676,19 @@ constraints(:id => /[A-Z][A-Z][0-9]+/) do
 end
 </ruby>
 
-NOTE: Of course, you can use the more advanced constraints available in non-resourceful routes in this context.
+NOTE: 当然，你也可以像在 非resourceful 路由规则中运用正则一样在这里使用各种高级的正则或限定技巧。
 
-TIP: By default the +:id+ parameter doesn't accept dots - this is because the dot is used as a separator for formatted routes. If you need to use a dot within an +:id+ add a constraint which overrides this - for example +:id+ => /[^\/]+/ allows anything except a slash.
+TIP: 默认情况下 +:id+ 参数不接收 点 ———— 这是因为 点已经被用作了格式分割符。如果你需要在 +:id+ 中的正则中匹配出 点，你需要这样复写正则表达式，例如：+:id+ => /[^\/]+/ ，这样会允许除了斜杠之外的任何字符。
 
-h4. Overriding the Named Helpers
+h4. 覆盖 命名（Named） Helper
 
-The +:as+ option lets you override the normal naming for the named route helpers. For example:
++:as+ 选项能让你把默认命名的路由 Helper 重命名成定制的字符串。例如：
 
 <ruby>
 resources :photos, :as => "images"
 </ruby>
 
-will recognize incoming paths beginning with +/photos+ and route the requests to +PhotosController+, but use the value of the :as option to name the helpers.
+这将会把 +/photos+ 相关的路由请求匹配到 +PhotosController+ ，但是产生的 Helper 却是 :as 选项中的值。
 
 |_.HTTP verb|_.Path            |_.action |_.named helper        |
 |GET        |/photos           |index    | images_path          |
@@ -695,24 +699,24 @@ will recognize incoming paths beginning with +/photos+ and route the requests to
 |PATCH/PUT  |/photos/:id       |update   | image_path(:id)      |
 |DELETE     |/photos/:id       |destroy  | image_path(:id)      |
 
-h4. Overriding the +new+ and +edit+ Segments
+h4. 覆盖  +new+ 和 +edit+ 片段
 
-The +:path_names+ option lets you override the automatically-generated "new" and "edit" segments in paths:
++:path_names+ 选项能够让你把自动生成路径中的 "new" 和 "edit" 覆盖：
 
 <ruby>
 resources :photos, :path_names => { :new => 'make', :edit => 'change' }
 </ruby>
 
-This would cause the routing to recognize paths such as
+这将会让 Rails 能够匹配这些请求：
 
 <plain>
 /photos/make
 /photos/1/change
 </plain>
 
-NOTE: The actual action names aren't changed by this option. The two paths shown would still route to the +new+ and +edit+ actions.
+NOTE: 这个选项并不会改变控制器中的行为名称，这两个路径依然会被匹配到控制器中的 +new+ 和 +edit+ 路径中去。
 
-TIP: If you find yourself wanting to change this option uniformly for all of your routes, you can use a scope.
+TIP: 如果你想一次性地把一条设置应用到多个规则上，你可以用 scope 。
 
 <ruby>
 scope :path_names => { :new => "make" } do
@@ -720,9 +724,9 @@ scope :path_names => { :new => "make" } do
 end
 </ruby>
 
-h4. Prefixing the Named Route Helpers
+h4. 为命名（named） 路由 Helper 加上前缀
 
-You can use the +:as+ option to prefix the named route helpers that Rails generates for a route. Use this option to prevent name collisions between routes using a path scope.
+你可以使用 +:as+ 选项来为 命名路由的 Helper 加上一个前缀。这样可以防止Helper 名和其他的名字冲突。
 
 <ruby>
 scope "admin" do
@@ -732,9 +736,9 @@ end
 resources :photos
 </ruby>
 
-This will provide route helpers such as +admin_photos_path+, +new_admin_photo_path+ etc.
+这样就将会产生 +admin_photos_path+，+new_admin_photo_path+ 这样的路由 Helper。 
 
-To prefix a group of route helpers, use +:as+ with +scope+:
+在 scope 后面用上 +:as+ 参数，就可以为一组路由规则修改前缀：
 
 <ruby>
 scope "admin", :as => "admin" do
@@ -744,11 +748,11 @@ end
 resources :photos, :accounts
 </ruby>
 
-This will generate routes such as +admin_photos_path+ and +admin_accounts_path+ which map to +/admin/photos+ and +/admin/accounts+ respectively.
+这样将会建立像 +admin_photos_path+ 和 +admin_accounts_path+ 这样的 helper ，他们分别对应 +/admin/photos+ and +/admin/accounts+ 。
 
-NOTE: The +namespace+ scope will automatically add +:as+ as well as +:module+ and +:path+ prefixes.
+NOTE: +namespace+ scope 将会自动为你添加 +:as+ ， +:module+ 和 +:path+ 前缀。
 
-You can prefix routes with a named parameter also:
+你甚至还能为你的路由规则添加上一个 命名参数（named parameter）：
 
 <ruby>
 scope ":username" do
@@ -756,31 +760,31 @@ scope ":username" do
 end
 </ruby>
 
-This will provide you with URLs such as +/bob/posts/1+ and will allow you to reference the +username+ part of the path as +params[:username]+ in controllers, helpers and views.
+这样将会让你 匹配上 +/bob/posts/1+ 这样的路径，并且在控制器，视图和 Helper 中会将 +username+ 对应到 +params[:username]+ 上。
 
-h4. Restricting the Routes Created
+h4. 对建立的路由进行限制
 
-By default, Rails creates routes for the seven default actions (index, show, new, create, edit, update, and destroy) for every RESTful route in your application. You can use the +:only+ and +:except+ options to fine-tune this behavior. The +:only+ option tells Rails to create only the specified routes:
+默认地， Rails 会在应用中为每一个 RESTful 路由建立7个动作 （index, show, new, create, edit, update, and destroy）。不过你可以用 +:only+ 或 +:except+ 选项来针对你的路由进行调整：
 
 <ruby>
 resources :photos, :only => [:index, :show]
 </ruby>
 
-Now, a +GET+ request to +/photos+ would succeed, but a +POST+ request to +/photos+ (which would ordinarily be routed to the +create+ action) will fail.
+这样， 对于 +/photos+ 的一个 +GET+ 请求将会成功，但是对 +/photos+ 发起的 +POST+ 请求（原本对应的是 +create+ 动作）将会失败。
 
-The +:except+ option specifies a route or list of routes that Rails should _not_ create:
++:except+ 选项指定了你所_不_需要创建的动作。
 
 <ruby>
 resources :photos, :except => :destroy
 </ruby>
 
-In this case, Rails will create all of the normal routes except the route for +destroy+ (a +DELETE+ request to +/photos/:id+).
+在这里， Rails 会创建除了 +destroy+ (针对 +/photos/:id+ 发起的 +DELETE+ 请求) 之外的所有默认动作。
 
-TIP: If your application has many RESTful routes, using +:only+ and +:except+ to generate only the routes that you actually need can cut down on memory use and speed up the routing process.
+TIP: 如果你的应用程序有很多 RESTful 路由，使用 +:only+ 和 +:except+ 可以只生成有用的路径，这能够减少匹配所需时间和内存。
 
-h4. Translated Paths
+h4. 对路径进行翻译
 
-Using +scope+, we can alter path names generated by resources:
+用 +scope+ 我们可以更改 resources 生成时的路径名
 
 <ruby>
 scope(:path_names => { :new => "neu", :edit => "bearbeiten" }) do
@@ -788,7 +792,7 @@ scope(:path_names => { :new => "neu", :edit => "bearbeiten" }) do
 end
 </ruby>
 
-Rails now creates routes to the +CategoriesController+.
+Rails 将会建立一组匹配到 +CategoriesController+ 的路由规则。
 
 |_.HTTP verb|_.Path                     |_.action |_.named helper           |
 |GET        |/kategorien                |index    | categories_path         |
@@ -799,9 +803,9 @@ Rails now creates routes to the +CategoriesController+.
 |PATCH/PUT  |/kategorien/:id            |update   | category_path(:id)      |
 |DELETE     |/kategorien/:id            |destroy  | category_path(:id)      |
 
-h4. Overriding the Singular Form
+h4. 重定义单复数
 
-If you want to define the singular form of a resource, you should add additional rules to the +Inflector+.
+如果你想要为一个 resource 定义一个单数格式，你只要为 +Inflector+ 增加上一个 额外的规则就可以了。
 
 <ruby>
 ActiveSupport::Inflector.inflections do |inflect|
@@ -809,9 +813,9 @@ ActiveSupport::Inflector.inflections do |inflect|
 end
 </ruby>
 
-h4(#nested-names). Using +:as+ in Nested Resources
+h4 在内嵌 Resource 中使用 +:as+ 参数
 
-The +:as+ option overrides the automatically-generated name for the resource in nested route helpers. For example,
+在内嵌的 Resource 中使用 +:as+ 参数将会覆盖掉自动生成部分的 Helper 名。例如：
 
 <ruby>
 resources :magazines do
@@ -819,22 +823,23 @@ resources :magazines do
 end
 </ruby>
 
-This will create routing helpers such as +magazine_periodical_ads_url+ and +edit_magazine_periodical_ad_path+.
+这将会建立像 +magazine_periodical_ads_url+ 和 +edit_magazine_periodical_ad_path+ 这样的 Helper。
 
-h3. Inspecting and Testing Routes
+h3. 对路由进行检查和测试
 
-Rails offers facilities for inspecting and testing your routes.
+Rails 提供了检查和测试路由的工具。
 
-h4. Seeing Existing Routes with +rake+
+h4. 通过 +rake+ 查看存在的路由规则
 
-If you want a complete list of all of the available routes in your application, run +rake routes+ command. This will print all of your routes, in the same order that they appear in +routes.rb+. For each route, you'll see:
+如果你想要一整套应用的完整可用的路由规则列表，运行 +rake routes+ 命令就好。他将会根据你在 +routes.rb+ 文件中的顺序打印出你所有的路由。对于每一个路由你都可以看到：
 
-* The route name (if any)
-* The HTTP verb used (if the route doesn't respond to all verbs)
-* The URL pattern to match
-* The routing parameters for the route
 
-For example, here's a small section of the +rake routes+ output for a RESTful route:
+* 路由的名字（如果有的话）
+* 所使用的 HTTP 动词（除非这个路由规则不相应任何动词） 
+* 将会匹配的 URL 模式
+* 匹配到路由的参数
+
+例如，这里是一个 RESTful 路由的 +rake routes+ 命令输出的片段
 
 <pre>
     users GET    /users(.:format)          users#index
@@ -843,48 +848,48 @@ For example, here's a small section of the +rake routes+ output for a RESTful ro
 edit_user GET    /users/:id/edit(.:format) users#edit
 </pre>
 
-You may restrict the listing to the routes that map to a particular controller setting the +CONTROLLER+ environment variable:
+你可以设定环境变量 +CONTROLLER+ 来限定只输出匹配到特定控制器的路由规则。
 
 <shell>
 $ CONTROLLER=users rake routes
 </shell>
 
-TIP: You'll find that the output from +rake routes+ is much more readable if you widen your terminal window until the output lines don't wrap.
+TIP: 如果你把终端窗口放大一点让 +rake routes+ 能够完整输出每一行可能你能看的舒服不少.
 
-h4. Testing Routes
+h4. 路由测试
 
-Routes should be included in your testing strategy (just like the rest of your application). Rails offers three "built-in assertions":http://api.rubyonrails.org/classes/ActionDispatch/Assertions/RoutingAssertions.html designed to make testing routes simpler:
+你的测试中应该加入路由测试（就和你应用程序的其他部分一样）。Rails 提供三个 "内建的断言"::http://api.rubyonrails.org/classes/ActionDispatch/Assertions/RoutingAssertions.html   被设计来帮助你进行路由的测试。
 
 * +assert_generates+
 * +assert_recognizes+
 * +assert_routing+
 
-h5. The +assert_generates+ Assertion
+h5. +assert_generates+ 断言
 
-+assert_generates+ asserts that a particular set of options generate a particular path and can be used with default routes or custom routes.
++assert_generates+ 能够对是否生成指定的路径进行断言：
 
 <ruby>
 assert_generates "/photos/1", { :controller => "photos", :action => "show", :id => "1" }
 assert_generates "/about", :controller => "pages", :action => "about"
 </ruby>
 
-h5. The +assert_recognizes+ Assertion
+h5. +assert_recognizes+ 断言
 
-+assert_recognizes+ is the inverse of +assert_generates+. It asserts that a given path is recognized and routes it to a particular spot in your application.
++assert_recognizes+ 是 +assert_generates+ 的反向断言. 它能够通过指定的位置判断是否与存在的路由规则匹配。
 
 <ruby>
 assert_recognizes({ :controller => "photos", :action => "show", :id => "1" }, "/photos/1")
 </ruby>
 
-You can supply a +:method+ argument to specify the HTTP verb:
+你可以提供一个 +:method+ 参数来指定使用的 HTTP 行为:
 
 <ruby>
 assert_recognizes({ :controller => "photos", :action => "create" }, { :path => "photos", :method => :post })
 </ruby>
 
-h5. The +assert_routing+ Assertion
+h5. +assert_routing+ 断言
 
-The +assert_routing+ assertion checks the route both ways: it tests that the path generates the options, and that the options generate the path. Thus, it combines the functions of +assert_generates+ and +assert_recognizes+.
+ +assert_routing+ 对一个路由双向地进行测试: 它测试的一条路径是否与选项匹配，之后测试选项是否生成路径。因此，这条断言结合了前两个测试方法 +assert_generates+ 和 +assert_recognizes+.
 
 <ruby>
 assert_routing({ :path => "photos", :method => :post }, { :controller => "photos", :action => "create" })

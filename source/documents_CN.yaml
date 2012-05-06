@@ -55,7 +55,6 @@
     - 
       name: 深入浅出说路由 
       url: routing.html
-      work_in_progress: true
       contributor: Tassandar	
       description: 这份教程介绍了 Rails 路由的常见功能。如果你想了解你的Rails程序中的路由该如何配置，就从这里开始吧。
 -
