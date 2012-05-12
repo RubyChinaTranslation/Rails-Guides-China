@@ -126,9 +126,11 @@
   name: 扩展(Extending Rails)
   documents:
     - 
-      name: The Basics of Creating Rails Plugins
+      name: Rails 插件入门指南
+      work_in_progress: true
+      contributor: Tassandar
       url: plugins.html
-      description: This guide covers how to build a plugin to extend the functionality of Rails.
+      description: 这篇文章将会告诉你如何在 Rails 上创建一个插件.
     - 
       name: Rails on Rack
       url: rails_on_rack.html

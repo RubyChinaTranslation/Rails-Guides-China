@@ -157,7 +157,7 @@ and you can expire it using the +expire_fragment+ method, like so:
 expire_fragment(:controller => 'products', :action => 'recent', :action_suffix => 'all_products')
 </ruby>
 
-If you don't want the cache block to bind to the action that called it, You can also use globally keyed fragments by calling the +cache+ method with a key, like so:
+If you don't want the cache block to bind to the action that called it, you can also use globally keyed fragments by calling the +cache+ method with a key:
 
 <ruby>
 <% cache('all_available_products') do %>
@@ -228,6 +228,42 @@ class ProductsController < ActionController
 
 end
 </ruby>
+
+Sometimes it is necessary to disambiguate the controller when you call +expire_action+, such as when there are two identically named controllers in separate namespaces:
+
+<ruby>
+class ProductsController < ActionController
+  caches_action :index
+
+  def index
+    @products = Product.all
+  end
+end
+
+module Admin
+  class ProductsController < ActionController
+    cache_sweeper :product_sweeper
+
+    def new
+      @product = Product.new
+    end
+
+    def create
+      @product = Product.create(params[:product])
+    end
+  end
+end
+
+class ProductSweeper < ActionController::Caching::Sweeper
+  observe Product
+
+  def after_create(product)
+    expire_action(:controller => '/products', :action => 'index')
+  end
+end
+</ruby>
+
+Note the use of '/products' here rather than 'products'. If you wanted to expire an action cache for the +Admin::ProductsController+, you would use 'admin/products' instead.
 
 h4. SQL Caching
 
