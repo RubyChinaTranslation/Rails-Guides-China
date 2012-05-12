@@ -1,25 +1,25 @@
 h2. Asset Pipeline
 
-这个指南涵盖了在 Rails 3.1 引入的 asset pipling.
+这个指南涵盖了在 Rails 3.1 引进的 asset pipling.
 通过浏览这个指南，你将能：
 
-* 理解 asset pipline 是什么和如何使用它
-* 合理的管理应用程序的资源
+* 理解 asset pipline 是什么和它是做什么的
+* 合理的组织应用程序的资源
 * 了解 asset pipline 的优点
 * 为 pipeline 添加预处理器
 * 用一个 gem 打包资源
 
-endrpologue.
+endprologue.
 
 h3. 什么是 Asset Pipline?
 
-asset pipline 是一个提供合并缩小或者压缩 JavaScript 和 CSS 资源的框架。它也添加了用其它语言编写这些资源的功能, 如 CoffeeScript, Sass 和 ERB。
+asset pipline 是一个提供连结缩小或者压缩 JavaScript 和 CSS 资源的框架。它也添加了用其它语言编写这些资源的功能, 如 CoffeeScript, Sass 和 ERB。
 
-在 Rails 3.1 之前这些功能都是通过第三方 Ruby 库添加进来的，如 Jammit 和 Sprockets. Rails 3.1 默认是通过 Action Pack 和 Sprockets 交互的，这要依赖 +sprockets+ gem.
+在 Rails 3.1 之前这些功能都是通过第三方 Ruby 库添加进来的，如 Jammit 和 Sprockets. Rails 3.1 默认通过 Action Pack 和 依赖 +sprockets+ gem 的 Sprockets 进行交互.
 
-使 asset pipline 成为 Rails 的核心功能意味着所有的开发者都能从其强大的功能收益，这些功能是使用一个中心库，Sprockets, 将资源预处理，压缩和缩小。 这是 Rails 的 "fast by default" 策略的一部分，这个策略是 DHH 在 RailsConf 2011 概述中的主旨。
+使 asset pipline 成为 Rails 的核心功能意味着所有的开发者都能从其强大的功能受益. 这些功能使用一个中心库，Sprockets, 将资源预处理，压缩和缩小。 这是 Rails 的 "fast by default" 策略的一部分，这个策略是 DHH 在 RailsConf 2011 概述中的主旨。
 
-在 Rails 3.1 中，asset pipline 是默认开启的。它可在 +config/application.rb+ 里被关闭，只要将以下这行放到应用程序类定义里:
+在 Rails 3.1 中，asset pipline 是默认开启的。它可在 +config/application.rb+ 里被关闭，只需将以下这行放到应用程序类定义里:
 
 <ruby>
 config.assets.enabled = false
@@ -35,14 +35,13 @@ rails new appname --skip-sprockets
 
 h4. 主要功能
 
-pipline 的第一个功能就是合并资源。这在生产环境非常重要，因为它可以避免浏览器为了渲染页面而不得不发送过多的请求。网页浏览器限制了并行请求的数量， 所以更少的请求能让你的应用程序加载更快。
+pipline 的第一个功能就是连结资源。这在生产环境非常重要，因为它可以避免浏览器为了渲染页面而不得不发送过多的请求。网页浏览器限制了并行请求的数量， 所以更少的请求能让你的应用程序加载更快。
 
-Rails 2.x 介绍了将 +:cache => true+ 放置到 +javascript_include_tag+ 或 +stylesheet_link_tag+ 方法的尾部能合并 JavaScript 或 CSS 资源。但这个技术有些不足。例如，它不能预先产生缓存和它不能显式调用由第三方库提供的资源。
+Rails 2.x 介绍了将 +:cache => true+ 放置到 +javascript_include_tag+ 或 +stylesheet_link_tag+ 方法的尾部能连结 JavaScript 或 CSS 资源。但这个技术有些不足。例如，它不能预先产生缓存和它不能显式调用由第三方库提供的资源。
 
-从 3.1 版开始， Rails 默认将所有的 JavaScript 文件合并成一个主要的 +.js+ 文件，和将所有的 CSS 文件合并成一个主要的 +.css+ 文件。 你将可以在本指南后面学习到如何自定义管理这些文件的策略。在生产环境中， Rails 给每个文件名插入一个 MD5 指纹,以便文件被网页浏览器缓存。你通过修改指纹使缓存无效，这在你修改文件后会自动发生。
+从 3.1 版开始， Rails 默认将所有的 JavaScript 文件连结成一个主要的 +.js+ 文件，和将所有的 CSS 文件连结成一个主要的 +.css+ 文件。 你将可以在本指南后面学习到如何自定义管理这些文件的策略。在生产环境中， Rails 给每个文件名插入一个 MD5 指纹,以便文件被网页浏览器缓存。你可以通过修改指纹使缓存无效，这在你修改文件后会自动发生。
 
-#FIXME: a set of build.
-asset pipline 的第二个功能是资源的缩小或者压缩。对于 CSS 文件，是通过去除空格和注释来实现的。对于 JavsScript, 会有更多的复杂过程。你可以选择一系列可选的构建或者你自己指定。
+asset pipline 的第二个功能是资源的缩小或者压缩。对于 CSS 文件，是通过去除空格和注释来实现的。对于 JavsScript, 会有更多的复杂过程。你可以从选项中选择一套构件或者指定你自己的。
 
 asset pipline 的第三个功能是它能你使用更高级的语言来编写资源，然后预编译成实质的资源。默认支持的语言包括 CSS 的 Sass，JavaScript 的 CoffeeScript 和可用于所有资源的 ERB.
 
@@ -50,7 +49,7 @@ h4. 什么是指纹识别和为什么我们要关心
 
 指纹识别是一项使一个文件的名字根据文件的内容而定的技术。当文件的内容改变了，文件名也会变。 这提供了辨别两个版本的文件是同一个文件的方法，即使是跨越不同的服务器和部署日期。
 
-当一个文件的名字是唯一的并且基于它的内容， HTTP 头部可以被设定为在任何地方缓存(无论是在 CDNs, 在 ISPs, 在网络设备里，或者是在网页浏览器里)去保存它们自己内容的副本。当内容更新了，指纹识别也会变更。这会引起远端客户端发出一个新的请求获得内容。这一般被叫做 _cache busting_.
+当一个文件的名字是唯一的并且基于它的内容， HTTP 头部可以被设定为在任何地方缓存(无论是在 CDNs, 在 ISPs, 在网络设备里，或者是在网页浏览器里)去保存它们自己内容的副本。当内容更新了，指纹识别也会变更。这会引起远端客户端发出一个新的请求获得内容。这一般被叫做 _清除缓存_.
 
 Rails 用于指纹识别的技术是将内容的 hash 插入到名字里，通常在尾部。例如 +global.css+ CSS文件可以被重命名为一个带有它的内容的 MD5 digest:
 
@@ -58,10 +57,9 @@ Rails 用于指纹识别的技术是将内容的 hash 插入到名字里，通�
 global-908e25f4bf641868d8683022a5b62f54.css
 </plain>
 
-这是 Rails asset pipline 所使用的测录俄。
+这是 Rails asset pipline 所使用的策略。
 
-#FIXME in the source
-Rails 的旧策略是为每个资源附加一个以日期为基础的查询字符串，这些 asset 都关联这一个内建的 helper. 源文件生成的代码看起来像这样:
+Rails 的旧策略是为每个资源附加一个以日期为基础的查询字符串，这些 asset 都会与一个内建的 helper 关联. 原先文件生成的代码看起来像这样:
 
 <plain>
 /stylesheets/global.css?1309495796
@@ -71,12 +69,12 @@ Rails 的旧策略是为每个资源附加一个以日期为基础的查询字�
 
 <ol>
   <li>
-    <strong>当文件名只是查询参数部分的不同，不是所有的缓存都会确实地缓存了内容。<br>
-    "Steve Souders recommends":http://www.stevesouders.com/blog/2008/08/23/revving-filenames-dont-use-querystring/, "...避免对可缓存资源使用查询字符串"。它发现在这种情况下有 5-20% 的请求都不会被缓存。特别是针对一些CDNs的独立缓存，查询字符串起不到太大的作用。。
+    <strong>当文件名只是查询参数部分的不同，不是所有的缓存都会确实地缓存了内容</strong>.<br>
+    "Steve Souders recommends":http://www.stevesouders.com/blog/2008/08/23/revving-filenames-dont-use-querystring/, "...避免对可缓存资源使用查询字符串"。它发现在这种情况下有 5-20% 的请求都不会被缓存。特别是针对一些CDNs的独立缓存，查询字符串起不到太大的作用。
   </li>
   <li>
     <strong>在多服务器环境中，文件名可以在不同的节点之间改变。</strong><br>
-    Rails 2.x 默认的查询字符是根据于文件的修改时间来。当资源被部署到某个集群，不能确定时间戳会是一样的。这会导致随着处理请求的服务器的不同而使用不同的值。
+    Rails 2.x 默认的查询字符基于文件的修改时间。当资源被部署到某个集群，不能确定时间戳会是一样的。这会导致随着处理请求的服务器的不同而使用不同的值。
   </li>
   <li>
     <strong>过多的独立缓存</strong><br/>
@@ -95,11 +93,11 @@ Rails 的旧策略是为每个资源附加一个以日期为基础的查询字�
 
 h3. 如何使用 Asset Pipeline
 
-在 Rails 之前的版本里，所有的资源都放置在 +public+ 的子目录下比如 +images+, +javascript+ 和 +stylesheets+. 对于 asset pipline, 这些资源现在被指定到 +app/assets+ 目录。这个目录下的所有文件都被交由 Sprockets 中间件处理，这个中间件通过引入 sprockets gem 使用。
+在 Rails 之前的版本里，所有的资源都放置在 +public+ 的子目录下比如 +images+, +javascript+ 和 +stylesheets+. 对于 asset pipline, 这些资源现在被指定到 +app/assets+ 目录。这个目录下的所有文件都通过 Sprockets 中间件供应，这个中间件通过引入 sprockets gem 使用。
 
-资源依然可以被放置在 +public+ 目录下。 所有位于 +public+ 目录下的文件都会作为静态资源由应用程序或者 web 服务器处理。在可用之前必须作一些预处理的文件要放在 +app/assets+ 里。
+资源依然可以被放置在 +public+ 目录下。 所有位于 +public+ 目录下的文件都会作为静态资源通过应用程序或者 web 服务器供应。在它们被供应之前必须作一些预处理的文件要放在 +app/assets+ 里。
 
-在生产中，Rails 默认预编译这些文件到 +public/assets+。 预编译过后的副本会被web 服务器用作静态资源。在生产中，+app/assets+ 里的文件从不被直接使用。
+在生产中，Rails 默认预编译这些文件到 +public/assets+。 预编译过后的副本会被 web 服务器作为静态资源供应。在生产中，+app/assets+ 里的文件从不被直接供应。
 
 当你创建一个 scaffold 或者一个控制器时，Rails 也会为该控制器创建一个 JavaScript 文件 (或者 CoffeeScript 文件，如果 +Gemfile+ 里有 +coffee-rails+ gem 的话) 和一个层叠式样式表文件 (或者 SCSS 文件，如果 +Gemfile+ 里有 +sass-rails+的话)
 
@@ -119,7 +117,7 @@ Pipeline assets 可以被放置到一个应用程序中这三个位置中的一�
 
 h5. 搜寻路径
 
-当一个文件在 manifest 或者 helper 中被指引，Sprockets 会在三个不同的资源地址去搜寻它.
+当一个文件在资源清单或者 helper 中被指引，Sprockets 会在三个不同的资源地址去搜寻它.
 
 默认的位置是: +app/assets/images+ 和那三个资源地址下的所有 +javascripts+， +stylesheets+ 子目录。
 
@@ -131,7 +129,7 @@ lib/assets/javascripts/moovinator.js
 vendor/assets/javascripts/slider.js
 </plain>
 
-会在 manifest 里被指引如下:
+会在资源清单里被指引如下:
 
 <plain>
 //= require home
@@ -161,16 +159,15 @@ config.assets.paths << Rails.root.join("app", "assets", "flash")
 
 路径会按找在搜寻路径中出现的顺序被历遍。
 
-有一点非常重要要注意的是，你像在 manifest 外引用的文件必须加载预编译数组里，否则它们在生产环境将不可以用。
+有一点非常重要要注意的是，你想在资源清单外引用的文件必须加载到预编译列表里，否则它们在生产环境将不可以用。
 
 h5. 使用索引文件
 
 Sprockets 对一些特殊的用途会使用名为 +index+ (使用相关扩展) 的文件。
 
-#FIXME manifest
 例如，如果你的许多模块都要使用某个 jQuery 函式库，这个函式库存放在 +lib/assets/library_name+。 +lib/assets/library_name/index.js+ 会作为这个库的所有文件的 manifest. 这个文件可以按顺序包含一组需要使用的文件，或者一个简单的 <tt>require_tree</tt> 指令。
 
-这个函式库可以作为一个整体被网站应用程序的 manifest 像这样访问：
+这个函式库可以作为一个整体被网站应用程序的资源清单像这样访问：
 
 <plain>
 //= require library_name
@@ -224,7 +221,6 @@ asset pipeline 会自动解析 ERB. 这意味着如果你添加 +erb+ 扩展名�
 
 这会嵌入一个格式正确的 data URI 到 CSS 源文件里
 
-#FIXME: be of the style
 注意，闭合标签不能使用 +-%>+ 的形式。
 
 h5. CSS 和 Sass
@@ -257,9 +253,9 @@ $('#logo').attr({
 $('#logo').attr src: "<%= asset_path('logo.png') %>"
 </plain>
 
-h4. Manifest 文件和指令
+h4. 资源清单文件和指令
 
-Sprockets 使用 manifest 文件去确认哪些资源要引入并处理的。 这些 manifest 文件包含一些 _指令_ -- 告诉 Sprockets 哪些文件要被按顺序引入，然后将它们合并成单个 CSS 或者 JavaScript 文件的指示。根据这些指令， Sprockets 加载这些被指定的文件，如果有必要就对它们进行加工，接着将它们合并成单个文件然后压缩它们 ( 如果 +Rails.application.config.assets.compress 为 true ). 由于只处理单个文件而不是多个， 浏览器可以发起更少的请求所以页面的加载时间将会大大的缩减。
+Sprockets 使用资源清单文件去确认哪些资源要引入并供应的。 这些资源清单文件包含一些 _指令_ -- 告诉 Sprockets 哪些文件要被按顺序引入，然后将它们连结成单个 CSS 或者 JavaScript 文件的指示。根据这些指令， Sprockets 加载这些被指定的文件，如果有必要就对它们进行加工，接着将它们连结成单个文件然后压缩它们 ( 如果 +Rails.application.config.assets.compress 为 true ). 由于只处理单个文件而不是多个， 浏览器可以发起更少的请求所以页面的加载时间将会大大的缩减。
 
 例如，一个新的 Rails 应用程序包含了一个默认的 +app/assets/javascripts/application.js+ 文件，这个文件包含了一些行:
 
@@ -274,10 +270,9 @@ Sprockets 使用 manifest 文件去确认哪些资源要引入并处理的。 �
 
 NOTE. 在 Rails 3.1 里， +jquery-rails+ gem 通过 asset pipline 提供了 +jquery.js+ 和 +jquery_ujs.js+ 文件. 你会在应用程序的目录中看到它们。
 
-+require_tree+ 指令告诉 Sprockets 递归地去包含在指定目录下_所有_ 的 JavaScript 文件到输出里。 这些路径必须在 manifest 文件中有相关的指定。 有也可以使用 +require_directory+ 指令，它会将在某个特定目录下所有的 JavaScript 文件包含进去，但不递归。
++require_tree+ 指令告诉 Sprockets 递归地去包含在指定目录下_所有_ 的 JavaScript 文件到输出里。 这些路径必须在资源清单文件中有相关的指定。 有也可以使用 +require_directory+ 指令，它会将在某个特定目录下所有的 JavaScript 文件包含进去，但不递归。
 
-#FIXME: include
-指令会从上到下进行处理， 但是通过 +require_tree+ 包含进来的文件的顺序就没有规定。你不应该在它们中安排顺序。如果你想在合并起来的文件中确保某个 JavaScript 文件内容在其它之前结束， 先将首要的文件在 manifest 加入。 注意 +require+ 指令家族会防止文件被重复包含到输出里。
+指令会从上到下进行处理， 但是通过 +require_tree+ 包含进来的文件的顺序就没有规定。你不应该在它们中安排顺序。如果你想在连结起来的文件中确保某个 JavaScript 文件内容在其它之前结束， 先将首要的文件填入资源清单。 注意 +require+ 指令集会防止文件被重复包含到输出里。
 
 Rails 也会创建一个默认的 +app/assets/stylesheets/application.css+ 文件，包含以下内容：
 
@@ -288,16 +283,15 @@ Rails 也会创建一个默认的 +app/assets/stylesheets/application.css+ 文�
 */
 </plain>
 
-在 JavaScript 文件里可用的指令也可用于 stylesheets (当然是包含 stylesheets 文件而不是 JavaScript 文件). +require_tree+ 指令在 CSS manifest 中的用法和在 JavaScript 的用法是一样的，就是加入当前目录下的所有 stylesheets 文件。
+在 JavaScript 文件里可用的指令也可用于 stylesheets (当然是包含 stylesheets 文件而不是 JavaScript 文件). +require_tree+ 指令在 CSS资源清单中的用法和在 JavaScript 的用法是一样的，就是加入当前目录下的所有 stylesheets 文件。
 
-#FIXME: all
 在这个例子中使用了 +require_self+。 这将文件中的 CSS (如果有) 放置到 +require_self+ 调用的准确位置。如果 =require_self+ 被调用超过一次，只有最后一次调用有效。
 
-NOTE. 如果你像使用多个 Sass 文件，你通常可以使用 "Sass +@import+ rule":http://sass-lang.com/docs/yardoc/file.SASS_REFERENCE.html#import 替代这些 Sprockets 指令。使用 Sprockets 指令的话，所有在 Sass 文件中定义的变量和 mixins 都只能在其被定义的文档中可用.(译者注: 虽然合并成同一个文件，但定义的变量等是相对独立的。而用 +@import+ 的话则可以在所有关联的 Sass 文件中通用.)
+NOTE. 如果你像使用多个 Sass 文件，你通常可以使用 "Sass +@import+ rule":http://sass-lang.com/docs/yardoc/file.SASS_REFERENCE.html#import 替代这些 Sprockets 指令。使用 Sprockets 指令的话，所有在 Sass 文件中定义的变量和 mixins 都只能在其被定义的文档中可用.(译者注: 虽然连结成同一个文件，但定义的变量等是相对独立的。而用 +@import+ 的话则可以在所有关联的 Sass 文件中通用.)
 
-你可以有和你需要的一样多的 manifest 文件。例如 +admin.css+ 和 +admin.js+ manifest 可以包括被用于应用程序管理部分的 JS 和 CSS 文件.
+你可以有和你需要的一样多的资源清单文件。例如 +admin.css+ 和 +admin.js+资源清单可以包括被用于应用程序管理部分的 JS 和 CSS 文件.
 
-排序方式和前面提到的一样。特殊情况下， 你可以指定独立的文件然后它们就会被按照指定的顺序编译。例如，你会通过这个方法合并三个 CSS 文件：
+排序方式和前面提到的一样。特殊情况下， 你可以指定独立的文件然后它们就会被按照指定的顺序编译。例如，你会通过这个方法连结三个 CSS 文件：
 
 <plain>
 /* ...
@@ -307,10 +301,9 @@ NOTE. 如果你像使用多个 Sass 文件，你通常可以使用 "Sass +@impor
 */
 </plain>
 
-#FIXME: 预加工?
 h4. 预处理
 
-文件的扩展名被用于判断某个资源文件要进入哪个预处理。当一个控制器或者一个 scaffold 是由 Rails 默认的 gemset 生成时， CoffeeScript 文件和 SCSS 文件会代替 常规的 JavaScript 和 CSS 文件被生成。 前面的使用过例子的控制器为 "projects"，它会生成一个 +app/assets/javascripts/projects.js.coffee+ 和一个 +app/assets/stylesheets/project.css.scss+ 文件。
+文件的扩展名被用于判断某个资源文件要进入哪个预处理过程。当一个控制器或者一个 scaffold 是由 Rails 默认的 gemset 生成时， CoffeeScript 文件和 SCSS 文件会代替常规的 JavaScript 和 CSS 文件被生成。 前面的使用过例子的控制器为 "projects"，则它会生成一个 +app/assets/javascripts/projects.js.coffee+ 和一个 +app/assets/stylesheets/project.css.scss+ 文件。
 
 当这些文件被请求时，它们会分别被 +coffee-script+ 和 +sass+ gem 提供的处理器处理，然后编译好的 JavaScript 和 CSS 文件送回给浏览。
 
@@ -320,9 +313,9 @@ h4. 预处理
 
 h3. 在开发中
 
-在开发环境中，资源文件按照在 manifest 文件中的指定顺序分开处理。
+在开发环境中，资源文件按照在资源清单文件中的指定顺序以单独文件方式被供应。
 
-这个 manifest +app/assets/javascript/application.js+：
+这个资源清单+app/assets/javascript/application.js+：
 
 <plain>
 //= require core
@@ -348,7 +341,7 @@ h4. 关闭调试
 config.assets.debug = false
 </ruby>
 
-当调试模式关闭后，Sprockets 对所有的文件进行必要的预处理和合并。随着调试模式的关闭，相对与上面 manifest会生成:
+当调试模式关闭后，Sprockets 对所有的文件进行必要的预处理和连结。随着调试模式的关闭，相对与上面 manifest会生成:
 
 <html>
 <script src="/assets/application.js"></script>
@@ -356,7 +349,7 @@ config.assets.debug = false
 
 在服务器启动后，资源在第一次请求时被编译并缓存。Sprockets 设置 +must-revalidate+ Cache-Control 的 HTTP 头部去防止在后续的请求开销 -- 浏览器会获得一个 304 (Not Modified) 的回应。
 
-如果在各请求之间，任何在 manifest 里的文件发生了变更，服务器会返回一个重新编译的文件。
+如果在各请求之间，任何在资源清单里的文件发生了变更，服务器会返回一个重新编译的文件。
 
 调试模式也可以通过 Rails 的 helper 方法开启：
 
@@ -367,14 +360,13 @@ config.assets.debug = false
 
 如果调试模式已经开启，+:debug+ 选项则是多余的。
 
-#FIXME: potentially
-你也可以在开发模式中部分开启压缩以作一个健全检查，还可以在需要调试时按需关闭。
+你可能会在开发模式中开启压缩以作一个完整性检查，或者可以在需要调试时按需关闭。
 
 h3. 在生产中
 
-在生产环境中，Rails 使用上面提到过的指纹识别结构。默认情况下，Rails 认为资源已经预编译过并且将会由 web 服务器以静态资源处理。
+在生产环境中，Rails 使用上面提到过的指纹识别方案。默认情况下，Rails 认为资源已经预编译过并且将会由 web 服务器以静态资源供应。
 
-在预编译阶段，MD5 是从已编译的内容生成的，然后在文件写入到磁盘时插入到文件名中。这些指纹识别过的名字都被用于 Rails helpers 替代 manifest 的名字。
+在预编译阶段，MD5 是从已编译的内容生成的，然后在文件写入到磁盘时插入到文件名中。这些指纹识别过的名字都被用于 Rails helpers 替代资源清单的名字。
 
 例如这个:
 
@@ -392,12 +384,11 @@ h3. 在生产中
 
 这个指纹识别动作是由 Rails 的 +config.assets.digest+ 设置控制的 (默认除了在生产环境中为 +true+ 外，其它环境都为 +false+).
 
-#FIXME: digests
-NOTE: 一般情况下默认选项不应该被改变。如果文件名里没有 digests，而且 far-futrue 头部也没有设置的话，远程客户端永远都不会在它们的内容变更时去刷新它们。
+NOTE: 一般情况下默认选项不应该被改变。如果文件名里没有摘要(译者注:digests)，而且 far-futrue 头部也没有设置的话，远程客户端永远都不会在它们的内容变更时去刷新它们。
 
 h4. 预编译资源
 
-Rails 本身绑定了一个 rake 任何去编译资源 manifest 和 pipeline 中的其它文件到磁盘里。
+Rails 本身绑定了一个 rake 任何去编译资源资源清单和 pipeline 中的其它文件到磁盘里。
 
 编译后的资源都被写入到了在 +config.assets.prefix+ 指定的位置里。默认情况下，是 +pulibc/assets+ 目录。
 
@@ -411,8 +402,7 @@ bundle exec rake assets:precompile
 
 为了更快速的预编译资源，你可以在 +config/application.rb+ 里将 +config.assets.initialize_on_precompile+ 设置为 +false+ 去部分加载你的应用程序。虽然这么做模板会看不到应用程序对象和方法。 *Heroku 要求这个为 false.*
 
-#FIXME: Should be reviewed
-WARNING: 如果你设置 +config.assets.initialize_on_precomile+ 为 false, 请在部署之前确保在本地测试 +rake assets:precompile+. 这应该会因为你的资源引用了应用程序对象或者方法而报错, 因为在开发模式范围内会忽略这个标记的值. 改变这个标记也会影响到 engines. Engines 也可以指定预编译资源. 因为完整的环境还没有加载完, engines (或者其他的 gems) 也不会被加载, 这会引起资源丢失.
+WARNING: 如果你设置 +config.assets.initialize_on_precomile+ 为 false, 在部署之前确保在本地测试 +rake assets:precompile+. 这应该会因为你的资源引用了应用程序对象或者方法而报错, 因为在开发模式范围内会忽略这个标记的值. 改变这个标记也会影响到 engines. Engines 也可以指定预编译资源. 因为完整的环境还没有加载完, engines (或者其他的 gems) 将不会被加载, 这会引起资源丢失.
 
 Capistrano (v2.8.0 或以上) 包含了一个处理这个情况的方法. 把下面这行加到 +Capfile+:
 
@@ -422,8 +412,7 @@ load 'deploy/assets'
 
 这把在 +config.assets.prefix+ 里指定的目录链接到 +shared/assets+. 如果你已经使用了这个共享文件夹, 那你就需要自己写一个部署任务了.
 
-#FIXME: life of the cacehd page
-这个目录在开发过程之间共享是很重要的, 因为这样做可以让远程地缓存页面(引用旧的已编译资源)依然对有已缓存页面的 life 作用.
+这个目录在各部署之间共享是很重要的, 因为这样做可以让远程缓存的页面(来自旧的已编译资源)依然对有已缓存页面有效.
 
 NOTE. 如果你在本地预编译资源, 你可以在服务器上使用 +bundle install --without assets+ 去避免安装资源 gem ( Gemfile 里资源分组的 gems).
 
@@ -441,7 +430,7 @@ NOTE. 那些匹配器 (和其它在预编译数组里的成员; 看下面) 适�
 config.assets.precompile += ['admin.js', 'admin.css', 'swfObject.js']
 </erb>
 
-rake 任务也会生成一个 +manifest.yml , 这个文件包含了所有资源和它们各自的指纹识别列表. 这被 Rails helper 方法用于避免将匹配请求调回给 Sprockets. 常规的 manifest 文件像这样:
+rake 任务也会生成一个 +manifest.yml , 这个文件包含了所有资源和它们各自的指纹识别列表. 这被 Rails helper 方法用于避免将匹配请求调回给 Sprockets. 常规的资源清单文件像这样:
 
 <plain>
 ---
@@ -519,8 +508,7 @@ h4. 即时编译
 
 h4. X-Sendfile Headers
 
-#FIXME: serve - 传送?提供?
-X-Sendfile 头部是 web 服务器的一个指令,用于忽略来自应用程序的回应(response)而去处理磁盘里的指定文件. 这个选项默认是关闭的, 但也可以被开启,如果你的服务器支持它. 当开启时, 这将负责把文件提供给 web 服务器, 而且更快.
+X-Sendfile 头部是 web 服务器的一个指令,用于忽略来自应用程序的回应(response)而是提供磁盘里的指定文件. 这个选项默认是关闭的, 但也可以被开启,如果你的服务器支持它. 当开启时, 这将负责把文件提供给 web 服务器, 而且更快.
 
 Apache 和 nginx 支持这个选项, 这可以在 <tt>config/environments/production.rb</tt> 里被开启.
 
@@ -529,7 +517,6 @@ Apache 和 nginx 支持这个选项, 这可以在 <tt>config/environments/produc
 # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for nginx
 </erb>
 
-#NOTE: take care to => 務必
 WARNING: 如果你升级一个已有的应用程序并且想使用这个选项, 务必只将这个配置选项粘贴进 +production.rb+ 和任何其它被定义为生产行为的环境 (不是 +application.rb+).
 
 h3. 如何缓存
@@ -540,7 +527,6 @@ TODO: Add more about changing the defualt store.
 
 h3. 为你的 Gems 添加资源
 
-#NOTE: in the form of => 以 .... 形式
 资源也来自外部源,以 gems 的形式.
 
 一个很好的例子就是 +jquery-rails+ gem, 它来自 Rails 标准的 JavaScript 函式库 gem. 这个 gem 包含了一个继承了 +Rails::Engine+ 的 engine 类. 通过这么做, Rails 被告知这个 gem 的目录会包含资源, 然后这个 engine 的 +app/assets+, +lib/assets+ 和 +vendor/assets+ 目录会被添加到 Sprockets 的搜索路径里.
