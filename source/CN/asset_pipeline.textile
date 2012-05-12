@@ -517,4 +517,119 @@ location ~ ^/(assets)/  {
 
 h4. 即时编译
 
+h4. X-Sendfile Headers
 
+#FIXME: serve - 传送?提供?
+X-Sendfile 头部是 web 服务器的一个指令,用于忽略来自应用程序的回应(response)而去处理磁盘里的指定文件. 这个选项默认是关闭的, 但也可以被开启,如果你的服务器支持它. 当开启时, 这将负责把文件提供给 web 服务器, 而且更快.
+
+Apache 和 nginx 支持这个选项, 这可以在 <tt>config/environments/production.rb</tt> 里被开启.
+
+<erb>
+# config.action_dispatch.x_sendfile_header = "X-Sendfile" # for apache
+# config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for nginx
+</erb>
+
+#NOTE: take care to => 務必
+WARNING: 如果你升级一个已有的应用程序并且想使用这个选项, 务必只将这个配置选项粘贴进 +production.rb+ 和任何其它被定义为生产行为的环境 (不是 +application.rb+).
+
+h3. 如何缓存
+
+Sprockets 使用 Rails 默认的缓存存储去在开发和生产环境中缓存资源.
+
+TODO: Add more about changing the defualt store.
+
+h3. 为你的 Gems 添加资源
+
+#NOTE: in the form of => 以 .... 形式
+资源也来自外部源,以 gems 的形式.
+
+一个很好的例子就是 +jquery-rails+ gem, 它来自 Rails 标准的 JavaScript 函式库 gem. 这个 gem 包含了一个继承了 +Rails::Engine+ 的 engine 类. 通过这么做, Rails 被告知这个 gem 的目录会包含资源, 然后这个 engine 的 +app/assets+, +lib/assets+ 和 +vendor/assets+ 目录会被添加到 Sprockets 的搜索路径里.
+
+h3. 为你的函式库或者 Gem 做一个预处理器.
+
+TODO: Registering gems on "Tilt":https://github.com/rtomayko/tilt enabling Sprockets to find them.
+
+h3. 从旧的 Rails 版本升级
+
+升级又两个步骤. 第一是 +public/+ 的文件移动到新的位置. 查阅上面的 "Asset Organization":#asset-organization 作为指导, 将不同格式的文件放放置到正确的位置.
+
+第二是升级各种环境文件, 设置正确的默认选项. 下面的变更反映了 3.1.0 版本的默认值.
+
+在 +application.rb+ 里:
+
+<erb>
+# Enable the asset pipeline
+config.assets.enabled = true
+
+# Version of your assets, change this if you want to expire all your assets
+config.assets.version = '1.0'
+
+# Change the path that assets are served from
+# config.assets.prefix = "/assets"
+</erb>
+
+在 +development.rb+ 里:
+
+<erb>
+# Do not compress assets
+config.assets.compress = false
+
+# Expands the lines which load the assets
+config.assets.debug = true
+</erb>
+
+还有 +production.rb+:
+
+<erb>
+# Compress JavaScripts and CSS
+config.assets.compress = true
+
+# Choose the compressors to use
+# config.assets.js_compressor  = :uglifier
+# config.assets.css_compressor = :yui
+
+# Don't fallback to assets pipeline if a precompiled asset is missed
+config.assets.compile = false
+
+# Generate digests for assets URLs.
+config.assets.digest = true
+
+# Defaults to nil and saved in location specified by config.assets.prefix
+# config.assets.manifest = YOUR_PATH
+
+# Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
+# config.assets.precompile += %w( search.js )
+</erb>
+
+你不应该改变 +test.rb+. 测试环境中的默认值是: +config.assets.compile+ 为 true, +config.assets.compress+, +config.assets.debug+ 和 +config.assets.digest+ 为 false.
+
+这些要被加入到 +Gemfile+ 里:
+
+<plain>
+# Gems used only for assets and not required
+# in production environments by default.
+group :assets do
+  gem 'sass-rails',   "~> 3.1.0"
+  gem 'coffee-rails', "~> 3.1.0"
+  gem 'uglifier'
+end
+</plain>
+
+如果你的 Bundler 使用 +assets+ 组, 请确认 +config/application.rb+ 有下列需求声明:
+
+<ruby>
+if defined?(Bundler)
+  # If you precompile assets before deploying to production, use this line
+  Bundler.require *Rails.groups(:assets => %w(development test))
+  # If you want your assets lazily compiled in production, use this line
+  # Bundler.require(:default, :assets, Rails.env)
+end
+</ruby>
+
+而在旧的 3.0 版本是这样的:
+
+<ruby>
+# If you have a Gemfile, require the gems listed there, including any gems
+# you've limited to :test, :development, or :production.
+Bundler.require(:default, Rails.env) if defined?(Bundler)
+</ruby>
