@@ -506,7 +506,6 @@ location ~ ^/(assets)/  {
 
 h4. 即时编译
 
-<<<<<<< HEAD
 有些情况你也像使用即时编译。在这个模式下，所有的资源请求都直接由 Sprockets 处理。
 
 开启这个选项：
@@ -557,7 +556,6 @@ config.assets.js_compressor = :uglifier
 
 注意必须将 +config.assets.compress+ 设置为 +true+ 才能使用 JavaScript 压缩器
 
-#FIXME: runtime
 NOTE: 为了使用 +uglifier+，你需要 "ExecJS":https://github.com/sstephenson/execjs#readme 支持的运行时。如果你使用 Mac OS X 或者 Windows， 你的系统已经安装有 JavaScript 运行时了。 查阅 "ExecJS":https://github.com/sstephenson/execjs#readme 文档了解支持的 JavaScript 运行时.
 
 h4. 使用你自己的压缩器
