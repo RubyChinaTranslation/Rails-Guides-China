@@ -590,4 +590,12 @@ config.assets.css_compressor = Transformer.new
 
 h4. 改变 _assets_ 的路径
 
+Sprockets 默认使用的公共路径为 +/assets+.
+
+它可以被改成其它的：
+
+<erb>
+config.assets.prefix = "/some_other_path"
+</erb>
+
 
