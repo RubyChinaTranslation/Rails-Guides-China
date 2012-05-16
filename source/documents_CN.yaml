@@ -74,8 +74,10 @@
       url: i18n.html
       description: This guide covers how to add internationalization to your applications. Your application will be able to translate content to different languages, change pluralization rules, use correct date formats for each country and so on.
     - 
-      name: Action Mailer Basics
+      name: Action Mailer 介绍
+      contributor: Tassandar
       url: action_mailer_basics.html
+      work_in_progress: true
       description: This guide describes how to use Action Mailer to send and receive emails.
     - 
       name: Testing Rails Applications
@@ -110,8 +112,6 @@
     - 
       name: Asset Pipeline
       url: asset_pipeline.html
-      work_in_progress: true
-      contributor: ichord
       description: This guide documents the asset pipeline.
       description: 本指南记载了 asset pipline.
     - 
@@ -129,8 +129,6 @@
   documents:
     - 
       name: Rails 插件入门指南
-      work_in_progress: true
-      contributor: Tassandar
       url: plugins.html
       description: 这篇文章将会告诉你如何在 Rails 上创建一个插件.
     - 
