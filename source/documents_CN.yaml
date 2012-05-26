@@ -102,6 +102,7 @@
     - 
       name: Rails 命令行工具和 Rake 任务
       url: command_line.html
+      contributor: Fenprace
       description: 本指南涵盖了 Rails 的命令行工具和 rake 任务。
     - 
       name: Caching with Rails 

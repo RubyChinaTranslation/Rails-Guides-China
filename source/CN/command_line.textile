@@ -1,18 +1,18 @@
-h2. A Guide to The Rails Command Line
+h2. Rails 命令行工具和 Rake 任务
 
-Rails comes with every command line tool you'll need to
+Rails 命令行工具提供了以下功能：
 
-* Create a Rails application
-* Generate models, controllers, database migrations, and unit tests
-* Start a development server
-* Experiment with objects through an interactive shell
-* Profile and benchmark your new creation
+* 创建 Rails 应用
+* 生成 models ， controllers ， migrations 以及单元测试
+* 启动开发服务器
+* 通过 shell 测试对象
+* 自定义应用
 
 endprologue.
 
-NOTE: This tutorial assumes you have basic Rails knowledge from reading the "Getting Started with Rails Guide":getting_started.html.
+NOTE: 本教程假设你已阅读 "Rails 初上手指南":getting_started.html ，并掌握了 Rails 的基本知识。
 
-WARNING. This Guide is based on Rails 3.0. Some of the code shown here will not work in earlier versions of Rails.
+WARNING. 本指南基于 Rails 3.0 有些代码在 Rails 3.0 之前的版本上无法正常运行。
 
 h3. Command Line Basics
 
