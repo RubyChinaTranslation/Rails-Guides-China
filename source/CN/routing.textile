@@ -499,7 +499,7 @@ match '/:username' => 'users#show'
 
 h4. 请求限制 
 
-您还可以在原有路由规则的基础上限定任何的<a href="action_controller_overview.html#the-request-object">Request</ a>的对象，它将返回 +String+。
+您还可以在原有路由规则的基础上限定任何的<a href="action_controller_overview.html#9">Request</a>的对象，它将返回 +String+。
 
 你可以用一个 +constraint+ 关键字指定一个请求限制：
 

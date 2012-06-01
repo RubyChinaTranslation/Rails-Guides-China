@@ -1,22 +1,22 @@
-h2. Action Mailer Basics
+h2. Action Mailer 入门
 
-本教程将告诉你如何让你的应用程序可以发送和接收邮件，还有 Action Mailer 的一些内部原理。 同时也包括如何编写 Mailer 的测试。
+这份文章能够让你了解如何用应用上手收发邮件，深入地了解 Action Mailer 组件，还介绍了测试自己邮件收发的方法。
 
 endprologue.
 
-警告. 本教程是基于 Rails 3.0 ， 一些代码可能无法在旧版本的 Rails 中运行。
+WARNING. 这份教程基于 Rails 3.2 版本。 有的代码在更老旧版本的 Rails 上可能会出问题。
 
-h3. 简介
+h3. Introduction
 
-Action Mailer 让你的应用可以用一个 mailer 的 model 和 views 来发送邮件。所以，在 Rails 里面，邮件是通过一个继承至 +ActionMailer::Base+ 的 mailer 来创建的，并存放在 +app/mailers+ 目录下面。这些 mailer 将依靠在 +app/views+ 目录下面对应名称的 view 来生成。
+Action Mailer allows you to send emails from your application using a mailer model and views. So, in Rails, emails are used by creating mailers that inherit from +ActionMailer::Base+ and live in +app/mailers+. Those mailers have associated views that appear alongside controller views in +app/views+.
 
-h3. 发送邮件
+h3. Sending Emails
 
-本节将一步一步的教你创建一个 mailer 和它对应的 views。
+This section will provide a step-by-step guide to creating a mailer and its views.
 
-h4. 生成一个 Mailer
+h4. Walkthrough to Generating a Mailer
 
-h5. 创建 Mailer
+h5. Create the Mailer
 
 <shell>
 $ rails generate mailer UserMailer
@@ -27,11 +27,11 @@ invoke  test_unit
 create    test/functional/user_mailer_test.rb
 </shell>
 
-现在就有了一个 mailer, 还有它的 view 和 test 文件.
+So we got the mailer, the views, and the tests.
 
-h5. 修改 Mailer
+h5. Edit the Mailer
 
-+app/mailers/user_mailer.rb+ 里面有个空的 mailer 类:
++app/mailers/user_mailer.rb+ contains an empty mailer:
 
 <ruby>
 class UserMailer < ActionMailer::Base
@@ -39,7 +39,7 @@ class UserMailer < ActionMailer::Base
 end
 </ruby>
 
-让我们来添加一个叫 +welcome_email+ 的方法, 它将用于发送用户注册成功的邮件:
+Let's add a method called +welcome_email+, that will send an email to the user's registered email address:
 
 <ruby>
 class UserMailer < ActionMailer::Base
@@ -48,7 +48,7 @@ class UserMailer < ActionMailer::Base
   def welcome_email(user)
     @user = user
     @url  = "http://example.com/login"
-    mail(:to => user.email, :subject => "欢迎来到某某网站")
+    mail(:to => user.email, :subject => "Welcome to My Awesome Site")
   end
 end
 </ruby>

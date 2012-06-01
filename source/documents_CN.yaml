@@ -36,8 +36,10 @@
   name: 视图(Views)
   documents:      
     - 
-      name: Layouts and Rendering in Rails
+      name: Rails中的布局与渲染
       url: layouts_and_rendering.html
+      work_in_progress: true
+      contributor: NaixSpirit
       description: This guide covers the basic layout features of Action Controller and Action View, including rendering and redirecting, using content_for blocks, and working with partials.
     - 
       name: Action View Form Helpers
@@ -72,8 +74,10 @@
       url: i18n.html
       description: This guide covers how to add internationalization to your applications. Your application will be able to translate content to different languages, change pluralization rules, use correct date formats for each country and so on.
     - 
-      name: Action Mailer Basics
+      name: Action Mailer 介绍
+      contributor: Tassandar
       url: action_mailer_basics.html
+      work_in_progress: true
       description: This guide describes how to use Action Mailer to send and receive emails.
     - 
       name: Testing Rails Applications
@@ -98,9 +102,10 @@
       contributor: ichord
       description: 这个指南是一份全面的 Rails 应用基本配置指南.
     - 
-      name: Rails Command Line Tools and Rake Tasks
+      name: Rails 命令行工具和 Rake 任务
       url: command_line.html
-      description: This guide covers the command line tools and rake tasks provided by Rails.
+      contributor: Fenprace
+      description: 本指南涵盖了 Rails 的命令行工具和 rake 任务。
     - 
       name: Caching with Rails 
       url: caching_with_rails.html
@@ -108,8 +113,6 @@
     - 
       name: Asset Pipeline
       url: asset_pipeline.html
-      work_in_progress: true
-      contributor: ichord
       description: This guide documents the asset pipeline.
       description: 本指南记载了 asset pipline.
     - 
@@ -127,8 +130,6 @@
   documents:
     - 
       name: Rails 插件入门指南
-      work_in_progress: true
-      contributor: Tassandar
       url: plugins.html
       description: 这篇文章将会告诉你如何在 Rails 上创建一个插件.
     - 
