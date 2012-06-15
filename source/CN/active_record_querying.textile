@@ -202,5 +202,67 @@ User.all.each do |user|
 end
 </ruby>
 
+但是随着表的规模的增大，这种处理过程也会随之增长。因为 +User.all.each+ 一次性地将整个表都实例化了，为每一条记录生成了一个 model ，并把这个结果数组保存在内存中。确实，当我们有一堆非常巨大的对象时，这个集合将会导致内存溢出。
 
+Rails 提供了两种方法来把记录分割成组进行处理。第一种方法是 +find_each+ ，检索出一组数据并对将每条记录作为一个 model 传给 block 代码块。第二种方法是 +find_in_batches+ ，检索出一组数据然后将整组数据作为一个 model 的数组传给 block 代码块。
 
+TIP: 这里的 +find_each+ 和 +find_in_batches+ 方法适用于那种大量数据不能够一次加载到内存中的情况分组处理情况。如果你只是想遍历一千条数据，那一般的查找方法会更好。
+
+h5. +find_each+
+
+这个 +find_each+ 方法检索出一组数据并对将每条记录作为一个 model 传给 block 代码块。在下面的例子中， +find_each+ 方法会检索出 1000 条数据（当前的 +find_each+ 和 +find_in_batches+ 方法的默认值）然后将每条记录作为一个 model 传给 block 代码块。
+
+<ruby>
+User.find_each do |user|
+  NewsLetter.weekly_deliver(user)
+end
+</ruby>
+
+h6. +find_each+ 的参数
+
++find_each+ 方法可以接受除了 +:order+ 和 +:limit+ 之外的普通的 +find+ 的大部分参数，而 +:order+ 和 +:limit+ 已经在 +find_each+ 方法内部实现使用了。
+
+另外，+find_each+ 还可以接受两个额外的参数 +:batch_size+ 和 +:start+ 。
+
+*+:batch_size+*
+
++:batch_size+ 这个参数可以让你在传递给 block 语句块之前指定检索到的每组数据的记录数目。比如说，检索一个 5000 条数据的组：
+
+<ruby>
+User.find_each(:batch_size => 5000) do |user|
+  NewsLetter.weekly_deliver(user)
+end
+</ruby>
+
+*+:start+*
+
+默认情况下，我们根据主键的递增顺序取数据，因为主键肯定是一个正整数。当你不需要低于某个 ID 值以下的记录时， +:start+ 这个参数让你可以指定开始的 ID 值，比如说：如果你想继续一个中断的处理进程，你就可以提供你最后一个保存的记录 ID 来实现。
+
+比如说： 只对记录 ID 大于 2000 的用户发送新闻信件（ newsletters ），并且按照每组 5000 条记录查询：
+
+<ruby>
+User.find_each(:start => 2000, :batch_size => 5000) do |user|
+  NewLetter.weekly_deliver(user)
+end
+</ruby>
+
+另外一个例子是如果你想多个使用者（ workers ）使用相同的查询。你可以给每个使用者（ worker ）设置 <tt>:start</tt> 属性来处理 10000 条数据。
+
+NOTE: +:include+ 可以让你定义与该记录一起加载的关联记录（ associations ）。
+
+h5. +find_in_batches+
+
++find_in_batches+ 和 +find_each+ 很像，因为它们都是按组检索记录的。不同点在于 +find_in_batches+ 将整组数据作为一个 model 数组传给 block 语句块，而不是分开。下面的例子一次性将最多 1000 条 invoices 记录作为一个数组传递给 block 语句块，最后语句块中包含所有剩下的 invoices 记录。
+
+<ruby>
+# 一次性传递 1000 个 invoices 记录给 add_invoices 方法。
+Invoice.find_in_batches(:include => :invoice_lines) do |invoices|
+  export.add_invoices(invoices)
+end
+</ruby>
+
+NOTE: +:include+ 可以让你定义与该记录一起加载的关联记录（ associations ）。
+
+h6. +find_in_batches+ 的参数
+
++find_in_batches+ 方法也像 +find_each+ 方法一样接受 +:batch_size+ 和 +:start+ 这两个参数，同时也接受大部分普通 +find+ 方法的参数，除了 +:order+ 和 +:limit+ 这两个 +find_in_batches+ 内部实现使用了的参数。
