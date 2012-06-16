@@ -121,13 +121,19 @@ caches_page :image, :gzip => false
 
 Or, you can set custom gzip compression level (level names are taken from +Zlib+ constants):
 
+或者设置特定的压缩级别（级别名称可以使用 +Zlib+ 中的常量）：
+
 <ruby>
 caches_page :image, :gzip => :best_speed
 </ruby>
 
 NOTE: Page caching ignores all parameters. For example +/products?page=1+ will be written out to the filesystem as +products.html+ with no reference to the +page+ parameter. Thus, if someone requests +/products?page=2+ later, they will get the cached first page. A workaround for this limitation is to include the parameters in the page's path, e.g. +/productions/page/1+.
 
+NOTE: 页面缓存会忽略所有的参数。如 +/products?page=1+ 将会在文件系统中生成没有关于 +page+ 参数的 +/products.html+ 。这样如果之后有人请求 +/products?page=2+ ，将会获取到缓存的第一页。能采取的措施就是把参数包含在页面的路径中，如： +/productions/page/1+ 。
+
 INFO: Page caching runs in an after filter. Thus, invalid requests won't generate spurious cache entries as long as you halt them. Typically, a redirection in some before filter that checks request preconditions does the job.
+
+INFO: 页面缓存在过滤器之后运行。这样，只要你中断无效的请求就不会生成伪造的缓存纪录。通常在一些检验请求的 before filter 中的跳转会做这项工作。
 
 h4. Action Caching
 
