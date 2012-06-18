@@ -1,6 +1,6 @@
 h2. Active Record 校验与回调
 
-本章节将指导你如何hook into到Active Record的整个声明周期中。你将学习如何在数据保存到数据前对其进行验证，以及如何在Active Record对象生命周期的特定时刻进行定制化操作。Orz
+本章节将指导你如何hook into到Active Record的整个生命周期中。你将学习如何在数据保存到数据前对其进行校验，以及如何在Active Record对象生命周期的特定时刻进行定制化操作。
 
 阅读完本章节并理解相关概念后，希望你能够：
 
@@ -335,8 +335,7 @@ h4. +numericality+
 
 否则，该校验将会尝试将被校验的值先通过+Float+转换为副点数。
 
-WARNING. Note that the regular expression above allows a trailing newline character.
-警告：Orz
+警告：请注意上面的正则允许以换行符结尾。
 
 <ruby>
 class Player < ActiveRecord::Base
@@ -1009,8 +1008,7 @@ h4. 销毁对象时
 * +around_destroy+
 * +after_destroy+
 
-WARNING. +after_save+ runs both on create and update, but always _after_ the more specific callbacks +after_create+ and +after_update+, no matter the order in which the macro calls were executed.
-警告。+after_save+ 在创建和更新对象是都会运行，Orz
+警告。+after_save+ 在创建和更新对象是都会运行，但总是在+after_create+和+after_update+之后，而和通过宏注册时的顺序无管。
 
 h4. +after_initialize+ 和 +after_find+
 
@@ -1018,7 +1016,7 @@ h4. +after_initialize+ 和 +after_find+
 
 +after_find+ 在从数据库载入Active Record对象时被调用。当+after_find+和+after_initialize+同时声明时，+after_find+将首先被调用。
 
-+after_initialize+和 +after_find+回调没有与之对用的+before_*+回调，但是他们可以和其他Active Record回调一样注册使用。Orz
++after_initialize+和 +after_find+回调没有与之对用的+before_*+回调，但他们也是和其他Active Record回调一样注册使用。
 
 <ruby>
 class User < ActiveRecord::Base
@@ -1096,13 +1094,12 @@ h3. 执行挂起
 
 整个回调链封装在一个事务中。如果任何一个<em>before</em>回调方法返回+false+或者抛出异常，整个执行链会中止并且回滚；而<em>after</em>回调则只会抛出一个异常。
 
-WARNING. Raising an arbitrary exception may break code that expects +save+ and its friends not to fail like that. The +ActiveRecord::Rollback+ exception is thought precisely to tell Active Record a rollback is going on. That one is internally captured but not reraised.
-警告。Orz
+警告。随意抛出一个异常，可能会中断预期执行的保存逻辑甚至可能导致未知的失败。而抛出+ActiveRecord::Rollback+异常是特地用来通知Active Record需要执行回滚操作。而且该异常会在内部捕捉到并不再抛出。
 
 h3. 关联回调 
 
 Callbacks work through model relationships, and can even be defined by them. Suppose an example where a user has many posts. A user's posts should be destroyed if the user is destroyed. Let's add an +after_destroy+ callback to the +User+ model by way of its relationship to the +Post+ model:
-Orz
+回调可以和关联一起工作，甚至是通过关联来定义的。例如一个user拥有多个posts。而一个用户的posts应到在该用户被销毁是全部删除。我们可以给和+User+模型关联的+Post+模型添加一个+after_destroy+回调：
 
 <ruby>
 class User < ActiveRecord::Base
@@ -1284,8 +1281,7 @@ config.active_record.observers = :mailer_observer
 
 h3. 事务回调
 
-There are two additional callbacks that are triggered by the completion of a database transaction: +after_commit+ and +after_rollback+. These callbacks are very similar to the +after_save+ callback except that they don't execute until after database changes have either been committed or rolled back. They are most useful when your active record models need to interact with external systems which are not part of the database transaction.
-还有两个回调是在完成一次数据库事务操作后被触发的：+after_commit+和+after_rollback+。这两个回调和+after_save+很相似，只不过他们直到数据库操做成功完成或者失败后回滚完成后才被触发。当你的AR模型需要和不属于数据库事务的外部系统打交道时会非常的有用。Orz
+还有两个回调是在完成一次数据库事务操作后被触发的：+after_commit+和+after_rollback+。这两个回调和+after_save+很相似，只不过他们直到数据库操做成功完成或者失败后回滚完成后才被触发。当你的AR模型需要和不属于数据库事务的外部系统打交道时会非常的有用。
 
 考虑如下场景，前面的示例中+PictureFile+模型需要在被销毁时删除和他关联的图片文件。如果在+after_destroy+回调之后发生任何异常，事务回滚，但是图片文件已经被删除而且无法恢复，这就会导致模型数据不一致。例如，假设下面代码中的+picture_file_2+是无效的，当我们执行+save!+方法时会抛出错误。
 
