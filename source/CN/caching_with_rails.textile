@@ -137,11 +137,19 @@ INFO: 页面缓存在过滤器之后运行。这样，只要你中断无效的�
 
 h4. Action Caching
 
+h4. Action 缓存
+
 One of the issues with Page Caching is that you cannot use it for pages that require to restrict access somehow. This is where Action Caching comes in. Action Caching works like Page Caching except for the fact that the incoming web request does go from the webserver to the Rails stack and Action Pack so that before filters can be run on it before the cache is served. This allows authentication and other restriction to be run while still serving the result of the output from a cached copy.
+
+页面缓存的问题之一是，不能缓存需要限制访问的页面。这时就有了 Action 缓存。Action 缓存和页面缓存一样，但它的网页请求是从 webserver 到 Rails 栈和 Action Pack 中。这样 before filter 可以在 cache 服务之前运行。就使得在获取缓存副本的同时也能运行权限和其他验证限制。
 
 Clearing the cache works in a similar way to Page Caching, except you use +expire_action+ instead of +expire_page+.
 
+清除缓存的方法和页面缓存的一样，除了使用 +expire_action+ 代替 +expire_page+。
+
 Let's say you only wanted authenticated users to call actions on +ProductsController+.
+
+假如你只是想已验证的用户才能调用 +ProductionsController+ 中的 action。
 
 <ruby>
 class ProductsController < ActionController
@@ -162,11 +170,19 @@ end
 
 You can also use +:if+ (or +:unless+) to pass a Proc that specifies when the action should be cached. Also, you can use +:layout => false+ to cache without layout so that dynamic information in the layout such as logged in user info or the number of items in the cart can be left uncached. This feature is available as of Rails 2.2.
 
+可以使用 +:if+ （或 +:unless+ ）来传递一个 Proc 来确定什么时候 action 能被缓存。同时也可以使用 +:layout => false+ 来取消 layout 的缓存，这样在 layout 中的动态信息如登录的用户信息或者购物车的项目数量就不被缓存了。这个特性在 Rails 2.2 就可以使用了。
+
 You can modify the default action cache path by passing a +:cache_path+ option. This will be passed directly to +ActionCachePath.path_for+. This is handy for actions with multiple possible routes that should be cached differently. If a block is given, it is called with the current controller instance.
+
+可以通过修改 +:cache_path+ 选项的值来修改默认的 action 缓存的路径。修改的值被直接传给 +ActionCachePath.path_for+ 。这便于有多个路由的 action 做不同的缓存。如果传递一个块（ block ），将会被当前的控制器实例调用。
 
 Finally, if you are using memcached or Ehcache, you can also pass +:expires_in+. In fact, all parameters not used by +caches_action+ are sent to the underlying cache store.
 
+最后，如果你使用 memcached 或 Ehcache ，你可以传值到 +:expires_in+ 。事实上所有不被 +caches_action+ 使用的参数都发送到了底层的缓存存储。
+
 INFO: Action caching runs in an after filter. Thus, invalid requests won't generate spurious cache entries as long as you halt them. Typically, a redirection in some before filter that checks request preconditions does the job.
+
+INFO: Action 缓存在 after filter 后运行。这样，只要你中断无效的请求，它将不会产生伪造的缓存纪录。通常在一些检验请求的 before filter 中的跳转会做这项工作。
 
 h4. Fragment Caching
 
