@@ -186,11 +186,19 @@ INFO: Action 缓存在 after filter 后运行。这样，只要你中断无效�
 
 h4. Fragment Caching
 
+h4. 片段缓存
+
 Life would be perfect if we could get away with caching the entire contents of a page or action and serving it out to the world. Unfortunately, dynamic web applications usually build pages with a variety of components not all of which have the same caching characteristics. In order to address such a dynamically created page where different parts of the page need to be cached and expired differently, Rails provides a mechanism called Fragment Caching.
+
+如果我们可以通过缓存整个页面或 action 来处理所有的问题那就完美了。不幸的是，动态的 web 应用程序通常会用不同的部分来构成页面，这些不同的部分并不都是使用完全相同的缓存配置。为了处理一个不同部分需要不同的缓存和失效时间的动态创建的页面， Rails 提供了片段缓存的机制。 
 
 Fragment Caching allows a fragment of view logic to be wrapped in a cache block and served out of the cache store when the next request comes in.
 
+片段缓存允许一个逻辑视图的片段放在一个缓存块中，在下一个请求时就可以直接使用缓存存储。
+
 As an example, if you wanted to show all the orders placed on your website in real time and didn't want to cache that part of the page, but did want to cache the part of the page which lists all products available, you could use this piece of code:
+
+举个例子，如果你想要在网站上实时的显示所有的订单，但是又不想把所有部分缓存到那个页上，
 
 <ruby>
 <% Order.find_recent.each do |o| %>
