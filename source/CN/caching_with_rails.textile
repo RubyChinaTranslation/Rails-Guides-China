@@ -190,7 +190,7 @@ h4. 片段缓存
 
 Life would be perfect if we could get away with caching the entire contents of a page or action and serving it out to the world. Unfortunately, dynamic web applications usually build pages with a variety of components not all of which have the same caching characteristics. In order to address such a dynamically created page where different parts of the page need to be cached and expired differently, Rails provides a mechanism called Fragment Caching.
 
-如果我们可以通过缓存整个页面或 action 来处理所有的问题那就完美了。不幸的是，动态的 web 应用程序通常会用不同的部分来构成页面，这些不同的部分并不都是使用完全相同的缓存配置。为了处理一个不同部分需要不同的缓存和失效时间的动态创建的页面， Rails 提供了片段缓存的机制。 
+如果可以通过缓存整个页面或 action 来处理所有的问题那就完美了。不幸的是，动态的 web 应用程序通常会用不同的部分来构成页面，这些不同的部分并不都是使用完全相同的缓存配置。为了处理一个不同部分需要不同的缓存和失效时间的动态创建的页面， Rails 提供了片段缓存的机制。 
 
 Fragment Caching allows a fragment of view logic to be wrapped in a cache block and served out of the cache store when the next request comes in.
 
@@ -198,7 +198,7 @@ Fragment Caching allows a fragment of view logic to be wrapped in a cache block 
 
 As an example, if you wanted to show all the orders placed on your website in real time and didn't want to cache that part of the page, but did want to cache the part of the page which lists all products available, you could use this piece of code:
 
-举个例子，如果你想要在网站上实时的显示所有的订单，但是又不想把所有部分缓存到那个页上，
+举个例子，你想要在网站上实时的显示所有的订单，不想缓存页面上的这一部分，但是想缓存页面上显示所有产品的那一部分，可以这样写你的代码：
 
 <ruby>
 <% Order.find_recent.each do |o| %>
@@ -215,6 +215,8 @@ As an example, if you wanted to show all the orders placed on your website in re
 
 The cache block in our example will bind to the action that called it and is written out to the same place as the Action Cache, which means that if you want to cache multiple fragments per action, you should provide an +action_suffix+ to the cache call:
 
+例子中的缓存块将会绑定到调用它的 action ，之后会将缓存写在和 Action 缓存的相同位置。所以如果你想为每个 action 缓存多个片段，你应该在 cache 调用时提供 +action_suffix+ ：
+
 <ruby>
 <% cache(:action => 'recent', :action_suffix => 'all_products') do %>
   All available products:
@@ -222,11 +224,15 @@ The cache block in our example will bind to the action that called it and is wri
 
 and you can expire it using the +expire_fragment+ method, like so:
 
+同时可以使用 +expire_fragment+ 方法来使缓存失效：
+
 <ruby>
 expire_fragment(:controller => 'products', :action => 'recent', :action_suffix => 'all_products')
 </ruby>
 
 If you don't want the cache block to bind to the action that called it, You can also use globally keyed fragments by calling the +cache+ method with a key, like so:
+
+如果不希望缓存块绑定到所调用的 action ，可以通过调用加上一个关键字的 +cache+ 方法使用全局片段：
 
 <ruby>
 <% cache('all_available_products') do %>
@@ -235,6 +241,8 @@ If you don't want the cache block to bind to the action that called it, You can 
 </ruby>
 
 This fragment is then available to all actions in the +ProductsController+ using the key and can be expired the same way:
+
+这个片段可以在 +ProductionsController+ 的所有 action 中使用。使用关键字，再以同样的方式使它失效：
 
 <ruby>
 expire_fragment('all_available_products')
