@@ -382,4 +382,132 @@ Client.where(:orders_count => [1,3,5])
 SELECT * FROM clients WHERE (clients.orders_count in (1,3,5)
 </sql>
 
+h3. 排序
+
+如果你想按照某种特定顺序返回检索的记录，可以使用 +order+ 方法。
+
+比如：如果你有一组记录并且希望它们能够按照 +created_at+ 的升序排列：
+
+<ruby>
+Client.order("created_at")
+</ruby>
+
+你还可以指定 +ASC+ 或者 +DESC+ 。
+
+<ruby>
+Client.order("created_at DESC")
+# 或者
+Client.order("created_at ASC")
+</ruby>
+
+又或者是按照多个字段排序：
+
+<ruby>
+Client.order("orders_count ASC, created_at DESC")
+# 或者
+Client.order("orders_count ASC", "created_at DESC")
+</ruby>
+
+h3. 选择返回的字段（投影）
+
+默认情况下， <tt>Model.find</tt> 方法使用 +select *+ 来返回结果记录的所有字段。
+
+如果你要返回结果集的一个子集，那你可以通过 +select+ 方法来指定这个子集。
+
+NOTE: 如果你使用了 +select+ 方法，那返回的集合是只读的：#只读对象。
+
+<br />
+
+比如：我们只需要 +viewable_by+ 和 +locked+ 两个字段：
+
+<ruby>
+Client.select("viewable_by, locked")
+</ruby>
+
+最终生成的 SQL 就会像下面一样：
+
+<sql>
+SELECT viewableby, locked FROM clients
+</sql>
+
+请特别小心，因为你这样只是初始化了一个 model 对象的一些字段。如果你操作那些你还未初始化的字段，那你就会得到一个异常：
+
+<shell>
+ActiveModel::MissingAttributeError: missing attribute: <attribute>
+</shell>
+
+其中 +<attribute>+ 是你要操作的属性名。+id+ 方法不会抛出 +ActiveRecord::MissingAttributeError+ ，所以在使用 model 的 associations 时要小心，因为它依赖于 +id+ 方法。
+
+如果你想对于某个字段只返回不同的记录，你可以使用 +uniq+：
+
+<ruby>
+Client.select(:name).uniq
+</ruby>
+
+它会生成如下 SQL 语句：
+
+<sql>
+SELECT DISTINCT name FROM clients
+</sql>
+
+你也可以移除这个唯一性约束：
+
+<ruby>
+query = Client.select(:name).uniq
+# => 返回唯一的 name 字段
+
+query.uniq(false)
+# => 返回所有 name ，即使有重复
+</ruby>
+
+h3. 限制和偏移量
+
+如果你想在 +Model.find+ 中使用 +LIMIT+ 来限制结果，那你可以直接结合使用 +limit+ 和 +offset+ 方法来指定 +LIMIT+ 。
+
+你可以使用 +limit+ 来指定返回的结果集中记录数量，然后使用 +offset+ 来指定偏移的记录数目。比如：
+
+<ruby>
+Client.limit(5)
+</ruby>
+
+将会最多返回 5 条记录，并且因为没有偏移量，所以它会返回最前面的 5 条记录。它执行的 SQL 语句如下：
+
+<sql>
+SELECT * FROM clients LIMIT 5
+</sql>
+
+然后在其基础上增加 +offset+
+
+<ruby>
+Clients.limit(5).offset(30)
+</ruby>
+
+它会返回从第 31 条记录开始的最多 5 条记录。它相当于如下 SQL 语句：
+
+<sql>
+SELECT * FROM clients LIMIT 5 OFFSET 30
+</sql>
+
+h3. 分组
+
+为了在查找记录的 SQL 语句中时指定 +GROUP BY+ ，你可以直接使用 +group+ 方法。
+
+比如你想找一组记录并按照创建的时间排序：
+
+<ruby>
+Order.select("data(created_at) as ordered_date, sum(price) as total_price").group("date(created_at)“)
+</ruby>
+
+它会为每个有 orders 的日期的返回一个 +Order+ 对象。
+
+
+
+
+
+
+
+
+
+
+
 
