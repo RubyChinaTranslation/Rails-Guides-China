@@ -500,6 +500,86 @@ Order.select("data(created_at) as ordered_date, sum(price) as total_price").grou
 
 它会为每个有 orders 的日期的返回一个 +Order+ 对象。
 
+他将会生成如下一样的 SQL 语句：
+
+<sql>
+SELECT date(created_at) as ordered_date, sum(price) as total_price FROM orders GROUP BY date(created_at)
+</sql>
+
+h3. Having 语句
+
+SQL 使用者利用 +HAVING+ 来指定 +GROUP BY+ 字段的需要满足的条件。你可以在 +Model.find+ 中将 +:having+ 作为一个参数传递给查找方法。
+
+比如说：
+
+<ruby>
+Order.select("date(created_at) as ordered_date, sum(price) as total_price").group("date(created_at)").having("sum(price) > ?", 100)
+</ruby>
+
+他将会生成如下 SQL 语句：
+
+<sql>
+SELECT date(created_at) as ordered_date, sum(price) as total_price FROM orders GROUP BY date(created_at) HAVING sum(price) > 100
+</sql>
+
+它会为每天返回一个 order 对象，但是仅限于那些一天订单总额大于 $100 的日子。
+
+h3. 覆盖条件表达式
+
+h4. +expect+
+
+你可以使用 +expect+ 来忽略一些特定的条件表达式。比如说：
+
+<ruby>
+Post.where('id > 10').limit(20).order('id asc').expect(:order)
+</ruby>
+
+类似于如下的 SQL 将会被执行：
+
+<sql>
+SELECT * FROM posts WHERE id > 10 LIMIT 20
+</sql>
+
+h4. +only+
+
+你还可以使用 +only+ 方法来覆盖一些条件表达式。比如说：
+
+<ruby>
+Post.where('id > 10').limit(20).order('id desc').only(:order, :where)
+</ruby>
+
+它会生成如下 SQL 语句：
+
+<sql>
+SELECT * FROM posts WHERE id > 10 ORDER BY id DESC
+</sql>
+
+h4. +reorder+
+
++reorder+ 方法会覆盖默认的排序方法。 比如说：
+
+<ruby>
+class Post < ActiveRecord::Base
+  ..
+  ..
+  has_many :comments, :order => 'posted_at DESC'
+end
+
+Post.find(10).comments.reorder('name')
+</ruby>
+
+它会产生如下 SQL 语句：
+
+<sql>
+SELECT * FROM posts WHERE id = 10 ORDER BY name
+</sql>
+
+如果没有使用 +reorder+ 方法，那对应的 SQL 语句就会变为：
+
+<sql>
+SELECT * FROM posts WHERE id = 10 ORDER BY posted_at DESC
+</sql>
+
 
 
 
