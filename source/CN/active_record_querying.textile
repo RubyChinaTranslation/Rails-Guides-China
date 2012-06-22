@@ -580,14 +580,96 @@ SELECT * FROM posts WHERE id = 10 ORDER BY name
 SELECT * FROM posts WHERE id = 10 ORDER BY posted_at DESC
 </sql>
 
+h4. +reverse_order+
 
++reverse_order+ 方法会按照指定的排序方式倒序排列。
 
+<ruby>
+Client.where("orders_count > 10").order(:name).reverse_order
+</ruby>
 
+如下 SQL 语句将会执行：
 
+<sql>
+SELECT * FROM clients WHERE orders_count > 10 ORDER BY name DESC
+</sql>
 
+如果没有特别指定排序方式，那 +reverse_order+ 方法会按照主键的倒序排列。
 
+<ruby>
+Client.where("orders_count > 10").reverse_order
+</ruby>
 
+它将会产生如下 SQL 语句：
 
+<sql>
+SELECT * FROM clients WHERE orders_count > 10 ORDER BY clients.id DESC
+</sql>
 
+这个方法还接受 *no* 参数。
+
+h3. 空对象的影响
+
++none+ 方法会返回一个代表没有记录的替代对象。随后的条件表达式会根据这个空对象继续返回空对象。这在某些需要返回一个替代对象而不是空结果时非常有用。
+
+<ruby>
+Post.none # 返回一个空结果并且不执行任何查询。
+</ruby>
+
+<ruby>
+# 以下的 visible_posts 方法期望返回一个关系对象。
+@posts = current_user.visible_posts.where(:name => params[:name])
+
+def visible_posts
+  case role
+  when 'Country Manager'
+    Post.where(:country => country)
+  when 'Reviewer'
+    Post.published
+  when 'Bad User'
+    Post.none # => 这里会返回一个 [] 或者 nil 并且结束调用
+  end
+end
+</ruby>
+
+h3. 只读的对象
+
+Active Record 提供了 +readonly+ 方法来明确指定不允许修改返回的对象。任何尝试修改只读对象行为都会失败，抛出一个 +ActiveRecord::ReadOnlyRecord+ 异常。
+
+<ruby>
+client = Client.readonly.first
+client.visits += 1
+client.save
+</ruby>
+
+因为 +client+ 已经被明确指定为一个只读的对象，所以以上的代码在执行 +client.save+ 时候更新 _visits_ 时会抛出一个 +ActiveRecord::ReadOnlyRecord+ 异常。
+
+h3. 为更新对象加锁
+
+加锁可以有效防止更新数据库记录时条件表达式竞争而保证更新操作的原子性。
+
+Active Record 提供了两种加锁机制：
+
+* 乐观锁
+* 悲观锁
+
+h4. 乐观锁
+
+乐观锁允许多个用户同时修改同一个对象，它假定数据冲突发生的可能性极小。它检查是否有另外的进程在这个记录打开后修改了这个对象来实现加锁的目地。如果有，那他会抛出一个 +ActiveRecord::StaleObjectError+ 异常并且忽略更新操作。
+
+<strong>乐观锁在列上加锁</strong>
+
+为了使用乐观锁，数据表中必须有一个叫做 +lock_version+ 的字段。每次记录更新之后， Active Record 都会增加 +lock_version+ 的数值。如果一个更新请求的 +lock_version+ 数值小于数据库中的 +lock_version+ ，那更新就会失败，并且抛出一个 +ActiveRecord::StaleObjectError+ 。比如说：
+
+<ruby>
+ca = Client.find(1)
+c2 = Client.find(1)
+
+c1.first_name = "Michael"
+c1.save
+
+c2.name = "should fail"
+c2.save # 抛出一个 ActiveRecord::StaleObjectError
+</ruby>
 
 
