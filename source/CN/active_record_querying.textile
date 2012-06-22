@@ -8,7 +8,7 @@ h2. Active Record 查询接口
 * 使用动态查找方法
 * 检查是否存在某些记录
 * Active Record 记录的计算方法
-* 针对记录之间的关系执行 EXPLAIN
+* 在 relation 实例对象上执行 EXPLAIN
 
 endprologue.
 
@@ -462,7 +462,7 @@ query.uniq(false)
 
 h3. 限制和偏移量
 
-如果你想在 +Model.find+ 中使用 +LIMIT+ 来限制结果，那你可以直接结合使用 +limit+ 和 +offset+ 方法来指定 +LIMIT+ 。
+如果你想在 +Model.find+ 中使用 +LIMIT+ 来限制结果，那你可以直接在 relation 实例对象上面结合使用 +limit+ 和 +offset+ 方法来指定 +LIMIT+ 。
 
 你可以使用 +limit+ 来指定返回的结果集中记录数量，然后使用 +offset+ 来指定偏移的记录数目。比如：
 
@@ -608,9 +608,9 @@ SELECT * FROM clients WHERE orders_count > 10 ORDER BY clients.id DESC
 
 这个方法还接受 *no* 参数。
 
-h3. 空对象的影响
+h3. 空 relation 实例对象
 
-+none+ 方法会返回一个代表没有记录的替代对象。随后的条件表达式会根据这个空对象继续返回空对象。这在某些需要返回一个替代对象而不是空结果时非常有用。
++none+ 方法会返回一个代表没有记录的 relation 实例对象。随后的条件表达式会根据这个 relation 实例对象继续返回空的 relation 实例对象而不是空结果时非常有用。
 
 <ruby>
 Post.none # 返回一个空结果并且不执行任何查询。
@@ -634,7 +634,7 @@ end
 
 h3. 只读的对象
 
-Active Record 提供了 +readonly+ 方法来明确指定不允许修改返回的对象。任何尝试修改只读对象行为都会失败，抛出一个 +ActiveRecord::ReadOnlyRecord+ 异常。
+Active Record 提供了 relation 实例对象上面的 +readonly+ 方法来明确指定不允许修改返回的对象。任何尝试修改只读对象行为都会失败，抛出一个 +ActiveRecord::ReadOnlyRecord+ 异常。
 
 <ruby>
 client = Client.readonly.first
@@ -671,5 +671,65 @@ c1.save
 c2.name = "should fail"
 c2.save # 抛出一个 ActiveRecord::StaleObjectError
 </ruby>
+
+然后你需要自己负责处理这个冲突，包括继续抛出异常并且回滚，合并或者提交其它业务逻辑以解决这个冲突。
+
+如果你要关闭这个机制，可以这样设置： <tt>ActiveRecord::Base.lock_optimistically = false</tt> 。
+
++ActiveRecord::Base+ 也提供了一个类属性 +locking_column+ 来修改默认的 +lock_version+ 字段：
+
+<ruby>
+class Client < ActiveRecord::Base
+  self.locking_column = :lock_client_column
+end
+</ruby>
+
+h4. 悲观锁
+
+悲观锁使用数据库提供的锁机制。当它使用 +lock+ 来构建一个 relation 实例对象时对返回的记录行加独占锁（写锁）。 relation 实例对象通常在一个事务里面使用 +lock+ 来防止发生死锁。
+
+比如说：
+
+<ruby>
+Item.transaction do
+  i = Item.lock.first
+  i.name = 'Jones'
+  i.save
+end
+</ruby>
+
+上面的代码在 MySQL 作为后端数据库时会生成以下 SQL 语句：
+
+<sql>
+SQL (0.2ms) BEGIN
+Item Load (0.3ms)  SELECT * FROM `item` LIMIT 1 FOR UPDATE
+Item Update (0.4ms)  UPDATE `items` SET `updated_at` = `2009-02-07 18:05:56`, `name` = 'Jones' WHERE `id` = 1
+SQL (0.8ms)  COMMIT
+</sql>
+
+你还可以传递原始 SQL 语句给 +lock+ 方法来支持不同类型的锁。比如说： MySQL 有一中锁叫做 +LOCK IN SHARE MODE+ ，它可以让你对一条记录上锁但是允许其它人读它。要指定这种锁类型，你需要把它作为参数传给 lock 方法：
+
+<ruby>
+Item.transaction do
+  i = Item.lock("LOCK IN SHARE MODE").find(1)
+  i.increament(:view)
+end
+</ruby>
+
+如果你已经有一个对象实例了，你可以使用如下代码来一次性地开启一个事务并加锁。
+
+<ruby>
+item = Item.first
+item.with_lock do
+  # 这个代码块在事务里面执行
+  # item 是已经加锁的
+  item.increment!(:view)
+end
+</ruby>
+
+h3. 连接表
+
+Active Record 提供了一个叫做 +joins+ 的查找方法来对结果的 SQL 语句指定 +JOIN+ 子句。Active Record 提供了多种使用 +joins+ 方法的方式。
+
 
 
