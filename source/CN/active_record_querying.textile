@@ -731,5 +731,162 @@ h3. 连接表
 
 Active Record 提供了一个叫做 +joins+ 的查找方法来对结果的 SQL 语句指定 +JOIN+ 子句。Active Record 提供了多种使用 +joins+ 方法的方式。
 
+h4. 使用零碎的 SQL 语句
+
+你可以使用原生态的 SQL 来使用 +JOIN+ 方法以生成 +joins+ 子句。
+
+<ruby>
+Client.join('LEFT OUTER JOIN addresses ON addresses.client_id = clients.id')
+</ruby>
+
+它会生成如下 SQL 语句：
+
+<sql>
+SELECT clients.* FROM clients LEFT OUTER JOIN addresses ON addresses.client_id = clients.id
+</sql>
+
+h4. 使用 Associations 的数组或者映射表
+
+WARNING: 这个方法只适用于 +INTER JOIN+ 的情况。
+
+Active Record 允许我们使用“ associations ”这个名字： model 中定义了 association_basic.html 作为使用 +JOIN+ 来指定 +joins+ 的缩写。
+
+比如说：看如下关于 +Category+ ， +Post+ ， +Comments+ 和 +Guest+ 几个 model 的例子。
+
+<ruby>
+class Category < ActiveRecord::Base
+  has_many :posts
+end
+
+class Post < ActiveRecord::Base
+  belongs_to :category
+  has_many :comments
+  has_many :tags
+end
+
+class Comment < ActiveRecord::Base
+  belongs_to :post
+  has_one :guest
+end
+
+class Guest < ActiveRecord::Base
+  belongs_to :comment
+end
+
+class Tag < ActiveRecord::Base
+  belongs_to :post
+end
+</ruby>
+
+现在以下所有的语句都会产生相应的使用了 +INNER JOIN+ 的连接查询语句：
+
+h5. 使用单个 Association
+
+<ruby>
+Category.joins(:posts)
+</ruby>
+
+它会产生如下语句：
+
+<sql>
+SELECT categories.* FROM categories
+  INNER JOIN posts ON posts.category_id = categories.id
+</sql>
+
+或者用英语说就是“ return a Category object for all categories with posts ”。注意如果你有多个 posts 关联相同的 category 的话，就会出现重复。如果你想消除重复， 那你可以这样写： Category.joins(:post).select("distinct(categories.id)") 。
+
+h5. 使用多个 Association
+
+<ruby>
+Post.joins(:category, :comments)
+</ruby>
+
+它会产生这样的结果：
+
+<sql>
+SELECT posts.* FROM posts
+  INNER JOIN categories ON posts.category_id = categories.id
+  INNER JOIN comments ON comments.post_id = posts.id
+</sql>
+
+或者用英语说就是： “ return all posts that having a category and at least one comment ”。再次注意有多条 comment 记录的 post 会重复出现。
+
+h5. 使用嵌套 Association （单层的）
+
+<ruby>
+Post.joins(:comments => :guest)
+</ruby>
+
+它会产生如下语句：
+
+<sql>
+SELECT posts.* FROM posts
+  INNER JOIN comments ON comments.post_id = posts.id
+  INNER JOIN guest ON guests.comment_id = comments.id
+</sql>
+
+同样，用英语说的就是： “ return all posts that have a comment made by guest. ”。
+
+h5. 使用嵌套 Association （多层的）
+
+<ruby>
+Category.joins(:posts => [{:comments => :guest}, :tags])
+</ruby>
+
+它产生如下结果：
+
+<sql>
+SELECT categories.* FROM categories
+  INNER JOIN posts ON posts.category_id = categories.id
+  INNER JOIN comments ON comments.post_id = posts.id
+  INNER JOIN guests ON guests.comment_id = comments.id
+  INNER JOIN tags ON tags.post_id = posts.id
+</sql>
+
+h4. 指定连接表的条件表达式
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
