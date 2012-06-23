@@ -250,9 +250,15 @@ expire_fragment('all_available_products')
 
 h4. Sweepers
 
+h4. 清理器
+
 Cache sweeping is a mechanism which allows you to get around having a ton of +expire_{page,action,fragment}+ calls in your code. It does this by moving all the work required to expire cached content into an +ActionController::Caching::Sweeper+ subclass. This class is an observer and looks for changes to an object via callbacks, and when a change occurs it expires the caches associated with that object in an around or after filter.
 
+Cache 清理是让你在代码里避免调用一大堆 +expire_{page,action,fragmeng}+ 方法的机制。它把所有需要是缓存内容失效的工作移到了 +ActionController::Caching::Sweeper+ 的子类中。这个类是一个观察器，通过回调来查询一个对象的变化，当变化发生时，就会在 around 或 after filter 中将该对象缓存的相关内容失效。
+
 Continuing with our Product controller example, we could rewrite it with a sweeper like this:
+
+继续 Product controller 的例子，可以在清理器中这样处理：
 
 <ruby>
 class ProductSweeper < ActionController::Caching::Sweeper
@@ -286,11 +292,15 @@ end
 
 You may notice that the actual product gets passed to the sweeper, so if we were caching the edit action for each product, we could add an expire method which specifies the page we want to expire:
 
+可能你注意到了实际的 product 传递到了清理器，如果对每一个 product 的 edit action 缓存，就可以加上一个对特定页面的失效方法：
+
 <ruby>
 expire_action(:controller => 'products', :action => 'edit', :id => product.id)
 </ruby>
 
 Then we add it to our controller to tell it to call the sweeper when certain actions are called. So, if we wanted to expire the cached content for the list and edit actions when the create action was called, we could do the following:
+
+之后把它加到控制器中，来告知控制器当某个 action 调用时使用清理器。如果我们想在 create action 调用后，使列表和 edit action 的缓存内容失效，我们可以这样做：
 
 <ruby>
 class ProductsController < ActionController
@@ -308,9 +318,15 @@ end
 
 h4. SQL Caching
 
+h4. SQL 缓存
+
 Query caching is a Rails feature that caches the result set returned by each query so that if Rails encounters the same query again for that request, it will use the cached result set as opposed to running the query against the database again.
 
+查询缓存是 Rails 的一个特性，它缓存了每一个数据库查询的结果，这样如果 Rails 再次遇到那个请求中的同样的查询，它将会使用缓存的结果集而不是知道到数据库中继续查询。
+
 For example:
+
+例如：
 
 <ruby>
 class ProductsController < ActionController
@@ -330,7 +346,11 @@ end
 
 The second time the same query is run against the database, it's not actually going to hit the database. The first time the result is returned from the query it is stored in the query cache (in memory) and the second time it's pulled from memory.
 
+第二次对数据库运行相同的查询，它实际上并不到数据库查询。第一次查询返回的结构存储在查询缓存（内存）中，第二次就直接从内存中拉取。
+
 However, it's important to note that query caches are created at the start of an action and destroyed at the end of that action and thus persist only for the duration of the action. If you'd like to store query results in a more persistent fashion, you can in Rails by using low level caching.
+
+然而，需要注意查询缓存在一个 action 的开始时创建，在 action 结束时清除，只持续在这个 action 的期间。如果希望在一个更持久的方式中存储查询结构，可以在 Rails 中使用低级别的缓存。
 
 h3. Cache Stores
 
