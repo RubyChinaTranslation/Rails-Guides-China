@@ -1042,69 +1042,71 @@ orders = client.orders.scoped
 orders.where("created_at > ?", 30.days.ago)
 </ruby>
 
+h4. 定义默认的 scope
 
+如果我们希望定义一个 model 里面所有的查询都会执行的 scope ，那我们可以在 model 里面使用 +default_scope+ 方法。
 
+<ruby>
+class Client < ActiveRecord::Base
+  default_scope where("removed_at is NULL")
+end
+</ruby>
 
+当这个 model 中执行了查询，就会产生类似如下的 SQL 查询语句：
 
+<sql>
+SELECT * FROM clients WHERE removed_at IS NULL
+</sql>
 
+h4. 移除所有的 scope
 
+如果想移除 scope ，我们可以用 +unscope+ 方法。当某个特定的查询不需要默认 scope 时，这个尤其有用。
 
+<ruby>
+Client.unscoped.all
+</ruby>
 
+这个方法移除所有的 scope ，在数据表上执行普通的查询。
 
+h3. 动态查找方法
 
+Active Record 为我们数据表上定义的每个字段都提供了相应的查找方法。如果你的 client 表上有一个 +first_name+ 字段，你马上可以从 Active Record 那里得到 +find_by_first_name+ 和 +find_all_by_first_name+ 两个查找方法。如果你的 client 表上还有 +locked+ 字段，那你也可以得到 +find_by_locked+ 和 +find_all_by_locked+ 方法。
 
+你还可以使用 +find_last_by_*+ 的方法来找到最后一条匹配的记录。
 
+你还可以在动态查找方法后面加上一个感叹号（ <tt>!</tt>）来保证如果没有匹配的记录时抛出一个 +ActiveRecord::RecordNotFound+ 错误，就像 +Client.find_by_name!("Ryan")+ 。
 
+如果你想同时用 name 和 locked 字段来查找数据，可以简单地在字段之间加上 +and+ 来串联这些查找方法。比如说： +Client.find_by_name_and_locked("Ryan", true)+ 。
 
+WARNING: 在 Rails 3.1 及其以下版本中，如果传入一个动态查找方法的参数少于字段数，就像 <tt>Client.find_by_name_and_locked("Ryan")</tt> 一样，它会给缺少的字段传递一个 +nil+ 值。这是无意义的，所以在 Rails 3.2 中，它会抛出一个 +AgumentError+ 的异常。
 
+h3. 查找并创建一个新对象
 
+通常，你需要先查找一条记录并在它不存在时创建它。这时，你可以使用 +first_or_create+ 或者 +first_or_create!+ 方法。
 
+h4. +first_r_create+
 
++first_or_create+ 方法先检查 +first+ 方法是不是返回 +nil+ ，如果是，就调用 +create+ 方法。它和 +where+ 方法一起使用时非常有用。让我们一起看个例子：
 
+假设你想找一个叫 'Andy' 的客户的记录，如果没有就创建一条新记录并把它的 +locked+ 字段设为 false 。你可以这样做：
 
+<ruby>
+Client.where(:first_name => 'Andy').first_or_create(:locked => false)
+# => #<Client id: 1, first_name: "Andy", orders_count: 0, locked: false, created_at: "2011-08-30 06:09:27", updated_at: "201108-30 06:09:27">
+</ruby>
 
+它会产生类似于如下 SQL 语句：
 
+<sql>
+SELECT * FROM clients WHERE (clients.first_name = 'Andy') LIMIT 1
+BEGIN
+INSERT INTO clients (created_at, first_name, locked, orders_count, updated_at)  VALUES ('2011-08-30 05:22:57', 'Andy', 0, NULL, '2011-08-30 05:22:57')
+COMMIT
+</sql>
 
++first_or_create+ 返回已存在的或者新创建的一条记录。在我们的例子中，没有一个叫做 Andy 的 client 记录，所以我们新创建了一条记录并返回。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+这条新创建的记录并不一定能保存到数据库里面，这取决于它能不能通过 validation 的验证（就像 +create+ 方法一样）。
 
 
 
