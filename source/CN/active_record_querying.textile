@@ -941,6 +941,128 @@ Post.includes(:comments).where("comments.visible", true)
 
 如果在 +includes+ 的查询时， post 没有任何 comment ，那依然会加载所有的 post 记录。如果使用 +joins+ （使用 INNER JOIN ），那就不会返回任何记录。
 
+h3. Scopes
+
+scope 让你可以指定常用的 Arel 查询以便于 association 对象和 model 的调用。在这些 scope 中，你可以使用之前提到过得任何方法，比如： +where+ ， +joins+ 和 +includes+ 。所有的 scope 方法都会返回一个 +ActiveRecord::Relation+ 对象，这个对象可以进一步调用其它方法（包括其它 scope ）。
+
+定义一个简单的 scope ，我们只需在类里面给 +scope+ 方法传递我们希望执行的 Arel 查询就可以了：
+
+<ruby>
+class Post < ActiveRecord::Base
+  scope :published, where(:published => true)
+end
+</ruby>
+
+就像之前的一样，这些方法也是可以串联的。
+
+<ruby>
+class Post < ActiveRecord::Base
+  scope :publiced, where(:published => true).joins(:category)
+end
+</ruby>
+
+scope 里面可以包含 scope ：
+
+<ruby>
+class Post < ActiveRecord::Base
+  scope :published, where(:published => true)
+  scope :published_and_commented, published.and(self.arel_table[:comments_count].gt(0))
+end
+</ruby>
+
+我们可以在类里面调用 +published+ 这个 scope ：
+
+<ruby>
+Post.published # => [published posted]
+</ruby>
+
+我们也可以在一个包含 +Post+ 对象的 association 里面调用：
+
+<ruby>
+category = Category.first
+category.posts.published # => [published posts belonging to this category]
+</ruby>
+
+h4. 和时间相关的
+
+如果你在 scope 里面包含日期或者时间，你必需使用 lambda 来保证它们每次都重新计算。
+
+<ruby>
+class Post < ActiveRecord::Base
+  scope :created_before_now, lambda { where("created_at < ?", Time.zone.now) }
+end
+</ruby>
+
+如果不使用 +lambda+ ， +Time.zone.now+ 将只调用一次。
+
+h4. 传递参数
+
+当在 +scope+ 里面使用 +lambda+ 时，它可以带参数：
+
+<ruby>
+class Post < ActiveRecord::Base
+  scope :created_before, lambda { |time| where("created_at < ?", time) }
+end
+</ruby>
+
+它可以这样调用：
+
+<ruby>
+Post.created_before(Time.zone.now)
+</ruby>
+
+然而，这只是相当于实现了一个类方法的功能。
+
+<ruby>
+class Post < ActiveRecord::Base
+  def self.created_before(time)
+    where("created_at < ?", time)
+  end
+end
+</ruby>
+
+类方法是给 scope 传递参数的更好的方式。这些方法依然可以被 association 对象调用：
+
+<ruby>
+category.posts.created_before(time)
+</ruby>
+
+h4. 使用 scope
+
+当你需要一个 relation 实例对象时， +scoped+ 方法就派上用场了。它会返回一个 +ActiveRecord::Relation+ 对象，并且这个对象可以继续调用其它 scope 。另外， association 也会用到 scope 。
+
+<ruby>
+client = Client.find_by_first_name("Ryan")
+orders = client.orders.scoped
+</ruby>
+
+对于这些新的 +orders+ 对象，我们可以判定它可以继续调用更多的 scope 。比如说，如果我们希望在之后的调用点上返回最近 30 天的 order 记录。
+
+<ruby>
+orders.where("created_at > ?", 30.days.ago)
+</ruby>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
