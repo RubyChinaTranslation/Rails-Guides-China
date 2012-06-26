@@ -1257,6 +1257,85 @@ Post.first.categories.any?
 Post.first.categories.many?
 </ruby>
 
+h3. 计算
 
+这个章节在前言中使用 count 方法作为例子，但是这些操作适用于所有子节。
 
+所有的计算方法都直接在 model 
+
+<ruby>
+Client.count
+# SELECT count(*) AS count_all FROM clients
+</ruby>
+
+或者 relation 
+
+<ruby>
+Client.where(:first_name => 'Ryan').count
+# SELECT count(*) AS count_all FROM clients WHERE (first_name = 'Ryan')
+</ruby>
+
+上使用。
+
+你也可以在 relation 上使用很多查找方法来做复杂的计算：
+
+<ruby>
+Client.includes("orders").where(:first_name => 'Ryan', :orders= => {:status => 'received'}).count
+</ruby>
+
+它会生成如下语句：
+
+<sql>
+SELECT count(DISTINCT clients.id) AS count_all FROM clients
+  LEFT OUTER JOIN orders ON orders.client_id = client.id WHERE
+  (clients.first_name = 'Ryan' AND orders.status = 'received')
+</sql>
+
+h4. count
+
+如果你想知道你的数据表有多少条记录，你可以调用 +Client.count+ 。如果你想更加明确一点，找出数据库中所有的 client 当前的年龄，你可以用 +Client.count(:age)+ 。
+
+想知道具体参数，可以参见父章节： "计算":#calculation 。
+
+h4. Average
+
+如果你想知道你的数据库中一些数据的平均值，你可以在数据表对应的类上使用 +average+ 方法。这个方法大致像下面这样调用：
+
+<ruby>
+Client.average("orders_count")
+</ruby>
+
+它会返回一个数字（可能是一个浮点数，如： 3.14159265 ），代表这块区域的平均值。
+
+想知道具体参数，可以参见父章节： "计算":#calculation 。
+
+h4. 最小值
+
+如果你想知道你的数据库中某些方面的最小值，你可以在数据表对应的类上使用 +minmum+ 方法。这个方法大致像下面这样调用：
+
+<ruby>
+Client.minimum("age")
+</ruby>
+
+想知道具体参数，可以参见父章节： "计算":#calculation 。
+
+h4. 最大值
+
+如果你想知道你的数据库中某些方面的最大值，你可以在数据表对应的类上使用 +maximum+ 方法。这个方法大致像下面这样调用：
+
+<ruby>
+Client.maximum("age")
+</ruby>
+
+想知道具体参数，可以参见父章节： "计算":#calculation 。
+
+h4. 求和
+
+如果你想知道你的数据库中某些方面的总和，你可以在数据表对应的类上使用 +sum+ 方法。这个方法大致像下面这样调用：
+
+<ruby>
+Client.sum("orders_count")
+</ruby>
+
+想知道具体参数，可以参见父章节： "计算":#calculation 。
 
