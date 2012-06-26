@@ -1163,5 +1163,100 @@ nick.save
 # => true
 </ruby>
 
+h3. 直接用 SQL 语句查找
+
+如果你想直接使用 SQL 语句查找记录，可以使用 +find_by_sql+ 方法。这个方法即使结果只有一条记录也会返回一个包含记录集的数组。比如你可以执行下面的查询：
+
+<ruby>
+Client.find_by_sql("SELECT * FROM clients
+  INNER JOIN orders ON clients.id = orders.cient_id
+  ORDER clients.created_at desc")
+</ruby>
+
++find_by_sql+ 方法提供了一种简单的调用数据库和查询实例对象的方法。
+
+h3. +select_all+
+
+<tt>find_by_sql</tt> 有一个近似方法叫 +connection#select_all+ 。像 +find_by_sql+ 一样， +select_all+ 方法直接用 SQL 语句从数据库里面查找数据，但是并不实例化它们。它会返回一个包含映射表的数组，每个映射表代表了一条记录。
+
+<ruby>
+Client.connection.select_all("SELECT * FROM clients WHERE id = '1'")
+</ruby>
+
+h3. +pluck+
+
+<tt>pluck</tt> 用于从一个 model 相关的数据表中查询一个单独的列。它接受一个列名作为参数并以相应的数据类型返回一组值。
+
+<ruby>
+Client.where(:active => true).pluck(:id)
+# SELECT id FROM clients WHERE active = 1
+
+Client.uniq.pluck(:role)
+# SELECT DISTINCT role FROM clients
+</ruby>
+
++pluck+ 方法实现了如下代码的的替换
+
+<ruby>
+Client.select(:id).map { |c| c.id }
+</ruby>
+
+替换为
+
+<ruby>
+Client.pluck(:id)
+</ruby>
+
+h3. 检查对象存在性
+
+如果你仅仅想检查一条记录是否存在，可以使用 +exists?+ 方法。这个方法会像 +find+ 方法一样查询数据库，但是它返回的是 +true+ 或者 +false+ 。
+
+<ruby>
+Client.exists?(1)
+</ruby>
+
++exists?+ 方法可以接受多个 id 作为参数，但是注意只要任何一条记录存在它都会返回 true 。
+
+<ruby>
+Client.exists?(1,2,3)
+# 或者
+Client.exists?([1,2,3]}
+</ruby>
+
+直接在一个 model 或者 relation 实例上调用不带参数的 +exists?+ 方法也是可以的。
+
+<ruby>
+Client.where(:first_name => 'Ryan').exists?
+</ruby>
+
+上面的例子中，如果至少有一个 +first_name+ 为 'Ryan' 的 client 记录存在，那就会返回 true ，否则就返回 false 。
+
+<ruby>
+Client.exists?
+</ruby>
+
+如果 +client+ 表为空，就返回 +false+ ，否则返回 +true+ 。
+
+你也可以使用 +any?+ 或者 +many?+ 来检查一个 model 或者 relation 的存在性。
+
+<ruby>
+# model
+Post.any?
+Post.many?
+
+# name scope
+Post.recent.any?
+Post.recent.many?
+
+# relation
+Post.where(:published => true).any?
+Post.where(:published => true).many?
+
+# association
+Post.first.categories.any?
+Post.first.categories.many?
+</ruby>
+
+
 
 
