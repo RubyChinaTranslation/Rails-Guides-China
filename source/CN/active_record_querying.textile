@@ -1108,5 +1108,60 @@ COMMIT
 
 这条新创建的记录并不一定能保存到数据库里面，这取决于它能不能通过 validation 的验证（就像 +create+ 方法一样）。
 
++first_or_create+ 每必要关心 +where+ 方法的参数。在上面的例子中，我们并没有明确给 +first_or_create+ 方法传递 +:first_name => 'Andy'+ 的参数。然而，在创建新记录时，依然使用了这个参数，因为这个参数已经传给了 +where+ 方法。
+
+你也可以这样用 +find_or_create_by+ 方法：
+
+<ruby>
+Client.find_or_create_by_first_name(:first_name => "Andy", :locked => false)
+</ruby>
+
+这个方法也可行，但是我们鼓励使用 +first_or_create+ 方法，因为它能明确指定那些参数传给 _find_ 方法，那些参数传给 _create_ 方法，这样能避免很多混乱。
+
+h4. +first_or_create!+
+
+如果你使用了 +first_or_create+ 方法，那当新记录不合法时，就会抛出一个异常。这篇指导不包含 validation 的知识，但是我们可以假定你暂时添加了以下代码到你的 +Client+ 的 model 中。
+
+<ruby>
+validates :orders_count, :presence => true
+</ruby>
+
+如果你在创建新记录时没有传一个 +orders_counts+ 的参数，那新记录就是不合法的，会抛出一个异常：
+
+<ruby>
+Client.where(:first_name => 'Andy').first_or_create!(:locked => false)
+# => ActiveRecord::RecordInvalid: Validation failed: Orders count can't be blank
+</ruby>
+
+同样，有一个 +find_or_create_by!+ 方法，但是 +first_or_create!+ 方法更加清晰明确。
+
+h4. +first_or_initialize+
+
++first_or_initialize+ 方法和 +first_or_create+ 方法差不多，只是它最后调用 +new+ 而不是 +create+ 方法。那就是说一个新 model 实例创建在内存中，而没有保存到数据库中。继续上面的例子，我们现在再创建一个叫 'Nick' 的记录：
+
+<ruby>
+nick = Client.where(:first_name => 'Nick').first_or_initialize(:locked => false)
+# => #<Client id: nil, first_name: "Nick", orders_count: 0, locked: false, created_at: "2011-08-30 06:09:27", updated_at: "2011-08-30 06:09:27">
+
+nick.persisted?
+# => false
+
+nick.new_record?
+# => true
+</ruby>
+
+因为这个对象还没有保存到数据库中，所以相应的 SQL 语句就像这样：
+
+<sql>
+SELECT * FROM clients WHERE (clients.first_name = 'Nick') LIMIT 1
+</sql>
+
+如果你想将它保存到数据库中，直接调用 +save+ 即可：
+
+<ruby>
+nick.save
+# => true
+</ruby>
+
 
 
