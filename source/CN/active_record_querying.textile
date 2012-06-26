@@ -1339,3 +1339,106 @@ Client.sum("orders_count")
 
 想知道具体参数，可以参见父章节： "计算":#calculation 。
 
+h3. 执行 EXPLAIN
+
+你可以在查询上面执行 relation 触发的 EXPLAIN 。比如说：
+
+<ruby>
+User.where(:id => 1).joins(:posts).explain
+</ruby>
+
+在 MySQL 下可能产生如下结果：
+
+<plain>
+EXPLAIN for: SELECT `users`.* FROM `users` INNER JOIN `posts` ON `posts`.`user_id` = `users`.`id` WHERE `users`.`id` = 1
+<plus>----<plus>-------------<plus>-------<plus>-------<plus>---------------<plus>---------<plus>---------<plus>-------<plus>------<plus>-------------<plus>
+| id | select_type | table | type  | possible_keys | key     | key_len | ref   | rows | Extra       |
+<plus>----<plus>-------------<plus>-------<plus>-------<plus>---------------<plus>---------<plus>---------<plus>-------<plus>------<plus>-------------<plus>
+|  1 | SIMPLE      | users | const | PRIMARY       | PRIMARY | 4       | const |    1 |             |
+|  1 | SIMPLE      | posts | ALL   | NULL          | NULL    | NULL    | NULL  |    1 | Using where |
+<plus>----<plus>-------------<plus>-------<plus>-------<plus>---------------<plus>---------<plus>---------<plus>-------<plus>------<plus>-------------<plus>
+2 rows in set (0.00 sec)
+</plain>
+
+Active Record 模拟数据库壳并以一个清晰的格式打印。所以，同样的查询在 PostgreSQL 中会像下面这样：
+
+<plain>
+EXPLAIN for: SELECT "users".* FROM "users" INNER JOIN "posts" ON "posts"."user_id" = "users"."id" WHERE "users"."id" = 1
+                                  QUERY PLAN
+------------------------------------------------------------------------------
+ Nested Loop Left Join  (cost=0.00..37.24 rows=8 width=0)
+   Join Filter: (posts.user_id = users.id)
+   ->  Index Scan using users_pkey on users  (cost=0.00..8.27 rows=1 width=4)
+         Index Cond: (id = 1)
+   ->  Seq Scan on posts  (cost=0.00..28.88 rows=8 width=4)
+         Filter: (posts.user_id = 1)
+(6 rows)
+</plain>
+
+预加载在数据库引擎盖下面会触发多个查询，并且某些查询可能需要用到之前一些查询的结果。所有， +explain+ 方法先执行查询，在做查询计划。比如说：
+
+<ruby>
+User.where(:id => 1).includes(:posts).explain
+</ruby>
+
+在 MySQL 数据库下生成
+
+<plain>
+EXPLAIN for: SELECT `users`.* FROM `users`  WHERE `users`.`id` = 1
+<plus>----<plus>-------------<plus>-------<plus>-------<plus>---------------<plus>---------<plus>---------<plus>-------<plus>------<plus>-------<plus>
+| id | select_type | table | type  | possible_keys | key     | key_len | ref   | rows | Extra |
+<plus>----<plus>-------------<plus>-------<plus>-------<plus>---------------<plus>---------<plus>---------<plus>-------<plus>------<plus>-------<plus>
+|  1 | SIMPLE      | users | const | PRIMARY       | PRIMARY | 4       | const |    1 |       |
+<plus>----<plus>-------------<plus>-------<plus>-------<plus>---------------<plus>---------<plus>---------<plus>-------<plus>------<plus>-------<plus>
+1 row in set (0.00 sec)
+
+EXPLAIN for: SELECT `posts`.* FROM `posts`  WHERE `posts`.`user_id` IN (1)
+<plus>----<plus>-------------<plus>-------<plus>------<plus>---------------<plus>------<plus>---------<plus>------<plus>------<plus>-------------<plus>
+| id | select_type | table | type | possible_keys | key  | key_len | ref  | rows | Extra       |
+<plus>----<plus>-------------<plus>-------<plus>------<plus>---------------<plus>------<plus>---------<plus>------<plus>------<plus>-------------<plus>
+|  1 | SIMPLE      | posts | ALL  | NULL          | NULL | NULL    | NULL |    1 | Using where |
+<plus>----<plus>-------------<plus>-------<plus>------<plus>---------------<plus>------<plus>---------<plus>------<plus>------<plus>-------------<plus>
+1 row in set (0.00 sec)
+</plain>
+
+h4. 自动化 EXPLAIN
+
+Active Record 可以在慢查询中自动执行 EXPLAIN 并写入日志。
+
+这个功能需要加上配置参数来开启
+
+<ruby>
+config.active_record.auto_explain_threshold_in_seconds
+</ruby>
+
+如果设置为一个数字，那一个超过这些秒的查询就会自动触发一个 EXPLAIN 并写入日志。在 relation 中，这个阈值是与获取记录的总时间相比较的。所以，一个 relation 就像是一个工作单位，不管它是不是实现预先加载而涉及了多个查询。
+
+阈值为 +nil+ 则关闭了自动执行 EXPLAIN 。
+
+默认情况下，开发模式下的阈值为 0.5 秒，测试和生产模式下为 +nil+ 。
+
+INFO. 不管阈值是不是设为 +nil+ ，如果没有日志系统，自动 EXPLAIN 都不起作用。
+
+h5. 禁用自动 EXPLAIN
+
+自动 EXPLAIN 可以用 +ActiveRecord::Base.silence_auto_explain+ 来选择性的禁用。
+
+<ruby>
+ActiveRecord.silence_auto_explain do
+  # 这里不会触发自动 EXPLAIN
+end
+</ruby>
+
+这在你知道某个查询很慢但是合理时是非常有用的，就像管理员页面某个重量级的报表等。
+
+正如名字所言， +silence_auto_explain+ 只会禁用自动 EXPLAIN 。直接调用 +ActiveRecord::Relation#explain+ 依然是可用的。
+
+h4. 解读 EXPLAIN
+
+了解 EXPLAIN 的输出已经超出本篇指导的范围了，以下的链接或许有帮助：
+
+* SQLite3: "EXPLAIN QUERY PLAN":http://www.sqlite.org/eqp.html
+
+* MySQL: "EXPLAIN Output Format":http://dev.mysql.com/doc/refman/5.6/en/explain-output.html
+
+* PostgreSQL: "Using EXPLAIN":http://www.postgresql.org/docs/current/static/using-explain.html
