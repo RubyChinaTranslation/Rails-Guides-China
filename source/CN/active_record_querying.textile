@@ -1,24 +1,24 @@
 h2. Active Record 查询接口
 
-本指导手册涉及了如何使用 Active Record 从数据库中取数据。通过本指导手册，你可以了解到：
+本指导手册涉及了如何使用 Active Record 从数据库中检索数据。通过本指导手册，你可以了解到：
 
-* 使用多种方法和条件查找数据
-* 对查找到的数据进行排序，分组，检索字段或者其它属性值
-* 利用预加载来减少数据检索时的数据库查询数目
+* 使用多种方法和条件表达式来查找数据
+* 对查找到的数据进行排序，分组，取用字段值或者其它属性值
+* 利用预加载来减少数据检索时执行的数据库查询次数
 * 使用动态查找方法
-* 检查是否存在某些记录
-* Active Record 记录的计算方法
+* 检查记录的存在性
+* 针对 Active Record 的 model 对象的统计方法
 * 在 relation 实例对象上执行 EXPLAIN
 
 endprologue.
 
 WARNING. 这个指导手册是基于 Rails 3.0 的。这里提到的某些代码在其它版本中可能不能工作。
 
-如果你过去常常使用原始 SQL 来从数据库中查找数据，那你会发现在 Rails 中，你可以使用更好的方式来达到目的。Active Record 使你可以在大多数情况下都避免使用原始 SQL 语句。
+如果你过去常常使用原始的 SQL 语句来从数据库中查找数据，那你会发现在 Rails 中，你可以使用更好的方式来达到这个目的。Active Record 使你可以在大多数情况下都避免使用原始的 SQL 语句。
 
-本指导手册中的示例代码会使用如下几个 models ：
+本指导手册中的示例代码会使用如下几个 model ：
  
-TIP： 除非具体指明，否则以下所有的 models 都使用 +id+ 作为主键。
+TIP: 除非具体指明，否则以下所有的 model 都使用 +id+ 作为主键。
 
 <ruby>
 class Client < ActiveRecord::Base
@@ -46,7 +46,7 @@ class Role < ActiveRecord::Base
 end
 </ruby>
 
-Active Record 可以帮你查询数据库并且兼容大多数数据库（ MySQL ， PostgreSQL 和  SQLite 等等）。不管你使用的是什么数据库， Active Record 的方法格式都是一样的。
+Active Record 可以帮你执行数据库查询并且兼容大多数数据库系统（ MySQL ， PostgreSQL 和  SQLite 等等）。不管你使用的是什么数据库系统， Active Record 提供的方法的使用方式都是一样的。
 
 h3. 从数据库中取对象
 
@@ -75,12 +75,12 @@ h3. 从数据库中取对象
 
 * 根据参数生成相应的 SQL 查询语句。
 * 执行 SQL 查询并返回符合条件的结果。
-* 为每个结果行实例化该 Model 的对象。
+* 为每个结果行实例化成该 Model 的对象。
 * 如果有的话，执行 +after_find+ 的回调函数。
 
-h4. 检索单个对象
+h4. 查询单个对象
 
-Active Record 提供了五种方式来检索单个对象。
+Active Record 提供了五种方式来查询单个对象。
 
 h5. 使用主键
 
@@ -98,7 +98,7 @@ client = Client.find(10)
 SELECT * FROM clients WHERE (clients.id = 10) LIMIT 1
 </sql>
 
-如果找不到匹配的记录 <tt>Model.find(primary_key)</tt> 会抛出一个 +ActiveRecord::RecordNotFound+ 异常。
+如果找不到匹配的记录， <tt>Model.find(primary_key)</tt> 会抛出一个 +ActiveRecord::RecordNotFound+ 异常。
 
 h5. +first+
 
@@ -169,7 +169,7 @@ SELECT * FROM clients ORDER BY clients.id DESC LIMIT 1
 
 如果没有找到匹配的记录， <tt>Model.last!</tt> 会抛出 +RecordNotFound+ 异常。
 
-h4. 检索多条记录
+h4. 查询多条记录
 
 h5. 使用多个主键
 
@@ -189,11 +189,11 @@ SELECT * FROM clients WHERE (clients.id in (1, 10))
 
 WARNING: 除非所有的主键都找到匹配的记录，否则 <tt>Model.find(array_of_primary_key)</tt> 将会抛出一个 +ActiveRecord::RecordNotFound+ 异常。
 
-h4. 按组检索多条记录
+h4. 按组查询多条记录
 
-我们经常需要同时处理大量数据，比如说当我们需要实时通知一群用户时，或者载入数据时。
+我们经常需要同时处理大量数据，比如说当我们需要实时通知一群用户，或者载入大量数据的时候。
 
-它可能直接这样写：
+你可能直接这样写：
 
 <ruby>
 # 当 users 这个表有几千条数据时，效率会很低。
@@ -202,7 +202,7 @@ User.all.each do |user|
 end
 </ruby>
 
-但是随着表的规模的增大，这种处理过程也会随之增长。因为 +User.all.each+ 一次性地将整个表都实例化了，为每一条记录生成了一个 model ，并把这个结果数组保存在内存中。确实，当我们有一堆非常巨大的对象时，这个集合将会导致内存溢出。
+但是随着表的规模的增大，这种处理方式的时间也会随之增长。因为 +User.all.each+ 一次性地将整个表都实例化了，为每一条记录生成了一个 model ，并把这个结果数组保存在内存中。其实，当我们有一堆非常巨大的对象时，这个集合将会导致内存溢出。
 
 Rails 提供了两种方法来把记录分割成组进行处理。第一种方法是 +find_each+ ，检索出一组数据并对将每条记录作为一个 model 传给 block 代码块。第二种方法是 +find_in_batches+ ，检索出一组数据然后将整组数据作为一个 model 的数组传给 block 代码块。
 
@@ -220,7 +220,7 @@ end
 
 h6. +find_each+ 的参数
 
-+find_each+ 方法可以接受除了 +:order+ 和 +:limit+ 之外的普通的 +find+ 的大部分参数，而 +:order+ 和 +:limit+ 已经在 +find_each+ 方法内部实现使用了。
++find_each+ 方法可以接受除了 +:order+ 和 +:limit+ 之外的普通的 +find+ 方法的所有参数，因为 +:order+ 和 +:limit+ 参数已用于 +find_each+ 方法的内部实现了。
 
 另外，+find_each+ 还可以接受两个额外的参数 +:batch_size+ 和 +:start+ 。
 
@@ -246,13 +246,13 @@ User.find_each(:start => 2000, :batch_size => 5000) do |user|
 end
 </ruby>
 
-另外一个例子是如果你想多个使用者（ workers ）使用相同的查询。你可以给每个使用者（ worker ）设置 <tt>:start</tt> 属性来处理 10000 条数据。
+另外一个例子是如果你想多个机器（ workers ）共同执行一个查询。你可以在每个机器（ worker ）上设置 <tt>:start</tt> 属性来各自处理 10000 条数据。
 
 NOTE: +:include+ 可以让你定义与该记录一起加载的关联记录（ associations ）。
 
 h5. +find_in_batches+
 
-+find_in_batches+ 和 +find_each+ 很像，因为它们都是按组检索记录的。不同点在于 +find_in_batches+ 将整组数据作为一个 model 数组传给 block 语句块，而不是分开。下面的例子一次性将最多 1000 条 invoices 记录作为一个数组传递给 block 语句块，最后语句块中包含所有剩下的 invoices 记录。
++find_in_batches+ 和 +find_each+ 很像，因为它们都是按组检索记录的。不同点在于 +find_in_batches+ 将整组数据作为一个 model 数组传给 block 语句块，而不是分开传递。下面的例子一次性将最多 1000 个 invoice 记录作为一个数组传递给 block 语句块，最后语句块包含所有剩下的 invoice 记录。
 
 <ruby>
 # 一次性传递 1000 个 invoices 记录给 add_invoices 方法。
@@ -265,7 +265,7 @@ NOTE: +:include+ 可以让你定义与该记录一起加载的关联记录（ as
 
 h6. +find_in_batches+ 的参数
 
-+find_in_batches+ 方法也像 +find_each+ 方法一样接受 +:batch_size+ 和 +:start+ 这两个参数，同时也接受大部分普通 +find+ 方法的参数，除了 +:order+ 和 +:limit+ 这两个 +find_in_batches+ 内部实现使用了的参数。
++find_in_batches+ 方法也像 +find_each+ 方法一样接受 +:batch_size+ 和 +:start+ 这两个参数，同时也接受大部分普通 +find+ 方法的参数，除了 +:order+ 和 +:limit+ 这两个 +find_in_batches+ 内部实现时已经使用了的参数。
 
 h3. 条件表达式
 
@@ -273,11 +273,11 @@ h3. 条件表达式
 
 h4. 仅含有字符串的条件表达式
 
-如果你想在普通查找方法里面加上条件表达式，那你可以直接这样写， +Client.where("orders_count = '2'")+ 。它会返回所有的 +orders_counts+ 为 2 的 clients 记录。
+如果你想在普通查找方法里面加上条件表达式，那你可以直接这样写， +Client.where("orders_count = '2'")+ 。它会返回所有的 +orders_counts+ 为 2 的 client 记录。
 
-WARNING: 直接用字符串构造你的条件表达式可能会让你遭受到 SQL 注入攻击。比如说： +Client.where("first_name LIKE '%#{params[:first_name]}'")+ 就是不安全的。请看下一节如何使用数组更好地构造条件表达式。
+WARNING: 直接用字符串构造你的条件表达式可能会让你遭受到 SQL 注入攻击。比如说： +Client.where("first_name LIKE '%#{params[:first_name]}'")+ 就是不安全的。请看下一节如何使用数组来更好地构造条件表达式。
 
-h4. 数组条件表达式
+h4. 数组式条件表达式
 
 假如数字会发生变化或者从其它地方传入，那该怎么办呢？那方法可能会写成如下形式：
 
@@ -293,21 +293,21 @@ Active Record 会先检查第一个元素，并用后面的元素代替 +(?)+ �
 Client.where("orders_count = ? AND locked = ?", params[:orders], false)
 </ruby>
 
-在这个例子中，第一个问号会被 +params[:orders]+ 替代，第二个问号会被 +false+ 的的等价值代替，这取决于数据库。
+在这个例子中，第一个问号会被 +params[:orders]+ 替代，第二个问号会被 +false+ 的的等价值代替，具体值取决于数据库适配器。
 
-所以，这种写法
+所以，下面这种写法
 
 <ruby>
 Client.where("orders_count = ?", params[:orders])
 </ruby>
 
-比这种写法好。
+比这种写法要好。
 
 <ruby>
 Client.where("orders_count = #{params[:orders]}")
 </ruby>
 
-因为它是变量安全的。如果你直接把变量写在条件表达式里面，那它会毫不处理地把变量传递给数据库。这就意味着它可能是来自于某个恶意用户的不安全的变量。如果你这样做，那你的数据库就危险了，因为一旦某个用户发现了他可以利用你的数据库，他就可以对它做任何事。所以千万不要直接把变量写在条件表达式里面。
+因为它是变量安全的。如果你直接把变量写在条件表达式里面，那数据库适配器会直接把变量传递给数据库 *as-is* 。这就意味着数据库可能得到某些来自于某个恶意用户的不安全的变量。如果你这样做了，那你的数据库就危险了，因为一旦某个用户发现了他可以入侵你的数据库，他就可以对它做任何事。所以千万不要直接把变量写在条件表达式里面。
 
 h5. 条件表达式中的占位符
 
@@ -318,7 +318,7 @@ Client.where("created_at >= :start_date AND created_at <= :end_date",
   {:start_date => params[:start_date], :end_date => params[:end_date]})
 </ruby>
 
-当你有一大堆变量时，这样的写法更具可读性。
+当你有一大堆变量时，这样的写法更有可读性。
 
 h5(#array-range_conditions). 数列式条件表达式
 
@@ -338,7 +338,7 @@ h4. 映射表式条件表达式
 
 Active Record 还支持传递一个映射表式条件表达式来提高你的条件表达式的可读性。在映射表式的条件表达式中，你把想比较的字段作为键，要用来比较的变量作为值。
 
-NOTE: 映射表式的条件表达式只用于相等比较，排序和查找子集中。
+NOTE: 映射表式的条件表达式只用于相等比较，排序和子集查找中。
 
 h5. 等价条件表达式
 
@@ -360,13 +360,13 @@ h5(#hash-range_conditions). 数列式条件表达式
 Client.where(:created_at => (Time.now.midnight -1.day)..Time.now.midnight)
 </ruby>
 
-它会用以下含有 +BETWEEN+ 的 SQL 语句来找出所有昨天创建的 clients 记录：
+它会用以下含有 +BETWEEN+ 的 SQL 语句来找出所有昨天创建的 client 记录：
 
 <sql>
 SELECT * FROM clients WHERE (clients.created_at BETWEEN '2008-12-21 00:00:00' AND '2008-12-22 00:00:00')
 </sql>
 
-这个表达式是数组式条件表达式中的例子的简写。
+这个表达式是数组式条件表达式中的那个范例的更简单的写法。
 
 h5. 子集条件表达式
 
@@ -414,7 +414,7 @@ h3. 选择返回的字段（投影）
 
 如果你要返回结果集的一个子集，那你可以通过 +select+ 方法来指定这个子集。
 
-NOTE: 如果你使用了 +select+ 方法，那返回的集合是只读的：#只读对象。
+NOTE: 如果你使用了 +select+ 方法，那返回的集合是"只读的":#10 。
 
 <br />
 
@@ -430,13 +430,13 @@ Client.select("viewable_by, locked")
 SELECT viewableby, locked FROM clients
 </sql>
 
-请特别小心，因为你这样只是初始化了一个 model 对象的一些字段。如果你操作那些你还未初始化的字段，那你就会得到一个异常：
+请特别小心，因为你这样只是初始化了一个 model 对象的一些字段。所以当你操作那些你还未初始化的字段时，就会得到一个异常：
 
 <shell>
 ActiveModel::MissingAttributeError: missing attribute: <attribute>
 </shell>
 
-其中 +<attribute>+ 是你要操作的属性名。+id+ 方法不会抛出 +ActiveRecord::MissingAttributeError+ ，所以在使用 model 的 associations 时要小心，因为它依赖于 +id+ 方法。
+其中 +&lt;attribute&gt;+ 是你要操作的属性名。+id+ 方法不会抛出 +ActiveRecord::MissingAttributeError+ ，所以在使用 model 的 associations 时要小心，因为它依赖于 +id+ 方法。
 
 如果你想对于某个字段只返回不同的记录，你可以使用 +uniq+：
 
@@ -608,12 +608,12 @@ SELECT * FROM clients WHERE orders_count > 10 ORDER BY clients.id DESC
 
 这个方法还接受 *no* 参数。
 
-h3. 空 relation 实例对象
+h3. 空实例对象
 
-+none+ 方法会返回一个代表没有记录的 relation 实例对象。随后的条件表达式会根据这个 relation 实例对象继续返回空的 relation 实例对象而不是空结果时非常有用。
++none+ 方法会返回一个代表没有记录的 relation 实例对象。随后的条件表达式会根据这个 relation 实例对象继续返回空的 relation 实例对象而不是空结果。这在你需要级联多个方法调用时非常有用。
 
 <ruby>
-Post.none # 返回一个空结果并且不执行任何查询。
+Post.none # 返回一个空实例对象并且不执行任何查询。
 </ruby>
 
 <ruby>
@@ -632,9 +632,9 @@ def visible_posts
 end
 </ruby>
 
-h3. 只读的对象
+h3. 只读对象
 
-Active Record 提供了 relation 实例对象上面的 +readonly+ 方法来明确指定不允许修改返回的对象。任何尝试修改只读对象行为都会失败，抛出一个 +ActiveRecord::ReadOnlyRecord+ 异常。
+Active Record 提供了在 relation 实例对象上调用 +readonly+ 方法的方式来明确指定不允许修改返回的对象。任何尝试修改只读对象的行为都会失败，并抛出一个 +ActiveRecord::ReadOnlyRecord+ 异常。
 
 <ruby>
 client = Client.readonly.first
@@ -674,9 +674,9 @@ c2.save # 抛出一个 ActiveRecord::StaleObjectError
 
 然后你需要自己负责处理这个冲突，包括继续抛出异常并且回滚，合并或者提交其它业务逻辑以解决这个冲突。
 
-如果你要关闭这个机制，可以这样设置： <tt>ActiveRecord::Base.lock_optimistically = false</tt> 。
+你可以这样设置： <tt>ActiveRecord::Base.lock_optimistically = false</tt> 来关闭这种机制。
 
-+ActiveRecord::Base+ 也提供了一个类属性 +locking_column+ 来修改默认的 +lock_version+ 字段：
++ActiveRecord::Base+ 提供了一个类属性 +locking_column+ 来修改默认的 +lock_version+ 字段：
 
 <ruby>
 class Client < ActiveRecord::Base
@@ -731,9 +731,9 @@ h3. 连接表
 
 Active Record 提供了一个叫做 +joins+ 的查找方法来对结果的 SQL 语句指定 +JOIN+ 子句。Active Record 提供了多种使用 +joins+ 方法的方式。
 
-h4. 使用零碎的 SQL 语句
+h4. 使用字符串 SQL 语句
 
-你可以使用原生态的 SQL 来使用 +JOIN+ 方法以生成 +joins+ 子句。
+你可以使用原生态的 SQL 语句来使用 +JOIN+ 方法以生成 +joins+ 子句。
 
 <ruby>
 Client.join('LEFT OUTER JOIN addresses ON addresses.client_id = clients.id')
@@ -745,11 +745,11 @@ Client.join('LEFT OUTER JOIN addresses ON addresses.client_id = clients.id')
 SELECT clients.* FROM clients LEFT OUTER JOIN addresses ON addresses.client_id = clients.id
 </sql>
 
-h4. 使用 Associations 的数组或者映射表
+h4. 使用已定义的 Associations 的数组或者映射表形式
 
 WARNING: 这个方法只适用于 +INTER JOIN+ 的情况。
 
-Active Record 允许我们使用“ associations ”这个名字： model 中定义了 association_basic.html 作为使用 +JOIN+ 来指定 +joins+ 的缩写。
+Active Record 允许我们使用 model 上定义的 "associations":association_basic.html 的名字作为使用 +joins+ 方法时指定连接表的缩写形式。
 
 比如说：看如下关于 +Category+ ， +Post+ ， +Comments+ 和 +Guest+ 几个 model 的例子。
 
@@ -793,7 +793,7 @@ SELECT categories.* FROM categories
   INNER JOIN posts ON posts.category_id = categories.id
 </sql>
 
-或者用英语说就是“ return a Category object for all categories with posts ”。注意如果你有多个 posts 关联相同的 category 的话，就会出现重复。如果你想消除重复， 那你可以这样写： Category.joins(:post).select("distinct(categories.id)") 。
+或者用英语说就是：“ return a Category object for all categories with posts ”。注意如果你有多个 posts 关联相同的 category 的话，就会出现重复。如果你想消除重复， 那你可以这样写： Category.joins(:post).select("distinct(categories.id)") 。
 
 h5. 使用多个 Association
 
@@ -809,7 +809,7 @@ SELECT posts.* FROM posts
   INNER JOIN comments ON comments.post_id = posts.id
 </sql>
 
-或者用英语说就是： “ return all posts that having a category and at least one comment ”。再次注意有多条 comment 记录的 post 会重复出现。
+或者用英语说就是：“ return all posts that having a category and at least one comment ”。再次提醒有多条 comment 记录的 post 会重复出现。
 
 h5. 使用嵌套 Association （单层的）
 
@@ -845,14 +845,14 @@ SELECT categories.* FROM categories
 
 h4. 指定连接表的条件表达式
 
-你可以使用通常的"数组":#array-conditions 和 "字符串":#pure-string-conditions 条件表达式来直接指定连接表的条件表达式。"映射表条件表达式":#hash-conditions 需要用一种特殊的语法来指定。
+你可以使用通常的 "数组式":#2-2 和 "纯字符串式":#2-1 条件表达式来直接指定连接表的条件表达式。 "映射表式条件表达式":#2-3 需要用一种特殊的语法来指定。
 
 <ruby>
 time_range = (Time.now.midnight - 1.day)..Time.now.midnight
 Client.joins(:orders).where('orders.created_at' => time_range)
-<ruby>
+</ruby>
 
-另外一种更清晰的写法是使用映射表条件表达式
+另外一种更清晰的写法是使用映射表式条件表达式
 
 <ruby>
 time_range = (Time.now.midnight - 1.day)..Time.now.midnight
@@ -923,7 +923,7 @@ Category.includes(:posts => [{:comments => :guest}, :tags).find(1)
 
 h4. 为预加载的 Association 指定条件表达式
 
-尽管 Active Record 像给 +joins+ 一样给预加载的 association 也提供了指定条件表达式的方法，但我们建议使用 "joins":#joining-tables 来代替。
+尽管 Active Record 像给 +joins+ 一样给预加载的 association 也提供了指定条件表达式的方法，但我们建议使用 "joins":#12 来代替。
 
 然后，如果你还是要这样做，那么你可以想你平时一样使用 +where+ 来达到目的。
 
@@ -935,17 +935,17 @@ Post.includes(:comments).where("comments.visible", true)
 
 <sql>
   SELECT "posts"."id" AS t0_r0, ... "comments"."updated_at" AS t1_r5 FROM "posts" LEFT OUTER JOIN "comments" ON "comments"."post_id" = "posts"."id" WHERE (comments.visible = 1)
-</ruby>
+</sql>
 
 如果没有 +where+ 语句，那会生成两条普通的查询语句。
 
 如果在 +includes+ 的查询时， post 没有任何 comment ，那依然会加载所有的 post 记录。如果使用 +joins+ （使用 INNER JOIN ），那就不会返回任何记录。
 
-h3. Scopes
+h3. 作用域（ Scope ）
 
-scope 让你可以指定常用的 Arel 查询以便于 association 对象和 model 的调用。在这些 scope 中，你可以使用之前提到过得任何方法，比如： +where+ ， +joins+ 和 +includes+ 。所有的 scope 方法都会返回一个 +ActiveRecord::Relation+ 对象，这个对象可以进一步调用其它方法（包括其它 scope ）。
+作用域让你可以定义常用的 Arel 查询以便于 association 对象和 model 对象的调用。在这些作用域中，你可以使用之前提到过的任何方法，比如： +where+ ， +joins+ 和 +includes+ 。所有的作用域方法都会返回一个 +ActiveRecord::Relation+ 对象，这个对象可以进一步调用其它方法（包括其它作用域）。
 
-定义一个简单的 scope ，我们只需在类里面给 +scope+ 方法传递我们希望执行的 Arel 查询就可以了：
+定义一个简单的作用域，我们只需在类里面给 +scope+ 方法传递我们希望执行的 Arel 查询就可以了：
 
 <ruby>
 class Post < ActiveRecord::Base
@@ -953,7 +953,7 @@ class Post < ActiveRecord::Base
 end
 </ruby>
 
-就像之前的一样，这些方法也是可以串联的。
+就像之前的一样，这些方法也是可以级联的。
 
 <ruby>
 class Post < ActiveRecord::Base
@@ -961,7 +961,7 @@ class Post < ActiveRecord::Base
 end
 </ruby>
 
-scope 里面可以包含 scope ：
+作用域里面可以包含其它作用域：
 
 <ruby>
 class Post < ActiveRecord::Base
@@ -970,7 +970,7 @@ class Post < ActiveRecord::Base
 end
 </ruby>
 
-我们可以在类里面调用 +published+ 这个 scope ：
+我们可以在类里面调用 +published+ 这个作用域：
 
 <ruby>
 Post.published # => [published posted]
@@ -983,9 +983,9 @@ category = Category.first
 category.posts.published # => [published posts belonging to this category]
 </ruby>
 
-h4. 和时间相关的
+h4. 包含时间的计算
 
-如果你在 scope 里面包含日期或者时间，你必需使用 lambda 来保证它们每次都重新计算。
+如果你在作用域里面包含日期或者时间，你必需使用 lambda 来保证它们每次都重新计算。
 
 <ruby>
 class Post < ActiveRecord::Base
@@ -1021,30 +1021,30 @@ class Post < ActiveRecord::Base
 end
 </ruby>
 
-类方法是给 scope 传递参数的更好的方式。这些方法依然可以被 association 对象调用：
+类方法是给作用域传递参数的一个更好的方式。这些方法依然可以被 association 对象调用：
 
 <ruby>
 category.posts.created_before(time)
 </ruby>
 
-h4. 使用 scope
+h4. 使用作用域
 
-当你需要一个 relation 实例对象时， +scoped+ 方法就派上用场了。它会返回一个 +ActiveRecord::Relation+ 对象，并且这个对象可以继续调用其它 scope 。另外， association 也会用到 scope 。
+当你需要一个 relation 实例对象时， +scoped+ 方法就派上用场了。它会返回一个 +ActiveRecord::Relation+ 对象，并且这个对象可以继续调用其它作用域。另外， association 也会用到作用域。
 
 <ruby>
 client = Client.find_by_first_name("Ryan")
 orders = client.orders.scoped
 </ruby>
 
-对于这些新的 +orders+ 对象，我们可以判定它可以继续调用更多的 scope 。比如说，如果我们希望在之后的调用点上返回最近 30 天的 order 记录。
+对于这个新的 +orders+ 对象，我们可以断定它可以继续调用其它的作用域。比如说，如果我们希望在之后的调用点上返回最近 30 天的 order 记录。
 
 <ruby>
 orders.where("created_at > ?", 30.days.ago)
 </ruby>
 
-h4. 定义默认的 scope
+h4. 定义默认的作用域
 
-如果我们希望定义一个 model 里面所有的查询都会执行的 scope ，那我们可以在 model 里面使用 +default_scope+ 方法。
+如果我们希望定义一个 model 里面所有的查询都会执行的作用域，那我们可以在 model 里面使用 +default_scope+ 方法。
 
 <ruby>
 class Client < ActiveRecord::Base
@@ -1058,15 +1058,15 @@ end
 SELECT * FROM clients WHERE removed_at IS NULL
 </sql>
 
-h4. 移除所有的 scope
+h4. 移除所有的作用域
 
-如果想移除 scope ，我们可以用 +unscope+ 方法。当某个特定的查询不需要默认 scope 时，这个尤其有用。
+如果想移除作用域，我们可以用 +unscope+ 方法。当某个特定的查询不需要默认作用域时，这个功能尤其有用。
 
 <ruby>
 Client.unscoped.all
 </ruby>
 
-这个方法移除所有的 scope ，在数据表上执行普通的查询。
+这个方法移除所有的默认作用域，在数据表上执行普通的查询。
 
 h3. 动态查找方法
 
@@ -1084,7 +1084,7 @@ h3. 查找并创建一个新对象
 
 通常，你需要先查找一条记录并在它不存在时创建它。这时，你可以使用 +first_or_create+ 或者 +first_or_create!+ 方法。
 
-h4. +first_r_create+
+h4. +first_or_create+
 
 +first_or_create+ 方法先检查 +first+ 方法是不是返回 +nil+ ，如果是，就调用 +create+ 方法。它和 +where+ 方法一起使用时非常有用。让我们一起看个例子：
 
@@ -1244,7 +1244,7 @@ Client.exists?
 Post.any?
 Post.many?
 
-# name scope
+# 已定义的作用域
 Post.recent.any?
 Post.recent.many?
 
@@ -1259,25 +1259,25 @@ Post.first.categories.many?
 
 h3. 计算
 
-这个章节在前言中使用 count 方法作为例子，但是这些操作适用于所有子节。
+这个章节在序言中使用 count 方法作为例子，但是这些操作适用于所有子节的方法。
 
-所有的计算方法都直接在 model 
+所有的计算方法都直接在 model 上
 
 <ruby>
 Client.count
 # SELECT count(*) AS count_all FROM clients
 </ruby>
 
-或者 relation 
+或者 relation 实例对象上
 
 <ruby>
 Client.where(:first_name => 'Ryan').count
 # SELECT count(*) AS count_all FROM clients WHERE (first_name = 'Ryan')
 </ruby>
 
-上使用。
+使用。
 
-你也可以在 relation 上使用很多查找方法来做复杂的计算：
+你也可以在 relation 实例对象上使用很多查找方法来做复杂的计算：
 
 <ruby>
 Client.includes("orders").where(:first_name => 'Ryan', :orders= => {:status => 'received'}).count
@@ -1291,13 +1291,13 @@ SELECT count(DISTINCT clients.id) AS count_all FROM clients
   (clients.first_name = 'Ryan' AND orders.status = 'received')
 </sql>
 
-h4. count
+h4. 次数
 
 如果你想知道你的数据表有多少条记录，你可以调用 +Client.count+ 。如果你想更加明确一点，找出数据库中所有的 client 当前的年龄，你可以用 +Client.count(:age)+ 。
 
-想知道具体参数，可以参见父章节： "计算":#calculation 。
+想知道具体用法，可以参见父章节： "计算":#21 。
 
-h4. Average
+h4. 平均值
 
 如果你想知道你的数据库中一些数据的平均值，你可以在数据表对应的类上使用 +average+ 方法。这个方法大致像下面这样调用：
 
@@ -1307,7 +1307,7 @@ Client.average("orders_count")
 
 它会返回一个数字（可能是一个浮点数，如： 3.14159265 ），代表这块区域的平均值。
 
-想知道具体参数，可以参见父章节： "计算":#calculation 。
+想知道具体用法，可以参见父章节： "计算":#21 。
 
 h4. 最小值
 
@@ -1317,7 +1317,7 @@ h4. 最小值
 Client.minimum("age")
 </ruby>
 
-想知道具体参数，可以参见父章节： "计算":#calculation 。
+想知道更多用法，可以参见父章节： "计算":#21 。
 
 h4. 最大值
 
@@ -1327,9 +1327,9 @@ h4. 最大值
 Client.maximum("age")
 </ruby>
 
-想知道具体参数，可以参见父章节： "计算":#calculation 。
+想知道更多用法，可以参见父章节： "计算":#21 。
 
-h4. 求和
+h4. 总和
 
 如果你想知道你的数据库中某些方面的总和，你可以在数据表对应的类上使用 +sum+ 方法。这个方法大致像下面这样调用：
 
@@ -1337,7 +1337,7 @@ h4. 求和
 Client.sum("orders_count")
 </ruby>
 
-想知道具体参数，可以参见父章节： "计算":#calculation 。
+想知道更多用法，可以参见父章节： "计算":#21 。
 
 h3. 执行 EXPLAIN
 
@@ -1360,7 +1360,8 @@ EXPLAIN for: SELECT `users`.* FROM `users` INNER JOIN `posts` ON `posts`.`user_i
 2 rows in set (0.00 sec)
 </plain>
 
-Active Record 模拟数据库壳并以一个清晰的格式打印。所以，同样的查询在 PostgreSQL 中会像下面这样：
+
+Active Record 模拟数据库引擎并以一个清晰的格式打印出结果。所以，同样的查询在 PostgreSQL 中可能会像下面这样：
 
 <plain>
 EXPLAIN for: SELECT "users".* FROM "users" INNER JOIN "posts" ON "posts"."user_id" = "users"."id" WHERE "users"."id" = 1
@@ -1375,7 +1376,7 @@ EXPLAIN for: SELECT "users".* FROM "users" INNER JOIN "posts" ON "posts"."user_i
 (6 rows)
 </plain>
 
-预加载在数据库引擎盖下面会触发多个查询，并且某些查询可能需要用到之前一些查询的结果。所有， +explain+ 方法先执行查询，在做查询计划。比如说：
+预加载在数据库引擎盖下面会触发多个查询，并且某些查询可能需要用到之前一些查询的结果。所有， +explain+ 方法先执行查询，再做查询计划。比如说：
 
 <ruby>
 User.where(:id => 1).includes(:posts).explain
@@ -1411,7 +1412,7 @@ Active Record 可以在慢查询中自动执行 EXPLAIN 并写入日志。
 config.active_record.auto_explain_threshold_in_seconds
 </ruby>
 
-如果设置为一个数字，那一个超过这些秒的查询就会自动触发一个 EXPLAIN 并写入日志。在 relation 中，这个阈值是与获取记录的总时间相比较的。所以，一个 relation 就像是一个工作单位，不管它是不是实现预先加载而涉及了多个查询。
+如果设置为一个数字，那一个超过这些时间（以秒为单位）的查询就会自动触发一个 EXPLAIN 并写入日志。在 relation 的计算中，这个阈值是与获取记录的总时间相比较的。所以，一个 relation 的计算就像是一个工作单位，不管它是不是实现预先加载而涉及了多个查询。
 
 阈值为 +nil+ 则关闭了自动执行 EXPLAIN 。
 
@@ -1433,9 +1434,9 @@ end
 
 正如名字所言， +silence_auto_explain+ 只会禁用自动 EXPLAIN 。直接调用 +ActiveRecord::Relation#explain+ 依然是可用的。
 
-h4. 解读 EXPLAIN
+h4. 深入了解 EXPLAIN
 
-了解 EXPLAIN 的输出已经超出本篇指导的范围了，以下的链接或许有帮助：
+深入了解 EXPLAIN 的输出已经超出本篇指导的范围了，以下的链接或许对你有帮助：
 
 * SQLite3: "EXPLAIN QUERY PLAN":http://www.sqlite.org/eqp.html
 
