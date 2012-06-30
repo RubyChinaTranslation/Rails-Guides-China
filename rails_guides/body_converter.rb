@@ -72,8 +72,8 @@ module RailsGuides
     end
     
     def markdown(body)
-      rndr = MarkdownRender.new with_toc_data: true
-      md = Redcarpet::Markdown.new rndr, table: true 
+      rndr = MarkdownRender.new :with_toc_data => true
+      md = Redcarpet::Markdown.new rndr, :table => true 
       md.render body
     end
 

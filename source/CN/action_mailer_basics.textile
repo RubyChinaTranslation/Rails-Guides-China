@@ -48,21 +48,21 @@ class UserMailer < ActionMailer::Base
   def welcome_email(user)
     @user = user
     @url  = "http://example.com/login"
-    mail(:to => user.email, :subject => "Welcome to My Awesome Site")
+    mail(:to => user.email, :subject => "欢迎来到我的网站")
   end
 end
 </ruby>
 
-Here is a quick explanation of the items presented in the preceding method. For a full list of all available options, please have a look further down at the Complete List of Action Mailer user-settable attributes section.
+这里的方法就展示了一个简单的邮件项目，要想用上更多可用的选项，你可以在下文中可以找到一个完整的 Action Mailer 的参数设置选项表。而在这里
 
-* <tt>default Hash</tt> - This is a hash of default values for any email you send, in this case we are setting the <tt>:from</tt> header to a value for all messages in this class, this can be overridden on a per email basis
-* +mail+ - The actual email message, we are passing the <tt>:to</tt> and <tt>:subject</tt> headers in.
+* <tt>default 哈希</tt> - 这是一个邮件的必选参数，在这个例子里我们在类的顶部设定了<tt>:from</tt>参数，这个参数是可以在每封具体邮件的内部修改的。
+* +mail+ - 在这个 email 文件中，我们对其设置了 <tt>:to</tt> 和 <tt>:subject</tt> 参数.
 
-Just like controllers, any instance variables we define in the method become available for use in the views.
+就和控制器一样，我们这个类的实例方法中定义的任何变量都将可以用在 View 中使用。
 
-h5. Create a Mailer View
+h5. 创建 Mailer 视图
 
-Create a file called +welcome_email.html.erb+ in +app/views/user_mailer/+. This will be the template used for the email, formatted in HTML:
+我们在  +app/views/user_mailer/+ 建立一个 Email 的模板文件叫 +welcome_email.html.erb+，用 HTML 语言进行书写它：
 
 <erb>
 <!DOCTYPE html>
@@ -84,7 +84,7 @@ Create a file called +welcome_email.html.erb+ in +app/views/user_mailer/+. This 
 </html>
 </erb>
 
-It is also a good idea to make a text part for this email, to do this, create a file called +welcome_email.text.erb+ in +app/views/user_mailer/+:
+为你的 email 的文字部分分离出来会是不错的选择，在 +app/views/user_mailer/+ 下建立一个文件 +welcome_email.text.erb+：
 
 <erb>
 Welcome to example.com, <%= @user.name %>
@@ -98,22 +98,22 @@ To login to the site, just follow this link: <%= @url %>.
 Thanks for joining and have a great day!
 </erb>
 
-When you call the +mail+ method now, Action Mailer will detect the two templates (text and HTML) and automatically generate a <tt>multipart/alternative</tt> email.
+当你调用了 +mail+ 方法之后， Action Mailer 将会为你检测两种模板文件(text 和 HTML)然后为你自动生成一个 email 文件。
 
-h5. Wire It Up So That the System Sends the Email When a User Signs Up
+h5. 用户注册后自动发送邮件
 
-There are several ways to do this, some people create Rails Observers to fire off emails, others do it inside of the User Model. However, in Rails 3, mailers are really just another way to render a view. Instead of rendering a view and sending out the HTTP protocol, they are just sending it out through the Email protocols instead. Due to this, it makes sense to just have your controller tell the mailer to send an email when a user is successfully created.
+这里有几种方法来实现这件事情，有的人会建立一个 Rails 观察者模型来监视注册事件，还有一些人会在用户模型中实现这一功能。然而，在 Rails 3 中，mailer 有了第三种方法去实现它，与原来渲染视图之后通过 HTTP 协议发送，他们现在只需要通过 Email 协议直接发送邮件就可以了。因此，你可以在用户成功注册之后直接通过控制器来发送命令给 mailer 发送邮件。
 
-Setting this up is painfully simple.
+而要做到这样的功能简直是易如反掌。
 
-First off, we need to create a simple +User+ scaffold:
+首先我们先建立一个 User scaffold：
 
 <shell>
 $ rails generate scaffold user name:string email:string login:string
 $ rake db:migrate
 </shell>
 
-Now that we have a user model to play with, we will just edit the +app/controllers/users_controller.rb+ make it instruct the UserMailer to deliver an email to the newly created user by editing the create action and inserting a call to <tt>UserMailer.welcome_email</tt> right after the user is successfully saved:
+这样我们就有了 用户模型了，我们将要编辑 +app/controllers/users_controller.rb+ 来让 UserMailer 为新建立的用户发送一封邮件，我们在 create 行为中当用户成功 save 之后调用了一个方法<tt>UserMailer.welcome_email</tt>。
 
 <ruby>
 class UsersController < ApplicationController
@@ -138,67 +138,66 @@ class UsersController < ApplicationController
 end
 </ruby>
 
-This provides a much simpler implementation that does not require the registering of observers and the like.
+这样就轻松地实现了目标，不需要观察者之类的东西。
+方法 +welcome_email+ 返回一个 <tt>Mail::Message</tt> 对象，它会像 +deliver+ 请求把它自己发送出去。
 
-The method +welcome_email+ returns a <tt>Mail::Message</tt> object which can then just be told +deliver+ to send itself out.
+NOTE: 在过去几个版本里的 Rails ，你需要调用 +deliver_welcome_email+ 或 +create_welcome_email+。它们在 Rails 3.0 中被弃用了，你只需要调用这个方法名本身即可。
 
-NOTE: In previous versions of Rails, you would call +deliver_welcome_email+ or +create_welcome_email+. This has been deprecated in Rails 3.0 in favour of just calling the method name itself.
+WARNING: 发送一封邮件可能需要花费将近一秒的时间，如果你需要一次性发送好几封邮件，或者你不想因此降低主机的处理俗入，你恐怕要考虑下使用一个后台处理软件，例如 Delayed　Job.
 
-WARNING: Sending out an email should only take a fraction of a second, but if you are planning on sending out many emails, or you have a slow domain resolution service, you might want to investigate using a background process like Delayed Job.
+h4. 多字节问题
 
-h4. Auto encoding header values
+Action Mailer 已经解决了文中的多字节编码问题。
 
-Action Mailer now handles the auto encoding of multibyte characters inside of headers and bodies.
+如果你用　UTF-8　作为你的字符集，你什么都不用做，直接用　UTF-8　编码填写邮件地址，主题，关键词，文件名和邮件正文，如果邮件头部或者正文中出现了非　US-ASCII　编码部分， Action Mailer 会自动把他们转码为可读的版本（quoted printable）。
 
-If you are using UTF-8 as your character set, you do not have to do anything special, just go ahead and send in UTF-8 data to the address fields, subject, keywords, filenames or body of the email and Action Mailer will auto encode it into quoted printable for you in the case of a header field or Base64 encode any body parts that are non US-ASCII.
+关于更为复杂的编码问题，例如在正文中编写了多种字符集，请参考　Ｍａｉｌ　类库。　
 
-For more complex examples such as defining alternate character sets or self encoding text first, please refer to the Mail library.
+h4. Action Mailer 方法全列表
 
-h4. Complete List of Action Mailer Methods
+其实不管你发什么邮件都只需要三个方法就够了：
 
-There are just three methods that you need to send pretty much any email message:
+* <tt>headers</tt> - 指定你邮件的头部，你可以传入一个哈希来把头部作为数据的键值对，然后你就可以这么用 <tt>headers[:field_name] = 'value'</tt>
+* <tt>attachments</tt> - 允许你添加附件到你的　ｅｍａｉｌ　中　例如 <tt>attachments['file-name.jpg'] = File.read('file-name.jpg')</tt>
+* <tt>mail</tt> - 发送邮件。你可以把头部数据以哈希的形式传入， mail　将会根据你的模板生成　Ｅｍａｉｌ　.
 
-* <tt>headers</tt> - Specifies any header on the email you want, you can pass a hash of header field names and value pairs, or you can call <tt>headers[:field_name] = 'value'</tt>
-* <tt>attachments</tt> - Allows you to add attachments to your email, for example <tt>attachments['file-name.jpg'] = File.read('file-name.jpg')</tt>
-* <tt>mail</tt> - Sends the actual email itself. You can pass in headers as a hash to the mail method as a parameter, mail will then create an email, either plain text, or multipart, depending on what email templates you have defined.
+h5. 自定义头部部分
 
-h5. Custom Headers
+自定义头部很简单，你只需要用三步就能够完成：
 
-Defining custom headers are simple, you can do it one of three ways:
-
-* Defining a header field as a parameter to the +mail+ method:
-
+* 把头部作为一个参数传入　+mail+ 方法:
+　
 <ruby>
 mail("X-Spam" => value)
 </ruby>
 
-* Passing in a key value assignment to the +headers+ method:
+* 传递一个键值对参数到　+headers+　方法:
 
 <ruby>
 headers["X-Spam"] = value
 </ruby>
 
-* Passing a hash of key value pairs to the +headers+ method:
+* 传递一个哈希到　+headers+　方法:
 
 <ruby>
 headers {"X-Spam" => value, "X-Special" => another_value}
 </ruby>
 
-TIP: All <tt>X-Value</tt> headers per the RFC2822 can appear more than one time. If you want to delete an <tt>X-Value</tt> header, you need to assign it a value of <tt>nil</tt>.
+TIP: 所有的 <tt>X-Value</tt> 头部　每 RFC2822 可以出现多次. 如果你想要删除一个　<tt>X-Value</tt>　头，你需要将其值声明成　<tt>nil</tt> .
 
-h5. Adding Attachments
+h5. 添加附件
 
-Adding attachments has been simplified in Action Mailer 3.0.
+添加附件在　Action Mailer 3.0　中得到了大大的简化.
 
-* Pass the file name and content and Action Mailer and the Mail gem will automatically guess the mime_type, set the encoding and create the attachment.
+* 只要传入　文件名的内容之后 Action Mailer 和 Mail 插件将会自动对其　mime_type　进行检测，并对应进行编码和创建附件.
 
 <ruby>
 attachments['filename.jpg'] = File.read('/path/to/filename.jpg')
 </ruby>
 
-NOTE: Mail will automatically Base64 encode an attachment, if you want something different, pre-encode your content and pass in the encoded content and encoding in a +Hash+ to the +attachments+ method.
+NOTE: Mail 插件将会自动地将附件进行　Base64　编码, 如果你对这一特性不太满意，你可以将其事先编码之后把内容和编码形式用哈希一并传入　+attachments+ 方法.
 
-* Pass the file name and specify headers and content and Action Mailer and Mail will use the settings you pass in.
+* 传入文件名和特殊的头部内容，为　Action Mailer 和 Mail　进行设置.
 
 <ruby>
 encoded_content = SpecialEncode(File.read('/path/to/filename.jpg'))
@@ -207,7 +206,7 @@ attachments['filename.jpg'] = {:mime_type => 'application/x-gzip',
                                :content => encoded_content }
 </ruby>
 
-NOTE: If you specify an encoding, Mail will assume that your content is already encoded and not try to Base64 encode it.
+NOTE: 如果你用了一种指定的编码形式， Mail　将会认为你的内容是已经经过编码的，并不再尝试地对其内容进行　Base64 编码.
 
 h5. Making Inline Attachments
 

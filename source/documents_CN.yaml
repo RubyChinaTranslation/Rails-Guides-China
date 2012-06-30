@@ -29,9 +29,10 @@
       contributor: sanatir
       description: This guide covers all the associations provided by Active Record.
     -
-      name: Active Record Query Interface
+      name: Active Record 查询接口
       url: active_record_querying.html
-      description: This guide covers the database query interface provided by Active Record.
+      contributer: zlx
+      description: 这篇指导涉及了如何使用 Active Record 从数据库中检索数据。
 -
   name: 视图(Views)
   documents:      
@@ -51,12 +52,10 @@
   name: 控制器(Controllers)
   documents:
     - 
-      name: 行为控制器概述
+      name: 动作控制器概述
       url: action_controller_overview.html
-      work_in_progress: true
       contributor: wolflee  
-      description: This guide covers how controllers work and how they fit into the request cycle in your application. It includes sessions, filters, and cookies, data streaming, and dealing with exceptions raised by a request, among other topics.
-      description: 该指南涵盖了控制器如何工作及他们如何在应用中的请求周期中协调地工作。内容包括sessions, 过滤器, cookies, 数据流, 除此之外还有处理由请求引起异常。
+      description: 这篇指南介绍控制器的工作原理以及它们在应用中的请求周期中是怎样协调运行的。内容包括 sessions ，过滤器，cookies ，数据流，除此之外还有包含处理由请求引起异常的内容。
     - 
       name: 深入浅出说路由 
       url: routing.html
@@ -72,6 +71,8 @@
     - 
       name: Rails Internationalization API
       url: i18n.html
+      work_in_progress: true
+      contributer: zlx
       description: This guide covers how to add internationalization to your applications. Your application will be able to translate content to different languages, change pluralization rules, use correct date formats for each country and so on.
     - 
       name: Action Mailer 介绍
@@ -110,6 +111,8 @@
       name: Caching with Rails 
       url: caching_with_rails.html
       description: Various caching techniques provided by Rails.
+      work_in_progress: true
+      contributor: sunny0425
     - 
       name: Asset Pipeline
       url: asset_pipeline.html

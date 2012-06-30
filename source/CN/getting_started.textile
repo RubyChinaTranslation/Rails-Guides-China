@@ -9,7 +9,7 @@ h2. Rails 初上手指南
 
 endprologue.
 
-WARNING.  这个指导手册适用与 Rails 3.1，有些代码在 Rails 早期版本可能无法正常运行。
+WARNING.  这个指导手册适用与 Rails 3.2，有些代码在 Rails 早期版本可能无法正常运行。
 
 h3. 手册假设
 
@@ -458,6 +458,7 @@ The model file, +app/models/post.rb+ is about as simple as it can get:
 
 <ruby>
 class Post < ActiveRecord::Base
+	attr_accessible :content, :name, :title
 end
 </ruby>
 
@@ -469,6 +470,7 @@ Rails 包含一些帮助你验证发送到models的数据的方法。打开 +app
 
 <ruby>
 class Post < ActiveRecord::Base
+  attr_accessible :content, :name, :title	
   validates :name,  :presence => true
   validates :title, :presence => true,
                     :length => { :minimum => 5 }
@@ -881,6 +883,7 @@ end
 
 <ruby>
 class Post < ActiveRecord::Base
+  attr_accessible :content, :name, :title
   validates :name,  :presence => true
   validates :title, :presence => true,
                     :length => { :minimum => 5 }
@@ -1294,9 +1297,8 @@ class Post < ActiveRecord::Base
 
   has_many :comments, :dependent => :destroy
   has_many :tags
-
   accepts_nested_attributes_for :tags, :allow_destroy => :true,
-    :reject_if => proc { |attrs| attrs.all? { |k, v| v.blank? } }
+  :reject_if => proc { |attrs| attrs.all? { |k, v| v.blank? } }
 end
 </ruby>
 
