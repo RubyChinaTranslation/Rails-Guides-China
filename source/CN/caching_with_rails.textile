@@ -412,11 +412,13 @@ There are some common options used by all cache implementations. These can be pa
 
 * +:race_condition_ttl+ - This option is used in conjunction with the +:expires_in+ option. It will prevent race conditions when cache entries expire by preventing multiple processes from simultaneously regenerating the same entry (also known as the dog pile effect). This option sets the number of seconds that an expired entry can be reused while a new value is being regenerated. It's a good practice to set this value if you use the +:expires_in+ option.
 
-* +:race_condition_ttl+ - 这个选项和 +expires_in+ 共同使用。
+* +:race_condition_ttl+ - 这个选项和 +expires_in+ 共同使用。它会在缓存失效时，从同时再产生的相同条目（也被称为 dog pile 效应）中阻止多个进程，以阻止竞争条件。
 
 h4. ActiveSupport::Cache::MemoryStore
 
 This cache store keeps entries in memory in the same Ruby process. The cache store has a bounded size specified by the +:size+ options to the initializer (default is 32Mb). When the cache exceeds the allotted size, a cleanup will occur and the least recently used entries will be removed.
+
+该缓存存储将在相同的 Ruby 进程中的缓存条目保存在内存中。它可以在初始化时通过设定 +:size+ 选项来限定缓存内容的大小（默认为32M）。当缓存超过了分配的大小，会做一次清理，将最近使用最少的条目移除。
 
 <ruby>
 ActionController::Base.cache_store = :memory_store, :size => 64.megabytes
@@ -424,11 +426,17 @@ ActionController::Base.cache_store = :memory_store, :size => 64.megabytes
 
 If you're running multiple Ruby on Rails server processes (which is the case if you're using mongrel_cluster or Phusion Passenger), then your Rails server process instances won't be able to share cache data with each other. This cache store is not appropriate for large application deployments, but can work well for small, low traffic sites with only a couple of server processes or for development and test environments.
 
+如果你运行多个 Ruby on Rails 服务进程（比如你使用 mongrel_cluster 或 Phusion Passenger）， Rails 服务进程实例彼此间不能共享缓存数据。这个缓存存储不可以在大的部署后的应用程序中使用，但是在小的，只有少数的服务进程的低流量网站或开发及测试环境下使用还是很不错的。
+
 This is the default cache store implementation.
+
+该缓存存储是默认的缓存存储实现方式。
 
 h4. ActiveSupport::Cache::FileStore
 
 This cache store uses the file system to store entries. The path to the directory where the store files will be stored must be specified when initializing the cache.
+
+该缓存存储方式使用文件系统存储缓存条目。存储文件的目录路径需要在初始化缓存是确定。
 
 <ruby>
 ActionController::Base.cache_store = :file_store, "/path/to/cache/directory"
@@ -436,7 +444,11 @@ ActionController::Base.cache_store = :file_store, "/path/to/cache/directory"
 
 With this cache store, multiple server processes on the same host can share a cache. Servers processes running on different hosts could share a cache by using a shared file system, but that set up would not be ideal and is not recommended. The cache store is appropriate for low to medium traffic sites that are served off one or two hosts.
 
+使用该缓存存储，有相同域名的多服务进程可以共享一个缓存。不同域名的服务进程也可以同时使用同一个共享文件系统来共享缓存。但是这样的结构不是完美的，也不推荐使用。该缓存存适合一或两个域名的低到中流量网站。
+
 Note that the cache will grow until the disk is full unless you periodically clear out old entries.
+
+注意：缓存将会不断增加，直到磁盘满了为止，所以你需要定期清理旧的缓存内容。
 
 h4. ActiveSupport::Cache::MemCacheStore
 
