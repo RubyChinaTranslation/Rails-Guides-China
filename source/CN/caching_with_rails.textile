@@ -519,15 +519,23 @@ h4. ActiveSupport::Cache::NullStore
 
 This cache store implementation is meant to be used only in development or test environments and it never stores anything. This can be very useful in development when you have code that interacts directly with +Rails.cache+, but caching may interfere with being able to see the results of code changes. With this cache store, all +fetch+ and +read+ operations will result in a miss.
 
+该缓存存储的实现不存储任何内容，它应该只是用于开发或测试环境下。在开发环境下这是非常有用的，如果你有代码和 +Rails.cache+ 交互，但是缓存可以直接看到代码更改的结果。使用该缓存存储方式，所有的 +fetch+ 和 +read+ 操作将会丢失。
+
 <ruby>
 ActionController::Base.cache_store = :null_store
 </ruby>
 
 h4. Custom Cache Stores
 
+h4. 自定义的缓存存储
+
 You can create your own custom cache store by simply extending +ActiveSupport::Cache::Store+ and implementing the appropriate methods. In this way, you can swap in any number of caching technologies into your Rails application.
 
+可以通过扩展 +ActiveSupport::Cache::Store+ ，以及实现相应的方法来创建自定义缓存存储。通过这种方式，可以将任何缓存技术应用到你的 Rails 应用程序中。
+
 To use a custom cache store, simple set the cache store to a new instance of the class.
+
+使用一个自定义的缓存存储，只需要简单的将缓存设置为该类的一个实例。
 
 <ruby>
 ActionController::Base.cache_store = MyCacheStore.new
@@ -537,7 +545,11 @@ h4. Cache Keys
 
 The keys used in a cache can be any object that responds to either +:cache_key+ or to +:to_param+. You can implement the +:cache_key+ method on your classes if you need to generate custom keys. Active Record will generate keys based on the class name and record id.
 
+在缓存中使用的键可以是任何能对 +:cache_key+ 或 +:to_param+ 响应的对象。如果需要生成自定义的键，可以在类里面实现 +:cache_key+ 方法。
+
 You can use Hashes and Arrays of values as cache keys.
+
+你可以使用 Hash 和 数组的值作为缓存键。
 
 <ruby>
 # This is a legal cache key
@@ -546,13 +558,21 @@ Rails.cache.read(:site => "mysite", :owners => [owner_1, owner_2])
 
 The keys you use on +Rails.cache+ will not be the same as those actually used with the storage engine. They may be modified with a namespace or altered to fit technology backend constraints. This means, for instance, that you can't save values with +Rails.cache+ and then try to pull them out with the +memcache-client+ gem. However, you also don't need to worry about exceeding the memcached size limit or violating syntax rules.
 
+你在 +Rails.cache+ 中使用的键和这些在实际中使用的存储引擎中使用的键不一样。他们可能会修改一个命名空间或改变以适应技术的后端约束。这意味着，例如，你不能使用 +Rails.cache+ 保存值，然后尝试使用 +memcache-client+ gem。然而，你不需要担心超出 memcached 限制的大小和违反语法规则。
+
 h3. Conditional GET support
 
 Conditional GETs are a feature of the HTTP specification that provide a way for web servers to tell browsers that the response to a GET request hasn't changed since the last request and can be safely pulled from the browser cache.
 
+有条件的 GET 是 HTTP 规格的一个特性，它为 web 服务提供一种方式来告知浏览器对一个 GET 请求的响应与上一个的请求没有变化，可以安全的从浏览器缓存中获取。
+
 They work by using the +HTTP_IF_NONE_MATCH+ and +HTTP_IF_MODIFIED_SINCE+ headers to pass back and forth both a unique content identifier and the timestamp of when the content was last changed. If the browser makes a request where the content identifier (etag) or last modified since timestamp matches the server’s version then the server only needs to send back an empty response with a not modified status.
 
+通过使用 +HTTP_IF_NONE_MATCH+ 和 +HTTP_IF_MODIFIED_SINCE+ 头部来传递返回唯一的内容标识和内容上次更改的时间戳。如果浏览器发起一个请求，它的内容标识（etag）或者上次更改的时间戳匹配服务器的版本，之后服务器只需要发送会一个包含未更改状态的空响应。
+
 It is the server's (i.e. our) responsibility to look for a last modified timestamp and the if-none-match header and determine whether or not to send back the full response. With conditional-get support in Rails this is a pretty easy task:
+
+查看上次更改的时间戳和 if-none-match 头部以及决定是否发送整个响应 是服务器（例如我们）的负责的。在 Rails 中使用 conditional-get 支持是非常简单的：
 
 <ruby>
 class ProductsController < ApplicationController
@@ -578,6 +598,8 @@ end
 
 If you don't have any special response processing and are using the default rendering mechanism (i.e. you're not using respond_to or calling render yourself) then you’ve got an easy helper in fresh_when:
 
+如果你没有任何特殊的响应过程，且使用默认的渲染机制（例如：没有使用 respond_to 或者自己调用渲染），则你可以使用简单的fresh_when 这个helper方法：
+
 <ruby>
 class ProductsController < ApplicationController
 
@@ -592,5 +614,7 @@ end
 </ruby>
 
 h3. Further reading
+
+h3. 更多阅读
 
 * "Scaling Rails Screencasts":http://railslab.newrelic.com/scaling-rails
