@@ -216,6 +216,7 @@ h5. 创建内联附件
 def welcome
   attachments.inline['image.jpg'] = File.read('/path/to/image.jpg')
 end
+</ruby>
 
 * 然后在你的视图中，你可以指定 <tt>attachments[]</tt> 作为一个哈希参数来传入你想要展示的附件，调用 +url+ ,然后把结果传入 <tt>image_tag</tt> 方法中去：
 
@@ -252,7 +253,6 @@ end
 
 对应地，用  <tt>:cc</tt> and <tt>:bcc</tt>  可以对carbon copy 和 blind carbon copy 可以进行同样的设置，
 
-The same format can be used to set carbon copy (Cc:) and blind carbon copy (Bcc:) recipients, by using the <tt>:cc</tt> and <tt>:bcc</tt> keys respectively.
 
 h5. 发送带名字的邮件
 
