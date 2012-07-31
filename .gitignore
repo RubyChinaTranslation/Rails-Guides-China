@@ -5,6 +5,7 @@ tags
 .lock
 /.git*
 /.gitignore
+/config/deploy.rb
 *.swp
 *.orig
 *~

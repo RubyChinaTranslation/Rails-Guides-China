@@ -77,8 +77,7 @@
       name: Action Mailer 介绍
       contributor: Tassandar
       url: action_mailer_basics.html
-      work_in_progress: true
-      description: This guide describes how to use Action Mailer to send and receive emails.
+      description: 这份教程讲诉了如何使用 Action Mailer 进行邮件的收发。
     -
       name: Testing Rails Applications
       url: testing.html
