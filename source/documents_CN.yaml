@@ -19,9 +19,8 @@
     -
       name: Active Record 校验与回调
       url: active_record_validations_callbacks.html
-      work_in_progress: true
       contributor: reyesyang
-      description: This guide covers how you can use Active Record validations and callbacks.
+      description: 该教程将会包含 Rails 中 Active Record 的验证与回调。
     -
       name: Active Record 数据表关联
       url: association_basics.html
