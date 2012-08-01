@@ -1,8 +1,8 @@
 set :application, "Rails Guides"
-set :domain, "www.railschina.org"
+set :domain, "guides.ruby-china.org"
 set :use_sudo, false
 set :user, "ruby"
-set :version, "v3.2.3"
+set :version, "v3.2.7"
 set :repository,  "./output"
 set :scm, :none
 
@@ -10,14 +10,13 @@ set :scm, :none
 role :web, domain
 role :app, domain
 role :db,  domain, :primary => true 
-set :deploy_to, "/home/#{user}/guides"
+
+set :deploy_to, "/home/#{user}/www/rails-guides"
 set :deploy_via, :copy
 
 
 namespace :local do
   task :generate_guides do
-    print "delete all the outfiles"
-    system "rm -rvf ./output"
     print "generate the lastest guides"
     system "rake generate_guides_CN RAILS_VERSION=#{version}  "
   end
