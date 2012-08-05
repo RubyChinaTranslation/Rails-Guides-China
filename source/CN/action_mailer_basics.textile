@@ -1,22 +1,22 @@
-h2. Action Mailer Basics
+h2. Action Mailer 入门
 
-本教程将告诉你如何让你的应用程序可以发送和接收邮件，还有 Action Mailer 的一些内部原理。 同时也包括如何编写 Mailer 的测试。
+这份文章能够让你了解如何用应用上手收发邮件，深入地了解 Action Mailer 组件，还介绍了测试自己邮件收发的方法。
 
 endprologue.
 
-警告. 本教程是基于 Rails 3.0 ， 一些代码可能无法在旧版本的 Rails 中运行。
+WARNING 这份教程对应版本为3.0,在最新版本的Rails上跑或许会出现问题。
 
-h3. 简介
+h3. Introduction
 
-Action Mailer 让你的应用可以用一个 mailer 的 model 和 views 来发送邮件。所以，在 Rails 里面，邮件是通过一个继承至 +ActionMailer::Base+ 的 mailer 来创建的，并存放在 +app/mailers+ 目录下面。这些 mailer 将依靠在 +app/views+ 目录下面对应名称的 view 来生成。
+Action Mailer allows you to send emails from your application using a mailer model and views. So, in Rails, emails are used by creating mailers that inherit from +ActionMailer::Base+ and live in +app/mailers+. Those mailers have associated views that appear alongside controller views in +app/views+.
 
-h3. 发送邮件
+h3. Sending Emails
 
-本节将一步一步的教你创建一个 mailer 和它对应的 views。
+This section will provide a step-by-step guide to creating a mailer and its views.
 
-h4. 生成一个 Mailer
+h4. Walkthrough to Generating a Mailer
 
-h5. 创建 Mailer
+h5. Create the Mailer
 
 <shell>
 $ rails generate mailer UserMailer
@@ -27,11 +27,11 @@ invoke  test_unit
 create    test/functional/user_mailer_test.rb
 </shell>
 
-现在就有了一个 mailer, 还有它的 view 和 test 文件.
+So we got the mailer, the views, and the tests.
 
-h5. 修改 Mailer
+h5. Edit the Mailer
 
-+app/mailers/user_mailer.rb+ 里面有个空的 mailer 类:
++app/mailers/user_mailer.rb+ contains an empty mailer:
 
 <ruby>
 class UserMailer < ActionMailer::Base
@@ -39,7 +39,7 @@ class UserMailer < ActionMailer::Base
 end
 </ruby>
 
-让我们来添加一个叫 +welcome_email+ 的方法, 它将用于发送用户注册成功的邮件:
+Let's add a method called +welcome_email+, that will send an email to the user's registered email address:
 
 <ruby>
 class UserMailer < ActionMailer::Base
@@ -48,21 +48,21 @@ class UserMailer < ActionMailer::Base
   def welcome_email(user)
     @user = user
     @url  = "http://example.com/login"
-    mail(:to => user.email, :subject => "欢迎来到某某网站")
+    mail(:to => user.email, :subject => "欢迎来到我的网站")
   end
 end
 </ruby>
 
-Here is a quick explanation of the items presented in the preceding method. For a full list of all available options, please have a look further down at the Complete List of Action Mailer user-settable attributes section.
+这里的方法就展示了一个简单的邮件项目，要想用上更多可用的选项，你可以在下文中可以找到一个完整的 Action Mailer 的参数设置选项表。而在这里
 
-* <tt>default Hash</tt> - This is a hash of default values for any email you send, in this case we are setting the <tt>:from</tt> header to a value for all messages in this class, this can be overridden on a per email basis
-* +mail+ - The actual email message, we are passing the <tt>:to</tt> and <tt>:subject</tt> headers in.
+* <tt>default 哈希</tt> - 这是一个邮件的必选参数，在这个例子里我们在类的顶部设定了<tt>:from</tt>参数，这个参数是可以在每封具体邮件的内部修改的。
+* +mail+ - 在这个 email 文件中，我们对其设置了 <tt>:to</tt> 和 <tt>:subject</tt> 参数.
 
-Just like controllers, any instance variables we define in the method become available for use in the views.
+就和控制器一样，我们这个类的实例方法中定义的任何变量都将可以用在 View 中使用。
 
-h5. Create a Mailer View
+h5. 创建 Mailer 视图
 
-Create a file called +welcome_email.html.erb+ in +app/views/user_mailer/+. This will be the template used for the email, formatted in HTML:
+我们在  +app/views/user_mailer/+ 建立一个 Email 的模板文件叫 +welcome_email.html.erb+，用 HTML 语言进行书写它：
 
 <erb>
 <!DOCTYPE html>
@@ -84,7 +84,7 @@ Create a file called +welcome_email.html.erb+ in +app/views/user_mailer/+. This 
 </html>
 </erb>
 
-It is also a good idea to make a text part for this email, to do this, create a file called +welcome_email.text.erb+ in +app/views/user_mailer/+:
+为你的 email 的文字部分分离出来会是不错的选择，在 +app/views/user_mailer/+ 下建立一个文件 +welcome_email.text.erb+：
 
 <erb>
 Welcome to example.com, <%= @user.name %>
@@ -98,22 +98,22 @@ To login to the site, just follow this link: <%= @url %>.
 Thanks for joining and have a great day!
 </erb>
 
-When you call the +mail+ method now, Action Mailer will detect the two templates (text and HTML) and automatically generate a <tt>multipart/alternative</tt> email.
+当你调用了 +mail+ 方法之后， Action Mailer 将会为你检测两种模板文件(text 和 HTML)然后为你自动生成一个 email 文件。
 
-h5. Wire It Up So That the System Sends the Email When a User Signs Up
+h5. 用户注册后自动发送邮件
 
-There are several ways to do this, some people create Rails Observers to fire off emails, others do it inside of the User Model. However, in Rails 3, mailers are really just another way to render a view. Instead of rendering a view and sending out the HTTP protocol, they are just sending it out through the Email protocols instead. Due to this, it makes sense to just have your controller tell the mailer to send an email when a user is successfully created.
+这里有几种方法来实现这件事情，有的人会建立一个 Rails 观察者模型来监视注册事件，还有一些人会在用户模型中实现这一功能。然而，在 Rails 3 中，mailer 有了第三种方法去实现它，与原来渲染视图之后通过 HTTP 协议发送，他们现在只需要通过 Email 协议直接发送邮件就可以了。因此，你可以在用户成功注册之后直接通过控制器来发送命令给 mailer 发送邮件。
 
-Setting this up is painfully simple.
+而要做到这样的功能简直是易如反掌。
 
-First off, we need to create a simple +User+ scaffold:
+首先我们先建立一个 User scaffold：
 
 <shell>
 $ rails generate scaffold user name:string email:string login:string
 $ rake db:migrate
 </shell>
 
-Now that we have a user model to play with, we will just edit the +app/controllers/users_controller.rb+ make it instruct the UserMailer to deliver an email to the newly created user by editing the create action and inserting a call to <tt>UserMailer.welcome_email</tt> right after the user is successfully saved:
+这样我们就有了 用户模型了，我们将要编辑 +app/controllers/users_controller.rb+ 来让 UserMailer 为新建立的用户发送一封邮件，我们在 create 行为中当用户成功 save 之后调用了一个方法<tt>UserMailer.welcome_email</tt>。
 
 <ruby>
 class UsersController < ApplicationController
@@ -138,67 +138,66 @@ class UsersController < ApplicationController
 end
 </ruby>
 
-This provides a much simpler implementation that does not require the registering of observers and the like.
+这样就轻松地实现了目标，不需要观察者之类的东西。
+方法 +welcome_email+ 返回一个 <tt>Mail::Message</tt> 对象，它会像 +deliver+ 请求把它自己发送出去。
 
-The method +welcome_email+ returns a <tt>Mail::Message</tt> object which can then just be told +deliver+ to send itself out.
+NOTE: 在过去几个版本里的 Rails ，你需要调用 +deliver_welcome_email+ 或 +create_welcome_email+。它们在 Rails 3.0 中被弃用了，你只需要调用这个方法名本身即可。
 
-NOTE: In previous versions of Rails, you would call +deliver_welcome_email+ or +create_welcome_email+. This has been deprecated in Rails 3.0 in favour of just calling the method name itself.
+WARNING: 发送一封邮件可能需要花费将近一秒的时间，如果你需要一次性发送好几封邮件，或者你不想因此降低主机的处理俗入，你恐怕要考虑下使用一个后台处理软件，例如 Delayed　Job.
 
-WARNING: Sending out an email should only take a fraction of a second, but if you are planning on sending out many emails, or you have a slow domain resolution service, you might want to investigate using a background process like Delayed Job.
+h4. 多字节问题
 
-h4. Auto encoding header values
+Action Mailer 已经解决了文中的多字节编码问题。
 
-Action Mailer now handles the auto encoding of multibyte characters inside of headers and bodies.
+如果你用　UTF-8　作为你的字符集，你什么都不用做，直接用　UTF-8　编码填写邮件地址，主题，关键词，文件名和邮件正文，如果邮件头部或者正文中出现了非　US-ASCII　编码部分， Action Mailer 会自动把他们转码为可读的版本（quoted printable）。
 
-If you are using UTF-8 as your character set, you do not have to do anything special, just go ahead and send in UTF-8 data to the address fields, subject, keywords, filenames or body of the email and Action Mailer will auto encode it into quoted printable for you in the case of a header field or Base64 encode any body parts that are non US-ASCII.
+关于更为复杂的编码问题，例如在正文中编写了多种字符集，请参考　Ｍａｉｌ　类库。　
 
-For more complex examples such as defining alternate character sets or self encoding text first, please refer to the Mail library.
+h4. Action Mailer 方法全列表
 
-h4. Complete List of Action Mailer Methods
+其实不管你发什么邮件都只需要三个方法就够了：
 
-There are just three methods that you need to send pretty much any email message:
+* <tt>headers</tt> - 指定你邮件的头部，你可以传入一个哈希来把头部作为数据的键值对，然后你就可以这么用 <tt>headers[:field_name] = 'value'</tt>
+* <tt>attachments</tt> - 允许你添加附件到你的　ｅｍａｉｌ　中　例如 <tt>attachments['file-name.jpg'] = File.read('file-name.jpg')</tt>
+* <tt>mail</tt> - 发送邮件。你可以把头部数据以哈希的形式传入， mail　将会根据你的模板生成　Ｅｍａｉｌ　.
 
-* <tt>headers</tt> - Specifies any header on the email you want, you can pass a hash of header field names and value pairs, or you can call <tt>headers[:field_name] = 'value'</tt>
-* <tt>attachments</tt> - Allows you to add attachments to your email, for example <tt>attachments['file-name.jpg'] = File.read('file-name.jpg')</tt>
-* <tt>mail</tt> - Sends the actual email itself. You can pass in headers as a hash to the mail method as a parameter, mail will then create an email, either plain text, or multipart, depending on what email templates you have defined.
+h5. 自定义头部部分
 
-h5. Custom Headers
+自定义头部很简单，你只需要用三步就能够完成：
 
-Defining custom headers are simple, you can do it one of three ways:
-
-* Defining a header field as a parameter to the +mail+ method:
-
+* 把头部作为一个参数传入　+mail+ 方法:
+　
 <ruby>
 mail("X-Spam" => value)
 </ruby>
 
-* Passing in a key value assignment to the +headers+ method:
+* 传递一个键值对参数到　+headers+　方法:
 
 <ruby>
 headers["X-Spam"] = value
 </ruby>
 
-* Passing a hash of key value pairs to the +headers+ method:
+* 传递一个哈希到　+headers+　方法:
 
 <ruby>
 headers {"X-Spam" => value, "X-Special" => another_value}
 </ruby>
 
-TIP: All <tt>X-Value</tt> headers per the RFC2822 can appear more than one time. If you want to delete an <tt>X-Value</tt> header, you need to assign it a value of <tt>nil</tt>.
+TIP: 所有的 <tt>X-Value</tt> 头部　每 RFC2822 可以出现多次. 如果你想要删除一个　<tt>X-Value</tt>　头，你需要将其值声明成　<tt>nil</tt> .
 
-h5. Adding Attachments
+h5. 添加附件
 
-Adding attachments has been simplified in Action Mailer 3.0.
+添加附件在　Action Mailer 3.0　中得到了大大的简化.
 
-* Pass the file name and content and Action Mailer and the Mail gem will automatically guess the mime_type, set the encoding and create the attachment.
+* 只要传入　文件名的内容之后 Action Mailer 和 Mail 插件将会自动对其　mime_type　进行检测，并对应进行编码和创建附件.
 
 <ruby>
 attachments['filename.jpg'] = File.read('/path/to/filename.jpg')
 </ruby>
 
-NOTE: Mail will automatically Base64 encode an attachment, if you want something different, pre-encode your content and pass in the encoded content and encoding in a +Hash+ to the +attachments+ method.
+NOTE: Mail 插件将会自动地将附件进行　Base64　编码, 如果你对这一特性不太满意，你可以将其事先编码之后把内容和编码形式用哈希一并传入　+attachments+ 方法.
 
-* Pass the file name and specify headers and content and Action Mailer and Mail will use the settings you pass in.
+* 传入文件名和特殊的头部内容，为　Action Mailer 和 Mail　进行设置.
 
 <ruby>
 encoded_content = SpecialEncode(File.read('/path/to/filename.jpg'))
@@ -207,13 +206,11 @@ attachments['filename.jpg'] = {:mime_type => 'application/x-gzip',
                                :content => encoded_content }
 </ruby>
 
-NOTE: If you specify an encoding, Mail will assume that your content is already encoded and not try to Base64 encode it.
+NOTE: 如果你用了一种指定的编码形式， Mail　将会认为你的内容是已经经过编码的，并不再尝试地对其内容进行　Base64 编码.
 
-h5. Making Inline Attachments
+h5. 创建内联附件
 
-Action Mailer 3.0 makes inline attachments, which involved a lot of hacking in pre 3.0 versions, much simpler and trivial as they should be.
-
-* Firstly, to tell Mail to turn an attachment into an inline attachment, you just call <tt>#inline</tt> on the attachments method within your Mailer:
+* 首先，要通知 Mail 将一个附件转换成内联附件，你需要调用 Mailer 附件方法之中的 <tt>#inline</tt> 函数。
 
 <ruby>
 def welcome
@@ -221,7 +218,7 @@ def welcome
 end
 </ruby>
 
-* Then in your view, you can just reference <tt>attachments[]</tt> as a hash and specify which attachment you want to show, calling +url+ on it and then passing the result into the <tt>image_tag</tt> method:
+* 然后在你的视图中，你可以指定 <tt>attachments[]</tt> 作为一个哈希参数来传入你想要展示的附件，调用 +url+ ,然后把结果传入 <tt>image_tag</tt> 方法中去：
 
 <erb>
 <p>Hello there, this is our image</p>
@@ -229,7 +226,7 @@ end
 <%= image_tag attachments['image.jpg'].url %>
 </erb>
 
-* As this is a standard call to +image_tag+ you can pass in an options hash after the attachment url as you could for any other image:
+* 这里以默认选项调用了 +image_tag+ 方法,你可以在这里象对待其他图像一样处理内联附件，在 <tt>image_tag</tt> 后面加上一些参数。
 
 <erb>
 <p>Hello there, this is our image</p>
@@ -238,9 +235,9 @@ end
                                             :class => 'photos' %>
 </erb>
 
-h5. Sending Email To Multiple Recipients
+h5. 发送多个收件人的信件
 
-It is possible to send email to one or more recipients in one email (for e.g. informing all admins of a new signup) by setting the list of emails to the <tt>:to</tt> key. The list of emails can be an array of email addresses or a single string with the addresses separated by commas.
+你可以为你的邮件加入多个的收件人（例如每当有一个新用户注册就通知所有的管理员。）,你需要给邮件中的 <tt>:to</tt> 参数设定一个列表。这个列表可以用数组的形式，也可以用以逗号隔开的email地址的字符串组成.
 
 <ruby>
 class AdminMailer < ActionMailer::Base
@@ -254,12 +251,12 @@ class AdminMailer < ActionMailer::Base
 end
 </ruby>
 
-The same format can be used to set carbon copy (Cc:) and blind carbon copy (Bcc:) recipients, by using the <tt>:cc</tt> and <tt>:bcc</tt> keys respectively.
+对应地，用  <tt>:cc</tt> and <tt>:bcc</tt>  可以对carbon copy 和 blind carbon copy 可以进行同样的设置，
 
-h5. Sending Email With Name
 
-Sometimes you wish to show the name of the person instead of just their email address when they receive the email. The trick to doing that is
-to format the email address in the format <tt>"Name &lt;email&gt;"</tt>.
+h5. 发送带名字的邮件
+
+有时候，你想要收件人在邮件地址的地方现实一个名字来代替地址信息，想要做到这个需要一个小技巧，就是把你的邮件地址用<tt>"Name &lt;email&gt;"</tt> 这样的格式编写就可以了。
 
 <ruby>
 def welcome_email(user)
@@ -271,9 +268,9 @@ end
 
 h4. Mailer Views
 
-Mailer views are located in the +app/views/name_of_mailer_class+ directory. The specific mailer view is known to the class because its name is the same as the mailer method. In our example from above, our mailer view for the +welcome_email+ method will be in +app/views/user_mailer/welcome_email.html.erb+ for the HTML version and +welcome_email.text.erb+ for the plain text version.
+Mailer 试图位于 +app/views/name_of_mailer_class+ 目录下，通常情况下，mailer 视图的名字要和 mailer 里面的方法相对应，在我们上面的例子当中，我们的 mailer 方法 welcome_email+ 对应的HTML版就应该位于+app/views/user_mailer/welcome_email.html.erb+ ,而文字版视图文件应该位于+welcome_email.text.erb+ .
 
-To change the default mailer view for your action you do something like:
+如果要对此默认的设置做出更改，你需要做一点这样的工作:
 
 <ruby>
 class UserMailer < ActionMailer::Base
@@ -290,9 +287,9 @@ class UserMailer < ActionMailer::Base
 end
 </ruby>
 
-In this case it will look for templates at +app/views/notifications+ with name +another+.
+这样，你的邮件模板就会以 +another+ 为名，在+app/views/notifications+ 中寻找。
 
-If you want more flexibility you can also pass a block and render specific templates or even render inline or text without using a template file:
+如果你寻求更加简洁的方式，你可以传入一个 block 来指定渲染的模板，甚至直接在 block 中指定一个字符串。
 
 <ruby>
 class UserMailer < ActionMailer::Base
@@ -311,13 +308,13 @@ class UserMailer < ActionMailer::Base
 end
 </ruby>
 
-This will render the template 'another_template.html.erb' for the HTML part and use the rendered text for the text part. The render command is the same one used inside of Action Controller, so you can use all the same options, such as <tt>:text</tt>, <tt>:inline</tt> etc.
+这样设置，mailer将会用模板 'another_template.html.erb' 来渲染 HTML 部分，用 文字来渲染 text 部分。在这里，render 命令的用法和 Action Controller 中的用法是一样的，所以他们有着同样的传入参数选项，这意味着你可以使用<tt>:text</tt>, <tt>:inline</tt> 等参数。
 
-h4. Action Mailer Layouts
+h4. Mailer 布局文件
 
-Just like controller views, you can also have mailer layouts. The layout name needs to be the same as your mailer, such as +user_mailer.html.erb+ and +user_mailer.text.erb+ to be automatically recognized by your mailer as a layout.
+和控制器视图一样，你同样可以创建mailer 布局文件，布局文件名要和你的mailer 控制器名字一样，例如+user_mailer.html.erb+ 和 +user_mailer.text.erb+ 就能够被自动识别成mailer的一个布局文件。
 
-In order to use a different file just use:
+如果要使用不同名字的文件你就需要这样：
 
 <ruby>
 class UserMailer < ActionMailer::Base
@@ -325,9 +322,9 @@ class UserMailer < ActionMailer::Base
 end
 </ruby>
 
-Just like with controller views, use +yield+ to render the view inside the layout.
+和控制器视图文件一样，用 +yield+ 去渲染布局中的视图文件。
 
-You can also pass in a <tt>:layout => 'layout_name'</tt> option to the render call inside the format block to specify different layouts for different actions:
+你同样可以在format 的block 中传入 <tt>:layout => 'layout_name'</tt> 选项调用 render 函数来指定不同的布局文件或者方法。
 
 <ruby>
 class UserMailer < ActionMailer::Base
@@ -340,13 +337,13 @@ class UserMailer < ActionMailer::Base
 end
 </ruby>
 
-Will render the HTML part using the <tt>my_layout.html.erb</tt> file and the text part with the usual <tt>user_mailer.text.erb</tt> file if it exists.
+这样将会用 <tt>my_layout.html.erb</tt> 渲染 HTML 视图 用 <tt>user_mailer.text.erb</tt> 渲染 text 视图.
 
-h4. Generating URLs in Action Mailer Views
+h4. 在 Action Mailer 视图中生成 URL.
 
-URLs can be generated in mailer views using +url_for+ or named routes.
+URL 可以在视图中使用 +url_for+ 方法或者命名路由方法生成.
 
-Unlike controllers, the mailer instance doesn't have any context about the incoming request so you'll need to provide the +:host+, +:controller+, and +:action+:
+但是和控制器不同，Mailer 实例无法得到任何请求的信息，所以你需要为方法提供  +:host+, +:controller+ 和 +:action+: 参数
 
 <erb>
 <%= url_for(:host => "example.com",
@@ -354,29 +351,28 @@ Unlike controllers, the mailer instance doesn't have any context about the incom
             :action => "greeting") %>
 </erb>
 
-When using named routes you only need to supply the +:host+:
+当使用命名路由方法时你只需要提供 +:host+ 参数：
 
 <erb>
 <%= user_url(@user, :host => "example.com") %>
 </erb>
 
-Email clients have no web context and so paths have no base URL to form complete web addresses. Thus, when using named routes only the "_url" variant makes sense.
+对于一个邮件客户端来说，它并不存在地址上的信息去生成网络地址，因此，当你使用命名路由方法的时候只能用 "_url" 后缀的 helper 方法.
 
-It is also possible to set a default host that will be used in all mailers by setting the <tt>:host</tt> option as a configuration option in <tt>config/application.rb</tt>:
+事先为 mailer 做好默认主机名的设置也是一个不错的方法，你可以在 <tt>config/application.rb</tt> 设置文件中的 <tt>:host</tt> 中设置你的主机名。
 
 <ruby>
 config.action_mailer.default_url_options = { :host => "example.com" }
 </ruby>
 
-If you use this setting, you should pass the <tt>:only_path => false</tt> option when using +url_for+. This will ensure that absolute URLs are generated because the +url_for+ view helper will, by default, generate relative URLs when a <tt>:host</tt> option isn't explicitly provided.
+如果你用了这个设定，你最好在使用  +url_for+ 方法的时候传入 <tt>:only_path => false</tt> 参数. 这样可以保证每当 +url_for+ 调用都能返回一个绝对地址。
 
-h4. Sending Multipart Emails
+h4. 发送复合邮件 
 
-Action Mailer will automatically send multipart emails if you have different templates for the same action. So, for our UserMailer example, if you have +welcome_email.text.erb+ and +welcome_email.html.erb+ in +app/views/user_mailer+, Action Mailer will automatically send a multipart email with the HTML and text versions setup as different parts.
+如果对于同一个 action 你有不同的模板，Action Mailer 将会自动地为你生成发送复合邮件 , 以我们的 UserMailer 作为例子，如果你在 +app/views/user_mailer+ 下面同时存在 +welcome_email.text.erb+ 和 +welcome_email.html.erb+ ,  Action Mailer 将会自动地把 HTML 和 text 部分合成一份并发送。
 
-The order of the parts getting inserted is determined by the <tt>:parts_order</tt> inside of the <tt>ActionMailer::Base.default</tt> method. If you want to explicitly alter the order, you can either change the <tt>:parts_order</tt> or explicitly render the parts in a different order:
+复合邮件的顺序依据<tt>ActionMailer::Base.default</tt> 方法中的 <tt>:parts_order</tt> 参数。如果你想要精确地控制邮件内容的顺序，你可以改变<tt>:parts_order</tt> 参数或者指定邮件用不同的顺序渲染。
 
-<ruby>
 class UserMailer < ActionMailer::Base
   def welcome_email(user)
     @user = user
@@ -390,11 +386,11 @@ class UserMailer < ActionMailer::Base
 end
 </ruby>
 
-Will put the HTML part first, and the plain text part second.
+这样将会先输入 HTML 部分，后输出 text 部分。
 
-h4. Sending Emails with Attachments
+h4. 发送带附件的邮件
 
-Attachments can be added by using the +attachments+ method:
+附件可以使用  +attachments+ 方法：
 
 <ruby>
 class UserMailer < ActionMailer::Base
@@ -408,17 +404,17 @@ class UserMailer < ActionMailer::Base
 end
 </ruby>
 
-The above will send a multipart email with an attachment, properly nested with the top level being <tt>multipart/mixed</tt> and the first part being a <tt>multipart/alternative</tt> containing the plain text and HTML email messages.
+这样就可以生成一份带附件的邮件了。
 
-h3. Receiving Emails
+h3. 接收邮件 
 
-Receiving and parsing emails with Action Mailer can be a rather complex endeavor. Before your email reaches your Rails app, you would have had to configure your system to somehow forward emails to your app, which needs to be listening for that. So, to receive emails in your Rails app you'll need to:
+用 Action Mailer 解析和接收邮件相对来说比较复杂，因为你需要在邮件还未到达你的服务器之前就做好监听邮件的工作，你需要配置好你的系统的接收方式。要想要一个 Rails 程序接收邮件你需要:
 
-* Implement a +receive+ method in your mailer.
+* 在你的 Mailer 中哦实现 +receive+ 函数。
 
-* Configure your email server to forward emails from the address(es) you would like your app to receive to +/path/to/app/script/rails runner 'UserMailer.receive(STDIN.read)'+.
+* 配置好你的email 服务器的转发邮件地址，你的程序将会收到 +/path/to/app/script/rails runner 'UserMailer.receive(STDIN.read)'+.
 
-Once a method called +receive+ is defined in any mailer, Action Mailer will parse the raw incoming email into an email object, decode it, instantiate a new mailer, and pass the email object to the mailer +receive+ instance method. Here's an example:
+一旦叫做  +receive+ 在 Mailer 中被设置， Action Mailer 将会处理接收到的 Email 并保存在一个新的实例化的邮件对象中去，例子如下：
 
 <ruby>
 class UserMailer < ActionMailer::Base
@@ -441,13 +437,15 @@ class UserMailer < ActionMailer::Base
 end
 </ruby>
 
-h3. Using Action Mailer Helpers
+h3. 使用 Action Mailer Helpers
 
-Action Mailer now just inherits from Abstract Controller, so you have access to the same generic helpers as you do in Action Controller.
 
-h3. Action Mailer Configuration
+Action Mailer 现在集成自一个抽象的 Controller 类，你可以调用 Action Controller 的通用 Helper .
 
-The following configuration options are best made in one of the environment files (environment.rb, production.rb, etc...)
+h3. Action Mailer 设置
+
+以下配置可以在你的环境配置文件 (environment.rb, production.rb...)
+中被找到:
 
 |+template_root+|Determines the base from which template references will be made.|
 |+logger+|Generates information on the mailing run if available. Can be set to +nil+ for no logging. Compatible with both Ruby's own +Logger+ and +Log4r+ loggers.|
@@ -458,9 +456,9 @@ The following configuration options are best made in one of the environment file
 |+perform_deliveries+|Determines whether deliveries are actually carried out when the +deliver+ method is invoked on the Mail message. By default they are, but this can be turned off to help functional testing.|
 |+deliveries+|Keeps an array of all the emails sent out through the Action Mailer with delivery_method :test. Most useful for unit and functional testing.|
 
-h4. Example Action Mailer Configuration
+h4. Action Mailer 配置范例
 
-An example would be adding the following to your appropriate <tt>config/environments/$RAILS_ENV.rb</tt> file:
+你可以在你的 环境配置文件(<tt>config/environments/$RAILS_ENV.rb</tt>)中做出如下配置
 
 <ruby>
 config.action_mailer.delivery_method = :sendmail
@@ -473,9 +471,9 @@ config.action_mailer.perform_deliveries = true
 config.action_mailer.raise_delivery_errors = true
 </ruby>
 
-h4. Action Mailer Configuration for GMail
+h4. Action Mailer 和 GMail
 
-As Action Mailer now uses the Mail gem, this becomes as simple as adding to your <tt>config/environments/$RAILS_ENV.rb</tt> file:
+因为 Action Mailer 现在使用 Mail gem，所以把你的 Action Mailer 和 一个Gmail绑定变得轻而易举。你 需要把设定写入你的 <tt>config/environments/$RAILS_ENV.rb</tt> 文件:
 
 <ruby>
 config.action_mailer.delivery_method = :smtp
@@ -489,11 +487,12 @@ config.action_mailer.smtp_settings = {
   :enable_starttls_auto => true  }
 </ruby>
 
-h3. Mailer Testing
+h3. Mailer 测试
 
-By default Action Mailer does not send emails in the test environment. They are just added to the +ActionMailer::Base.deliveries+ array.
+默认情况下， Action Mailer并不在测试环境中发送电子邮件。 他们只是将邮件添加到 ActionMailer :: Base.deliveries 队列中去。
 
-Testing mailers normally involves two things: One is that the mail was queued, and the other one that the email is correct. With that in mind, we could test our example mailer from above like so:
+测试寄件人通常考虑两件事情：一个是该邮件被送入发送队列，一个是保证电子邮件是正确的。 考虑到这一点，我们可以像这样测试我们的邮件：
+
 
 <ruby>
 class UserMailerTest < ActionMailer::TestCase
@@ -513,4 +512,5 @@ class UserMailerTest < ActionMailer::TestCase
 end
 </ruby>
 
-In the test we send the email and store the returned object in the +email+ variable. We then ensure that it was sent (the first assert), then, in the second batch of assertions, we ensure that the email does indeed contain what we expect.
+在测试中，我们发送并保存返回的邮件对象。然后，我们确保它被送出（第一个断言），然后，在第二个断言中，我们确保该电子邮件确实包含我们所期望的邮件。
+

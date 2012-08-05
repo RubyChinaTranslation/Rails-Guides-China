@@ -19,9 +19,8 @@
     -
       name: Active Record 校验与回调
       url: active_record_validations_callbacks.html
-      work_in_progress: true
       contributor: reyesyang
-      description: This guide covers how you can use Active Record validations and callbacks.
+      description: 该教程将会包含 Rails 中 Active Record 的验证与回调。
     -
       name: Active Record 数据表关联
       url: association_basics.html
@@ -78,8 +77,7 @@
       name: Action Mailer 介绍
       contributor: Tassandar
       url: action_mailer_basics.html
-      work_in_progress: true
-      description: This guide describes how to use Action Mailer to send and receive emails.
+      description: 这份教程讲诉了如何使用 Action Mailer 进行邮件的收发。
     -
       name: Testing Rails Applications
       url: testing.html
@@ -138,9 +136,8 @@
     -
       name: Rails on Rack
       url: rails_on_rack.html
-      work_in_progress: true
       contributer: wolflee
-      description: This guide covers Rails integration with Rack and interfacing with other Rack components.
+      description: 这篇指南涵盖了 Rails 与 Rack 集成以及其他 Rack 组件的连接。
     -
       name: Creating and Customizing Rails Generators
       url: generators.html
