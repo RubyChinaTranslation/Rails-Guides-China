@@ -38,4 +38,3 @@ end
 #callbacks
 #after 'deploy:setup', 'remote:create_symlink'
 before 'deploy:setup', 'local:generate_guides'
-
