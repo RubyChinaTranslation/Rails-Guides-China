@@ -224,20 +224,20 @@ $ rake db:test:load
 
 NOTE: 如果 +db/schema.rb+ 不存在，+db:test:prepare+ 将会由一个错误而失败。
 
-h5. Rake Tasks for Preparing your Application for Testing
+h5. 测试准备工作的 Rake 任务
 
-|_.Tasks                         |_.Description|
-|+rake db:test:clone+            |Recreate the test database from the current environment's database schema|
-|+rake db:test:clone_structure+  |Recreate the test database from the development structure|
-|+rake db:test:load+             |Recreate the test database from the current +schema.rb+|
-|+rake db:test:prepare+          |Check for pending migrations and load the test schema|
-|+rake db:test:purge+            |Empty the test database.|
+|_.任务                          |_.描述|
+|+rake db:test:clone+            |由当前环境的数据库 schema 重建测试数据库|
+|+rake db:test:clone_structure+  |由 structure 中重建测试数据|
+|+rake db:test:load+             |由当前 +schema.rb+ 重建测试数据|
+|+rake db:test:prepare+          |检查待处理的 migrations 并且加载测试 schema|
+|+rake db:test:purge+            |清空测试数据。|
 
-TIP: You can see all these rake tasks and their descriptions by running +rake --tasks --describe+
+TIP: 运行 +rake --tasks --describe+ ，你就会看到所有的 rake 任务以及它们的描述
 
-h4. Running Tests
+h4. 运行测试
 
-Running a test is as simple as invoking the file containing the test cases through Ruby:
+运行测试是非常简单的，通过 Ruby 调用包含测试实例的文件即可。
 
 <shell>
 $ ruby -Itest test/unit/post_test.rb
@@ -250,9 +250,9 @@ Finished in 0.023513 seconds.
 1 tests, 1 assertions, 0 failures, 0 errors
 </shell>
 
-This will run all the test methods from the test case. Note that +test_helper.rb+ is in the +test+ directory, hence this directory needs to be added to the load path using the +-I+ switch.
+这将会从测试实例中运行所有的测试方法。注意，+test_help.rb+ 在 +test+ 目录中，因此这个目录需要通过使用 +-I+ 参数来添加到加载路径。
 
-You can also run a particular test method from the test case by using the +-n+ switch with the +test method name+.
+你也可以通过使用 +-n+ 参数加 +测试方法名称+ 来运行测试实例中个别的测试方法。
 
 <shell>
 $ ruby -Itest test/unit/post_test.rb -n test_the_truth
@@ -265,9 +265,9 @@ Finished in 0.023513 seconds.
 1 tests, 1 assertions, 0 failures, 0 errors
 </shell>
 
-The +.+ (dot) above indicates a passing test. When a test fails you see an +F+; when a test throws an error you see an +E+ in its place. The last line of the output is the summary.
+上面的 +.+ （点）表示测试通过。当一个测试失败时，你将会看到 +F+ ；当测试抛出一个错误时你会在那个地方看到 +E+ 。输出内容的最后一行是概要。
 
-To see how a test failure is reported, you can add a failing test to the +post_test.rb+ test case.
+你可以在 +post_test.rb+ 测试实例中增加一个失败的测试来看看测试失败如何报告。
 
 <ruby>
 test "should not save post without title" do
@@ -276,7 +276,7 @@ test "should not save post without title" do
 end
 </ruby>
 
-Let us run this newly added test.
+让我们运行一下这个刚刚增加的测试。
 
 <shell>
 $ ruby unit/post_test.rb -n test_should_not_save_post_without_title
@@ -292,7 +292,7 @@ test_should_not_save_post_without_title(PostTest) [/test/unit/post_test.rb:6]:
 1 tests, 1 assertions, 1 failures, 0 errors
 </shell>
 
-In the output, +F+ denotes a failure. You can see the corresponding trace shown under +1)+ along with the name of the failing test. The next few lines contain the stack trace followed by a message which mentions the actual value and the expected value by the assertion. The default assertion messages provide just enough information to help pinpoint the error. To make the assertion failure message more readable, every assertion provides an optional message parameter, as shown here:
+在这个输出中，+F+ 表示失败。你可以看到对应的 trace ，在 1) 后面紧跟这失败信息的名称。接下来的几行包含了堆积的 trace ，它们后面跟随着有关断言涉及到的实际值和期许值的信息。默认的断言信息提供仅仅足够强调错误的信息。为了是这个断言失败的信息更加可读，每个 assertion 提供了一个可选的信息参数，如下所示：
 
 <ruby>
 test "should not save post without title" do
@@ -301,7 +301,7 @@ test "should not save post without title" do
 end
 </ruby>
 
-Running this test shows the friendlier assertion message:
+运行这个测试将会显示更加友好的断言信息：
 
 <shell>
   1) Failure:
@@ -310,7 +310,7 @@ Saved the post without a title.
 <false> is not true.
 </shell>
 
-Now to get this test to pass we can add a model level validation for the _title_ field.
+现在为了使这个测试通过，我们可以为 _title_ 这个字段增加一个 model 级的验证。
 
 <ruby>
 class Post < ActiveRecord::Base
@@ -318,7 +318,7 @@ class Post < ActiveRecord::Base
 end
 </ruby>
 
-Now the test should pass. Let us verify by running the test again:
+现在这个测试将会通过。让我们通过再一次运行测试来验证一下：
 
 <shell>
 $ ruby unit/post_test.rb -n test_should_not_save_post_without_title
@@ -330,21 +330,21 @@ Finished in 0.193608 seconds.
 1 tests, 1 assertions, 0 failures, 0 errors
 </shell>
 
-Now, if you noticed, we first wrote a test which fails for a desired functionality, then we wrote some code which adds the functionality and finally we ensured that our test passes. This approach to software development is referred to as _Test-Driven Development_ (TDD).
+现在，也许你已经注意到了，我们写了一个对于需求功能没有通过的测试，然后我们在需求功能中加入了一些代码并且最终确保了我们的测试通过。这种软件开发模式就是所提及的 测试驱动开发模式 (TDD)。
 
-TIP: Many Rails developers practice _Test-Driven Development_ (TDD). This is an excellent way to build up a test suite that exercises every part of your application. TDD is beyond the scope of this guide, but one place to start is with "15 TDD steps to create a Rails application":http://andrzejonsoftware.blogspot.com/2007/05/15-tdd-steps-to-create-rails.html.
+TIP: 许多 Rails 开发者实践 _Test-Driven Developmet_ （TDD）。这是一中非常出色的方式来建立一个可以执行应用程序每一部分的测试套件。TDD 已经超出了本指南的范围，但是你可以从这里开始入 "15 TDD steps to create a Rails application":http://andrzejonsoftware.blogspot.com/2007/05/15-tdd-steps-to-create-rails.html 。
 
-To see how an error gets reported, here's a test containing an error:
+来看一下错误是如何被报出的，这里是一个包含了错误的测试：
 
 <ruby>
 test "should report error" do
-  # some_undefined_variable is not defined elsewhere in the test case
+  # some_undefined_variable 没有在测试实例的任何地方被定义
   some_undefined_variable
   assert true
 end
 </ruby>
 
-Now you can see even more output in the console from running the tests:
+运行测试后，现在你可以在终端中看到更多的输出：
 
 <shell>
 $ ruby unit/post_test.rb -n test_should_report_error
@@ -361,9 +361,9 @@ NameError: undefined local variable or method `some_undefined_variable' for #<Po
 1 tests, 0 assertions, 0 failures, 1 errors
 </shell>
 
-Notice the 'E' in the output. It denotes a test with error.
+注意这个在输出中的 'E' 。它表示测试有错误发生。
 
-NOTE: The execution of each test method stops as soon as any error or an assertion failure is encountered, and the test suite continues with the next method. All test methods are executed in alphabetical order.
+NOTE: 每一个测试方法一旦遇到任何错误或者断言失效就会停止执行，并且测试套件会继续执行下一个方法。所有测试方法将会按照字母顺序来执行。
 
 h4. What to Include in Your Unit Tests
 
