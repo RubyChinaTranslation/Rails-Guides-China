@@ -60,6 +60,7 @@ The following changes are meant for upgrading your application to Rails 3.2.2, t
 h4(#gemfile3_2). Gemfile
 
 Make the following changes to your +Gemfile+.
+在你的 +Gemfile+ 中做以下修改。
 
 <ruby>
 gem 'rails', '= 3.2.2'
@@ -74,6 +75,7 @@ end
 h4(#config_dev3_2). config/environments/development.rb
 
 There are a couple of new configuration settings that you should add to your development environment:
+这里还有一些新的配置项你需要添加到你的开发环境:
 
 <ruby>
 # Raise exception on mass assignment protection for Active Record models
@@ -87,6 +89,7 @@ config.active_record.auto_explain_threshold_in_seconds = 0.5
 h4(#config_test3_2). config/environments/test.rb
 
 The <tt>mass_assignment_sanitizer</tt> configuration setting should also be be added to <tt>config/environments/test.rb</tt>:
+<tt>mass_assignment_sanitizer</tt>配置项也要添加到<tt>config/environments/test.rb</tt>中:
 
 <ruby>
 # Raise exception on mass assignment protection for Active Record models
@@ -96,16 +99,21 @@ config.active_record.mass_assignment_sanitizer = :strict
 h4(#plugins3_2). vendor/plugins
 
 Rails 3.2 deprecates <tt>vendor/plugins</tt> and Rails 4.0 will remove them completely. While it's not strictly necessary as part of a Rails 3.2 upgrade, you can start replacing any plugins by extracting them to gems and adding them to your Gemfile. If you choose not to make them gems, you can move them into, say, <tt>lib/my_plugin/*</tt> and add an appropriate initializer in <tt>config/initializers/my_plugin.rb</tt>.
+Rails 3.2 不赞成<tt>vendor/plugins</tt>，Rails 4.0 将完全移除它们。虽然它不是 Rails 3.2 升级必须的一部分，你可以通过提取它们为 gems 来替代任何插件并将它们添加到你的 Gemfile。如果你选择不将它们做成 gems，你可以将它们放进<tt>lib/my_plugin/*</tt>，并添加一个适当的初始化器在 <tt>config/initializers/my_plugin.rb</tt>中。
 
-h3. Upgrading from Rails 3.0 to Rails 3.1
+
+h3. 升级从 Rails 3.0 到 3.1
 
 If your application is currently on any version of Rails older than 3.0.x, you should upgrade to Rails 3.0 before attempting an update to Rails 3.1.
+如果你的应用程序是使用 Rails 3.0.x 之前的版本，在你升级到 Rails 3.1之前请先升级到 Rails 3.0。
 
 The following changes are meant for upgrading your application to Rails 3.1.3, the latest 3.1.x version of Rails.
+接下来的修改为了让你的应用程序升级到 Rails 3.1.3，Rails 3.1.x 的最新版本。
 
 h4(#gemfile3_1). Gemfile
 
 Make the following changes to your +Gemfile+.
+在你的 +Gemfile+ 中做以下修改。
 
 <ruby>
 gem 'rails', '= 3.1.3'
@@ -125,6 +133,7 @@ gem 'jquery-rails'
 h4(#config_app3_1). config/application.rb
 
 The asset pipeline requires the following additions:
+asset pipeline 需要以下额外的设置：
 
 <ruby>
 config.assets.enabled = true
@@ -132,6 +141,7 @@ config.assets.version = '1.0'
 </ruby>
 
 If your application is using an "/assets" route for a resource you may want change the prefix used for assets to avoid conflicts:
+如果你的应用程序正在使用一个"/assets"路径的资源，你可能要改变 assets 前缀来避免冲突：
 
 <ruby>
 # Defaults to '/assets'
@@ -141,8 +151,10 @@ config.assets.prefix = '/asset-files'
 h4(#config_dev3_1). config/environments/development.rb
 
 Remove the RJS setting <tt>config.action_view.debug_rjs = true</tt>.
+移除 RJS 设置<tt>config.action_view.debug_rjs = true</tt>。
 
 Add these settings if you enable the asset pipeline:
+如果你启用了 asset pipeline，你需要添加这些配置：
 
 <ruby>
 # Do not compress assets
@@ -155,6 +167,7 @@ config.assets.debug = true
 h4(#config_prod3_1). config/environments/production.rb
 
 Again, most of the changes below are for the asset pipeline. You can read more about these in the "Asset Pipeline":asset_pipeline.html guide.
+再一次，下面的大部分修改是为了 asset pipeline。你可以在"Asset Pipeline"中阅读到更多信息：asset_pipeline.html guide。
 
 <ruby>
 # Compress JavaScripts and CSS
@@ -179,6 +192,7 @@ config.assets.digest = true
 h4(#config_test3_1). config/environments/test.rb
 
 You can help test performance with these additions to your test environment:
+你可以添加这些额外的配置到你的测试环境来帮助你测试性能：
 
 <ruby>
 # Configure static asset server for tests with Cache-Control for performance
@@ -189,6 +203,7 @@ config.static_cache_control = "public, max-age=3600"
 h4(#config_wp3_1). config/initializers/wrap_parameters.rb
 
 Add this file with the following contents, if you wish to wrap parameters into a nested hash. This is on by default in new applications.
+在这个文件中添加以下内容，如果你希望封装参数到一个内嵌 hash。在新的应用程序中这是默认情况。
 
 <ruby>
 # Be sure to restart your server when you modify this file.
