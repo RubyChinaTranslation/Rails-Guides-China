@@ -165,6 +165,7 @@
     -
       name: 升级 Ruby on Rails
       url: upgrading_ruby_on_rails.html
+      contributer: gingerhot
       description: 该教程将帮助你升级应用程序到最新的 Ruby on Rails 版本。
       contributor: gingerhot 
     -
