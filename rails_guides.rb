@@ -50,4 +50,5 @@ RedCloth.send(:include, RailsGuides::TextProcess)
 
 
 require "rails_guides/generator"
+require "rails_guides/version"
 RailsGuides::Generator.new.generate

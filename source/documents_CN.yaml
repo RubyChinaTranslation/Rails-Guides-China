@@ -7,7 +7,6 @@
       url: getting_started.html
       contributor: jhjguxin
       description: 关于安装和建立一个全新的 Rails 程序你所需要知道的一切.
-
 -
   name: 模型(Models)
   documents:
@@ -83,7 +82,6 @@
       contributor: poiyzy
       url: testing.html
       description: 这是一篇关于实作单元测试和功能测试的相当全面的指导。它包含了从“什么是一个测试”到测试 API 的所有内容。享用它吧！
-      work_in_progress: true
     -
       name: Securing Rails Applications
       url: security.html
@@ -111,17 +109,15 @@
       name: Caching with Rails
       url: caching_with_rails.html
       description: Various caching techniques provided by Rails.
-      work_in_progress: true
       contributor: sunny0425
     -
       name: Asset Pipeline
       url: asset_pipeline.html
-      description: This guide documents the asset pipeline.
       description: 本指南记载了 asset pipline.
+      contributor: ichord
     -
       name: Engine 入门
       url: engines.html
-      work_in_progress: true
       contributor: jhjguxin
       description: 这是一个解释如何编写一个可挂载的 engine 的教程。
     -
@@ -138,7 +134,7 @@
     -
       name: Rails on Rack
       url: rails_on_rack.html
-      contributer: wolflee
+      contributor: wolflee
       description: 这篇指南涵盖了 Rails 与 Rack 集成以及其他 Rack 组件的连接。
     -
       name: Creating and Customizing Rails Generators
