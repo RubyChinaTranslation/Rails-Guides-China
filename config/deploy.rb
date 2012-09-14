@@ -2,7 +2,6 @@ set :application, "Rails Guides"
 set :domain, "guides.ruby-china.org"
 set :use_sudo, false
 set :user, "ruby"
-set :version, "v3.2.7"
 set :repository,  "./output"
 set :scm, :none
 
