@@ -29,7 +29,7 @@
     -
       name: Active Record 查询接口
       url: active_record_querying.html
-      contributer: zlx
+      contributor: zlx
       description: 这篇指导涉及了如何使用 Active Record 从数据库中检索数据。
 -
   name: 视图(Views)
@@ -70,7 +70,7 @@
       name: Rails Internationalization API
       url: i18n.html
       work_in_progress: true
-      contributer: zlx
+      contributor: zlx
       description: This guide covers how to add internationalization to your applications. Your application will be able to translate content to different languages, change pluralization rules, use correct date formats for each country and so on.
     -
       name: Action Mailer 介绍
@@ -106,10 +106,10 @@
       contributor: Fenprace
       description: 本指南涵盖了 Rails 的命令行工具和 rake 任务。
     -
-      name: Caching with Rails
+      name: Rails与缓存
       url: caching_with_rails.html
-      description: Various caching techniques provided by Rails.
       contributor: sunny0425
+      description: 介绍多种 Rails 下的缓存方式
     -
       name: Asset Pipeline
       url: asset_pipeline.html
@@ -161,9 +161,8 @@
     -
       name: 升级 Ruby on Rails
       url: upgrading_ruby_on_rails.html
-      contributer: gingerhot
+      contributor: gingerhot
       description: 该教程将帮助你升级应用程序到最新的 Ruby on Rails 版本。
-      contributor: gingerhot 
     -
       name: Ruby on Rails 3.2 Release Notes
       url: 3_2_release_notes.html
