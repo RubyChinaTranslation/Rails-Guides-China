@@ -87,6 +87,8 @@
       name: Debugging Rails Applications
       url: debugging_rails_applications.html
       description: This guide describes how to debug Rails applications. It covers the different ways of achieving this and how to understand what is happening "behind the scenes" of your code.
+	  contributor: Jack47
+      work_in_progress: true
     - 
       name: Rails 应用与性能测试
       url: performance_testing.html
