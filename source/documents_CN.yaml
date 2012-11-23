@@ -81,7 +81,7 @@
       description: 这份教程讲诉了如何使用 Action Mailer 进行邮件的收发。
     -
       name: 测试 Rails 应用程序
-      contributor: poiyzy
+      contributor: poiyzy&Jack47
       url: testing.html
       description: 这是一篇关于实作单元测试和功能测试的相当全面的指导。它包含了从“什么是一个测试”到测试 API 的所有内容。享用它吧！
     -
