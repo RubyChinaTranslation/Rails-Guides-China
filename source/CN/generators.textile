@@ -1,24 +1,24 @@
-h2. Creating and Customizing Rails Generators & Templates
+h2. Rails生成器及模板的创建与定制 
 
-Rails generators are an essential tool if you plan to improve your workflow. With this guide you will learn how to create generators and customize existing ones.
+如果您计划改善工作流程，Rails 生成器 (generators)必不可少。您将通过本指南学到如何创建它们及定制一个现成的。
 
-In this guide you will:
+将为您呈现：
 
-* Learn how to see which generators are available in your application
-* Create a generator using templates
-* Learn how Rails searches for generators before invoking them
-* Customize your scaffold by creating new generators
-* Customize your scaffold by changing generator templates
-* Learn how to use fallbacks to avoid overwriting a huge set of generators
-* Learn how to create an application template
+* 学习如何知道您的应用 (application) 中哪些生成器可用
+* 使用模板创建生成器
+* 学习如何在调用生成器前搜索它们
+* 通过创建新的生成器定制您的scaffold
+* 通过修改生成器模板定制您的scaffold
+* 学习如何使用回退 (fallbacks) 避免覆盖一个庞大的生成器集合。
+* 学习如何创建应用模板
 
 endprologue.
 
-NOTE: This guide is about generators in Rails 3, previous versions are not covered.
+NOTE: 本指南针对Rails 3，未涵盖之前的版本
 
-h3. First Contact
+h3. 初体验
 
-When you create an application using the +rails+ command, you are in fact using a Rails generator. After that, you can get a list of all available generators by just invoking +rails generate+:
+当您使用 +rails+ 命令创建一个应用，实际上就是在使用Rails 生成器。而后，您可以通过调用 +rails generate+ 得到一份可用生成器列表：
 
 <shell>
 $ rails new myapp
@@ -26,17 +26,17 @@ $ cd myapp
 $ rails generate
 </shell>
 
-You will get a list of all generators that comes with Rails. If you need a detailed description of the helper generator, for example, you can simply do:
+您将获得一份完整的Rails原生生成器列表。如果您需要一个生成器的详细描述，例如 helper生成器，您只需这样:
 
 <shell>
 $ rails generate helper --help
 </shell>
 
-h3. Creating Your First Generator
+h3. 创建您的首个生成器
 
-Since Rails 3.0, generators are built on top of "Thor":https://github.com/wycats/thor. Thor provides powerful options parsing and a great API for manipulating files. For instance, let's build a generator that creates an initializer file named +initializer.rb+ inside +config/initializers+.
+从Rails 3.0开始，生成器基于 "Thor":https://github.com/wycats/thor，Thor 提供强大的选项解析功能和一套牛逼的文件操纵API。例如，让我们创建一个生成器来生成 +config/initializers/initializer.rb+ 文件。
 
-The first step is to create a file at +lib/generators/initializer_generator.rb+ with the following content:
+首先创建文件 +lib/generators/initializer_generator.rb+ ，其内容如下：
 
 <ruby>
 class InitializerGenerator < Rails::Generators::Base
@@ -46,23 +46,23 @@ class InitializerGenerator < Rails::Generators::Base
 end
 </ruby>
 
-NOTE: +create_file+ is a method provided by +Thor::Actions+. Documentation for +create_file+ and other Thor methods can be found in "Thor's documentation":http://rdoc.info/github/wycats/thor/master/Thor/Actions.html
+NOTE: +create_file+ 方法由 +Thor::Actions+ 提供. 需要了解 +create_file+ 的文档及其他Thor方法敬请移步 "Thor's documentation":http://rdoc.info/github/wycats/thor/master/Thor/Actions.html
 
-Our new generator is quite simple: it inherits from +Rails::Generators::Base+ and has one method definition. When a generator is invoked, each public method in the generator is executed sequentially in the order that it is defined. Finally, we invoke the +create_file+ method that will create a file at the given destination with the given content. If you are familiar with the Rails Application Templates API, you'll feel right at home with the new generators API.
+我们的新生成器有点单薄：它继承自 +Rails::Generators::Base+ 并仅有一个方法定义。当生成器被调用，每个生成器中的公共方法依照定义的次序执行。最终，我们调用 +create_file+ 方法，将创建一个给定内容给定位置的文件。如果您熟悉Rails 应用的模板API，您将对新的生成器API有宾至如归的感觉。
 
-To invoke our new generator, we just need to do:
+调用我们的新生成器，您只需:
 
 <shell>
 $ rails generate initializer
 </shell>
 
-Before we go on, let's see our brand new generator description:
+在我们继续前，来看一下我们的全新生成器的描述：
 
 <shell>
 $ rails generate initializer --help
 </shell>
 
-Rails is usually able to generate good descriptions if a generator is namespaced, as +ActiveRecord::Generators::ModelGenerator+, but not in this particular case. We can solve this problem in two ways. The first one is calling +desc+ inside our generator:
+要是生成器在命名空间下，Rails 一般都能够生成不错的描述，像是 +ActiveRecord::Generators::ModelGenerator+ ，但是像咱们这种特殊情况 (译注：InitializerGenerator在::下) 就不行了。解决这个问题，有两个选择。第一个在我们的生成器里调用 +desc+ ：
 
 <ruby>
 class InitializerGenerator < Rails::Generators::Base
@@ -73,11 +73,12 @@ class InitializerGenerator < Rails::Generators::Base
 end
 </ruby>
 
-Now we can see the new description by invoking +--help+ on the new generator. The second way to add a description is by creating a file named +USAGE+ in the same directory as our generator. We are going to do that in the next step.
+现在我们能通过调用 +--help+ 看到新的生成器描述了。第二选择是在生成器同一目录下创建名为+USAGE+的文件。我们下一步就要这样做。
 
-h3. Creating Generators with Generators
 
-Generators themselves have a generator:
+h3. 用生成器创建生成器
+
+生成器自身拥有一个生成器：
 
 <shell>
 $ rails generate generator initializer
@@ -87,7 +88,7 @@ $ rails generate generator initializer
       create  lib/generators/initializer/templates
 </shell>
 
-This is the generator just created:
+刚建的生成器如下：
 
 <ruby>
 class InitializerGenerator < Rails::Generators::NamedBase
@@ -95,9 +96,9 @@ class InitializerGenerator < Rails::Generators::NamedBase
 end
 </ruby>
 
-First, notice that we are inheriting from +Rails::Generators::NamedBase+ instead of +Rails::Generators::Base+. This means that our generator expects at least one argument, which will be the name of the initializer, and will be available in our code in the variable +name+.
+首先，注意我们继承自 +Rails::Generators::NamedBase+ 而不是 +Rails::Generators::Base+ 了。这意味着我们的生成器预期 (expects) 至少一个参数, 这个参数将作为initializer的名字，在我们的代码中作为变量 +name+ 出现。
 
-We can see that by invoking the description of this new generator (don't forget to delete the old generator file):
+我们可以通过调用这个新生成器的描述看出来 (别忘了把之前的生成器文件删掉)
 
 <shell>
 $ rails generate initializer --help
@@ -105,15 +106,15 @@ Usage:
   rails generate initializer NAME [options]
 </shell>
 
-We can also see that our new generator has a class method called +source_root+. This method points to where our generator templates will be placed, if any, and by default it points to the created directory +lib/generators/initializer/templates+.
+我们还看到新的生成器拥有一个名为 +source_root+ 的类方法。这个方法指出我们的生成器模板在存放的位置 (如果有的话)，默认它指向被创建的目录 +lib/generators/initializer/templates+ 。
 
-In order to understand what a generator template means, let's create the file +lib/generators/initializer/templates/initializer.rb+ with the following content:
+为了理解生成器模板的意义，让我们创建文件 +lib/generators/initializer/templates/initializer.rb+ ，其内容如下：
 
 <ruby>
 # Add initialization content here
 </ruby>
 
-And now let's change the generator to copy this template when invoked:
+现在让我们修改生成器使其被调用时拷贝这个模板：
 
 <ruby>
 class InitializerGenerator < Rails::Generators::NamedBase
@@ -125,15 +126,15 @@ class InitializerGenerator < Rails::Generators::NamedBase
 end
 </ruby>
 
-And let's execute our generator:
+来执行我们的生成器：
 
 <shell>
 $ rails generate initializer core_extensions
 </shell>
 
-We can see that now an initializer named core_extensions was created at +config/initializers/core_extensions.rb+ with the contents of our template. That means that +copy_file+ copied a file in our source root to the destination path we gave. The method +file_name+ is automatically created when we inherit from +Rails::Generators::NamedBase+.
+我们可以看到现在一个名为core_extensions的initializer被创建在 +config/initializers/core_extensions.rb+ ，内容与我们模板中的相同。这意味着 +copy_file+ 方法拷贝了一个我们的原始文件到了给定的目标路径。当我们继承了 +Rails::Generators::NamedBase+ , 方法 +file_name+ 被自动创建。
 
-The methods that are available for generators are covered in the "final section":#generator-methods of this guide.
+本指南的 "final section":#9 涵盖了更多生成器可用方法。
 
 h3. Generators Lookup
 
