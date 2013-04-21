@@ -76,7 +76,7 @@ end
 现在我们能通过调用 +--help+ 看到新的生成器描述了。第二选择是在生成器同一目录下创建名为+USAGE+的文件。我们下一步就要这样做。
 
 
-h3. 用生成器创建生成器
+h3.  用生成器创建生成器
 
 生成器自身拥有一个生成器：
 
@@ -136,9 +136,9 @@ $ rails generate initializer core_extensions
 
 本指南的 "final section":#9 涵盖了更多生成器可用方法。
 
-h3. Generators Lookup
+h3. 生成器查找
 
-When you run +rails generate initializer core_extensions+ Rails requires these files in turn until one is found:
+当您运行 +rails generate initializer core_extensions+ Rails 挨个儿引入这些文件直到生成器被发现为止：
 
 <shell>
 rails/generators/initializer/initializer_generator.rb
@@ -147,13 +147,13 @@ rails/generators/initializer_generator.rb
 generators/initializer_generator.rb
 </shell>
 
-If none is found you get an error message.
+如果没找到生成器您将收到一条错误信息。
 
-INFO: The examples above put files under the application's +lib+ because said directory belongs to +$LOAD_PATH+.
+INFO: 之前示例中将生成器文件放在应用的 +lib+ 目录下是因为这个目录属于 +$LOAD_PATH+
 
-h3. Customizing Your Workflow
+h3. 定制您的工作流程
 
-Rails own generators are flexible enough to let you customize scaffolding. They can be configured in +config/application.rb+, these are some defaults:
+Rails 自带的生成器提供足够的可定制性，让您定制脚手架 (scaffolding)。它们在可以在 +config/application.rb+ 中被配置， 以下是默认配置:
 
 <ruby>
 config.generators do |g|
@@ -163,7 +163,7 @@ config.generators do |g|
 end
 </ruby>
 
-Before we customize our workflow, let's first see what our scaffold looks like:
+在定制工作流程前，一块先看我们的scaffold是什么样的:
 
 <shell>
 $ rails generate scaffold User name:string
@@ -193,9 +193,9 @@ $ rails generate scaffold User name:string
       create    app/assets/stylesheets/scaffold.css
 </shell>
 
-Looking at this output, it's easy to understand how generators work in Rails 3.0 and above. The scaffold generator doesn't actually generate anything, it just invokes others to do the work. This allows us to add/replace/remove any of those invocations. For instance, the scaffold generator invokes the scaffold_controller generator, which invokes erb, test_unit and helper generators. Since each generator has a single responsibility, they are easy to reuse, avoiding code duplication.
+对照输出，很容易理解生成器在Rails 3.0及之前的版本是如何工作的。scaffold生成器实际上不生成任何东西，它只调用其它的生成器工作。这样就允许我们 添加、修改、删除 这些调用。例如，scaffold生成器调用scaffold_controller生成器, 从而调用erb、test_unit和helper生成器。从每个生成器的单一职责，它们极易重用，避免了重复代码。
 
-Our first customization on the workflow will be to stop generating stylesheets and test fixtures for scaffolds. We can achieve that by changing our configuration to the following:
+我们的第一个工作流程定制将阻止为scaffolds生成样式表和测试夹具。可以通过修改我们的工作流程config来实现：
 
 <ruby>
 config.generators do |g|
@@ -206,35 +206,36 @@ config.generators do |g|
 end
 </ruby>
 
-If we generate another resource with the scaffold generator, we can see that neither stylesheets nor fixtures are created anymore. If you want to customize it further, for example to use DataMapper and RSpec instead of Active Record and TestUnit, it's just a matter of adding their gems to your application and configuring your generators.
+如果我们要让scaffold生成另一个resource，可以看到样式表和测试夹具没有再被生成。如果您想定制进一步定制scaffold生成器，例如用DataMapper和RSpec 替代 Active Record和TestUnit，只需要添加这两个gem到您应用里，然后配置您的生成器。
 
-To demonstrate this, we are going to create a new helper generator that simply adds some instance variable readers. First, we create a generator within the rails namespace, as this is where rails searches for generators used as hooks:
+示范一下，我们将创建一个新的helper生成器，它可以简单添加一些实例变量reader。首先，我们在rails命名空间下创建一个生成器，以便rails能够搜索到生成器：
 
 <shell>
 $ rails generate generator rails/my_helper
 </shell>
 
-After that, we can delete both the +templates+ directory and the +source_root+ class method from our new generators, because we are not going to need them. So our new generator looks like the following:
+
+之后，我们可以从新的生成器里删掉 +templates+ 目录和 +source_root+ 类方法，因为我们不需要它们。现在我们的新生成器看起来就像这样：
 
 <ruby>
 class Rails::MyHelperGenerator < Rails::Generators::NamedBase
-  def create_helper_file
-    create_file "app/helpers/#{file_name}_helper.rb", <<-FILE
-module #{class_name}Helper
-  attr_reader :#{plural_name}, :#{plural_name.singularize}
-end
-    FILE
-  end
+    def create_helper_file
+        create_file "app/helpers/#{file_name}_helper.rb", <<-FILE
+            module #{class_name}Helper
+            attr_reader :#{plural_name}, :#{plural_name.singularize}
+        end
+        FILE
+    end
 end
 </ruby>
 
-We can try out our new generator by creating a helper for users:
+我们可以试一下新生成器来生成为products (一个resource)一个helper
 
 <shell>
 $ rails generate my_helper products
 </shell>
 
-And it will generate the following helper file in +app/helpers+:
+它会在 +app/helpers+ 目录下生成一下的helper文件:
 
 <ruby>
 module ProductsHelper
@@ -242,7 +243,7 @@ module ProductsHelper
 end
 </ruby>
 
-Which is what we expected. We can now tell scaffold to use our new helper generator by editing +config/application.rb+ once again:
+正是我们期望的那样。现在我们可以再一次通过编辑 +config/application.rb+  指挥scaffold使用我们的新生成器了。
 
 <ruby>
 config.generators do |g|
@@ -254,7 +255,7 @@ config.generators do |g|
 end
 </ruby>
 
-and see it in action when invoking the generator:
+调用scaffold生成器就可以看到my_helper起效了：
 
 <shell>
 $ rails generate scaffold Post body:text
@@ -263,34 +264,34 @@ $ rails generate scaffold Post body:text
       create      app/helpers/posts_helper.rb
 </shell>
 
-We can notice on the output that our new helper was invoked instead of the Rails default. However one thing is missing, which is tests for our new generator and to do that, we are going to reuse old helpers test generators.
+我们可以在输出上提示新生成器替代了Rails默认的。然而有个事儿忘了，还没生成helper的测试呢，我们要重用原来的helper测试生成器。
 
-Since Rails 3.0, this is easy to do due to the hooks concept. Our new helper does not need to be focused in one specific test framework, it can simply provide a hook and a test framework just needs to implement this hook in order to be compatible.
+从Rails 3.0开始，这事由于钩子机制 (hooks concept) 变得很容易了。我们的新helper无需关注特定的测试框架，它可以方便地提供一个hook，测试框架只需实现这个hook就可以兼容。
 
-To do that, we can change the generator this way:
+我们这样可以修改生成器：
 
 <ruby>
 class Rails::MyHelperGenerator < Rails::Generators::NamedBase
-  def create_helper_file
-    create_file "app/helpers/#{file_name}_helper.rb", <<-FILE
-module #{class_name}Helper
-  attr_reader :#{plural_name}, :#{plural_name.singularize}
-end
-    FILE
-  end
+    def create_helper_file
+       create_file "app/helpers/#{file_name}_helper.rb", <<-FILE
+           module #{class_name}Helper
+               attr_reader :#{plural_name}, :#{plural_name.singularize}
+           end
+       FILE
+    end
 
-  hook_for :test_framework
+    hook_for :test_framework
 end
 </ruby>
 
-Now, when the helper generator is invoked and TestUnit is configured as the test framework, it will try to invoke both +Rails::TestUnitGenerator+ and +TestUnit::MyHelperGenerator+. Since none of those are defined, we can tell our generator to invoke +TestUnit::Generators::HelperGenerator+ instead, which is defined since it's a Rails generator. To do that, we just need to add:
+现在，当helper生成器被调用，假设TestUnit被配置为测试框架，它将尝试调用 +Rails::TestUnitGenerator+ 和 +TestUnit::MyHelperGenerator+。由于这些没有被定义，我们可以告诉我们的生成器调用 +TestUnit::Generators::HelperGenerator+ 替代之，因为它是定义的Rails生成器。我们只需要添加：
 
 <ruby>
 # Search for :helper instead of :my_helper
 hook_for :test_framework, :as => :helper
 </ruby>
 
-And now you can re-run scaffold for another resource and see it generating tests as well!
+现在您可以重新运行scaffold生成另一个resource，并且看到它同时生成了测试！
 
 h3. Customizing Your Workflow by Changing Generators Templates
 
