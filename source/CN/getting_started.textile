@@ -320,7 +320,7 @@ $ rails generate controller welcome index
 
 提示: 如果你在输入这个命令的时候出现没有这个命令错误，你需要明确的使用 ruby 来执行 Rails 命令。
 
-Rails 将会为你创建一些文件，包含 `app/views/home/index.html.erb` 。这个模板会用来显示在 home controller 中的 index action (method) 的结果。在文本编辑器中打开这个文件并输入：
+Rails 将会为你创建一些文件，包含 `app/views/welcome/index.html.erb` 。这个模板会用来显示在 welcome controller 中的 index action (method) 的结果。在文本编辑器中打开这个文件并输入：
 
 <code class="html">
 <h1>Hello, Rails!</h1>
