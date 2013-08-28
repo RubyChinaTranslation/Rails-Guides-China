@@ -184,15 +184,3 @@
       name: Ruby on Rails 3.1 Release Notes
       url: 3_1_release_notes.html
       description: Release notes for Rails 3.1.
-    -
-      name: Ruby on Rails 3.0 Release Notes
-      url: 3_0_release_notes.html
-      description: Release notes for Rails 3.0.
-    -
-      name: Ruby on Rails 2.3 Release Notes
-      url: 2_3_release_notes.html
-      description: Release notes for Rails 2.3.
-    -
-      name: Ruby on Rails 2.2 Release Notes
-      url: 2_2_release_notes.html
-      description: Release notes for Rails 2.2.

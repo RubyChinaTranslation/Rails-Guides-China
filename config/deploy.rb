@@ -1,5 +1,5 @@
 set :application, "Rails Guides"
-set :domain, "guides.ruby-china.org"
+set :domain, "www.railschina.org"
 set :use_sudo, false
 set :user, "ruby"
 set :repository,  "./output"
@@ -17,7 +17,7 @@ set :deploy_via, :copy
 namespace :local do
   task :generate_guides do
     print "generate the lastest guides"
-    system "rake generate_guides_CN RAILS_VERSION=#{version}  "
+    system "rake generate_guides_CN RAILS_VERSION=3.2.13"
   end
 end
 
