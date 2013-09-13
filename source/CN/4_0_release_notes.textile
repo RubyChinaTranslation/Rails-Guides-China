@@ -1,47 +1,46 @@
 Ruby on Rails 4.0 Release Notes
 ===============================
 
-Highlights in Rails 4.0:
+Rails 4.0 要点:
 
-* Ruby 2.0 preferred; 1.9.3+ required
+* 推荐使用Ruby 2.0，最低要求 Ruby 1.9.3以上
 * Strong Parameters
 * Turbolinks
 * Russian Doll Caching
 
-These release notes cover only the major changes. To know about various bug fixes and changes, please refer to the change logs or check out the [list of commits](https://github.com/rails/rails/commits/master) in the main Rails repository on GitHub.
+这些 release notes 仅仅覆盖新版本中主要的变化。想知道更多变更和修复的bug记录，请参考change logs或者从 Github 上的 Rails 官方代码仓库查看[提交记录列表](https://github.com/rails/rails/commits/master)
 
 --------------------------------------------------------------------------------
 
-Upgrading to Rails 4.0
+升级到 Rails 4.0
 ----------------------
 
-If you're upgrading an existing application, it's a great idea to have good test coverage before going in. You should also first upgrade to Rails 3.2 in case you haven't and make sure your application still runs as expected before attempting an update to Rails 4.0. A list of things to watch out for when upgrading is available in the [Upgrading to Rails](upgrading_ruby_on_rails.html#upgrading-from-rails-3-2-to-rails-4-0) guide.
+如果你要升级一个已有的应用，那么在这之前确保测试覆盖是一个很好的做法。而且，你应该先升级到 Rails 3.2 （如果还没有的话）来确保自己的应用能够按预期工作，然后再尝试升级到 Rails 4.0。在[升级Rails](upgrading_ruby_on_rails.html#upgrading-from-rails-3-2-to-rails-4-0)指南中有一份关于升级注意事项的清单。
 
-
-Creating a Rails 4.0 application
+创建 Rails 4.0 应用
 --------------------------------
 
 ```
- You should have the 'rails' RubyGem installed
+ 你应该安装了 rails 这个 RubyGem
 $ rails new myapp
 $ cd myapp
 ```
 
-### Vendoring Gems
+### 第三方 Gem 包
 
-Rails now uses a `Gemfile` in the application root to determine the gems you require for your application to start. This `Gemfile` is processed by the [Bundler](https://github.com/carlhuda/bundler) gem, which then installs all your dependencies. It can even install all the dependencies locally to your application so that it doesn't depend on the system gems.
+目前，Rails 使用项目代码根目录下的 `Gemfile` 文件来指明你的项目启动依赖哪些第三方 Gem 包。这个 `Gemfile` 文件由 [Bundler](https://github.com/carlhuda/bundler) 工具进行处理，Bundler 将会安装所有的相关依赖包。它还可以将这些依赖的软件包安装到你的应用“本地目录”（译者按：即你的应用项目当前目录下），这样你的应用将不会受制于系统中的第三方 Gem 包。
 
-More information: [Bundler homepage](http://gembundler.com)
+更多信息请参考: [Bundler homepage](http://gembundler.com)
 
-### Living on the Edge
+### 使用最新版本
 
-`Bundler` and `Gemfile` makes freezing your Rails application easy as pie with the new dedicated `bundle` command. If you want to bundle straight from the Git repository, you can pass the `--edge` flag:
+`Bundler` 工具和 `Gemfile` 文件能够用 `bundle` 命令将你的 Rails 应用“冻结”在一起。如果你想从 Git 仓库中直接打包最新环境，可以使用 `--edge` 参数:
 
 ```
 $ rails new myapp --edge
 ```
 
-If you have a local checkout of the Rails repository and want to generate an application using that, you can pass the `--dev` flag:
+如果你从 Rails 代码库中取出了一份代码放在本地并希望使用它创建Rails应用，那么应该使用 `--dev` 参数:
 
 ```
 $ ruby /path/to/rails/railties/bin/rails new myapp --dev
