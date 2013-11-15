@@ -46,6 +46,11 @@
       work_in_progress: true
       contributor: crhan
       description: Guide to using built-in Form helpers.
+    -
+      name: Action View Overview 
+      url: action_view_overview.html
+      contributor: Jngai
+      description: Guide to using the user facing view portion. 
 -
   name: 控制器(Controllers)
   documents:
