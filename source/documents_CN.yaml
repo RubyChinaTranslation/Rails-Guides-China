@@ -24,7 +24,7 @@
       name: Active Record 数据表关联
       url: association_basics.html
       work_in_progress: true
-      contributor: mingyuan0715
+      contributor: mingyuan0715 allenfantasy
       description: 该教程包含所有Active Record 提供的所有数据表关联功能。
     -
       name: Active Record 查询接口
@@ -47,10 +47,10 @@
       contributor: crhan
       description: Guide to using built-in Form helpers.
     -
-      name: Action View Overview 
+      name: Action View Overview
       url: action_view_overview.html
       contributor: Jngai
-      description: Guide to using the user facing view portion. 
+      description: Guide to using the user facing view portion.
 -
   name: 控制器(Controllers)
   documents:
