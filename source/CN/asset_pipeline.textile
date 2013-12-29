@@ -3,47 +3,47 @@ h2. Asset Pipeline
 这个指南涵盖了在 Rails 3.1 引进的 asset pipling.
 通过浏览这个指南，你将能：
 
-* 理解 asset pipline 是什么和它是做什么的
+* 理解 asset pipeline 是什么和它是做什么的
 * 合理的组织应用程序的资源
-* 了解 asset pipline 的优点
+* 了解 asset pipeline 的优点
 * 为 pipeline 添加预处理器
 * 用一个 gem 打包资源
 
 endprologue.
 
-h3. 什么是 Asset Pipline?
+h3. 什么是 Asset Pipeline?
 
-asset pipline 是一个提供连结缩小或者压缩 JavaScript 和 CSS 资源的框架。它也添加了用其它语言编写这些资源的功能, 如 CoffeeScript, Sass 和 ERB。
+asset pipeline 是一个提供连结缩小或者压缩 JavaScript 和 CSS 资源的框架。它也添加了用其它语言编写这些资源的功能, 如 CoffeeScript, Sass 和 ERB。
 
 在 Rails 3.1 之前这些功能都是通过第三方 Ruby 库添加进来的，如 Jammit 和 Sprockets. Rails 3.1 默认通过 Action Pack 和 依赖 +sprockets+ gem 的 Sprockets 进行交互.
 
-使 asset pipline 成为 Rails 的核心功能意味着所有的开发者都能从其强大的功能受益. 这些功能使用一个中心库，Sprockets, 将资源预处理，压缩和缩小。 这是 Rails 的 "fast by default" 策略的一部分，这个策略是 DHH 在 RailsConf 2011 概述中的主旨。
+使 asset pipeline 成为 Rails 的核心功能意味着所有的开发者都能从其强大的功能受益. 这些功能使用一个中心库，Sprockets, 将资源预处理，压缩和缩小。 这是 Rails 的 "fast by default" 策略的一部分，这个策略是 DHH 在 RailsConf 2011 概述中的主旨。
 
-在 Rails 3.1 中，asset pipline 是默认开启的。它可在 +config/application.rb+ 里被关闭，只需将以下这行放到应用程序类定义里:
+在 Rails 3.1 中，asset pipeline 是默认开启的。它可在 +config/application.rb+ 里被关闭，只需将以下这行放到应用程序类定义里:
 
 <ruby>
 config.assets.enabled = false
 </ruby>
 
-你也可以在创建一个新应用程序的时候投递 <tt>--skip-sprockets</tt> 参数来关闭 asset pipline.
+你也可以在创建一个新应用程序的时候投递 <tt>--skip-sprockets</tt> 参数来关闭 asset pipeline.
 
 <plain>
 rails new appname --skip-sprockets
 </plain>
 
-你应该在所有的新应用程序中默认使用它，除非你有特殊的原因去避免使用 asset pipline.
+你应该在所有的新应用程序中默认使用它，除非你有特殊的原因去避免使用 asset pipeline.
 
 h4. 主要功能
 
-pipline 的第一个功能就是连结资源。这在生产环境非常重要，因为它可以避免浏览器为了渲染页面而不得不发送过多的请求。网页浏览器限制了并行请求的数量， 所以更少的请求能让你的应用程序加载更快。
+pipeline 的第一个功能就是连结资源。这在生产环境非常重要，因为它可以避免浏览器为了渲染页面而不得不发送过多的请求。网页浏览器限制了并行请求的数量， 所以更少的请求能让你的应用程序加载更快。
 
 Rails 2.x 介绍了将 +:cache => true+ 放置到 +javascript_include_tag+ 或 +stylesheet_link_tag+ 方法的尾部能连结 JavaScript 或 CSS 资源。但这个技术有些不足。例如，它不能预先产生缓存和它不能显式调用由第三方库提供的资源。
 
 从 3.1 版开始， Rails 默认将所有的 JavaScript 文件连结成一个主要的 +.js+ 文件，和将所有的 CSS 文件连结成一个主要的 +.css+ 文件。 你将可以在本指南后面学习到如何自定义管理这些文件的策略。在生产环境中， Rails 给每个文件名插入一个 MD5 指纹,以便文件被网页浏览器缓存。你可以通过修改指纹使缓存无效，这在你修改文件后会自动发生。
 
-asset pipline 的第二个功能是资源的缩小或者压缩。对于 CSS 文件，是通过去除空格和注释来实现的。对于 JavsScript, 会有更多的复杂过程。你可以从选项中选择一套构件或者指定你自己的。
+asset pipeline 的第二个功能是资源的缩小或者压缩。对于 CSS 文件，是通过去除空格和注释来实现的。对于 JavsScript, 会有更多的复杂过程。你可以从选项中选择一套构件或者指定你自己的。
 
-asset pipline 的第三个功能是它能你使用更高级的语言来编写资源，然后预编译成实质的资源。默认支持的语言包括 CSS 的 Sass，JavaScript 的 CoffeeScript 和可用于所有资源的 ERB.
+asset pipeline 的第三个功能是它能你使用更高级的语言来编写资源，然后预编译成实质的资源。默认支持的语言包括 CSS 的 Sass，JavaScript 的 CoffeeScript 和可用于所有资源的 ERB.
 
 h4. 什么是指纹识别和为什么我们要关心
 
@@ -57,7 +57,7 @@ Rails 用于指纹识别的技术是将内容的 hash 插入到名字里，通�
 global-908e25f4bf641868d8683022a5b62f54.css
 </plain>
 
-这是 Rails asset pipline 所使用的策略。
+这是 Rails asset pipeline 所使用的策略。
 
 Rails 的旧策略是为每个资源附加一个以日期为基础的查询字符串，这些 asset 都会与一个内建的 helper 关联. 原先文件生成的代码看起来像这样:
 
@@ -93,7 +93,7 @@ Rails 的旧策略是为每个资源附加一个以日期为基础的查询字�
 
 h3. 如何使用 Asset Pipeline
 
-在 Rails 之前的版本里，所有的资源都放置在 +public+ 的子目录下比如 +images+, +javascript+ 和 +stylesheets+. 对于 asset pipline, 这些资源现在被指定到 +app/assets+ 目录。这个目录下的所有文件都通过 Sprockets 中间件供应，这个中间件通过引入 sprockets gem 使用。
+在 Rails 之前的版本里，所有的资源都放置在 +public+ 的子目录下比如 +images+, +javascript+ 和 +stylesheets+. 对于 asset pipeline, 这些资源现在被指定到 +app/assets+ 目录。这个目录下的所有文件都通过 Sprockets 中间件供应，这个中间件通过引入 sprockets gem 使用。
 
 资源依然可以被放置在 +public+ 目录下。 所有位于 +public+ 目录下的文件都会作为静态资源通过应用程序或者 web 服务器供应。在它们被供应之前必须作一些预处理的文件要放在 +app/assets+ 里。
 
@@ -268,7 +268,7 @@ Sprockets 使用资源清单文件去确认哪些资源要引入并供应的。 
 
 在 JavaScript 文件里，指令以 +//=+ 开头。在这个例子里， 该文件使用了 +require+ 和 +require_tree+ 指令。 +require+ 指令是用于告诉 Sprockets 需要加入的文件。这里，你加入了 +jquery.js+ 和 +jquery_ujs.js+ 文件，Sprockets 可以在搜索路径的某个地方找到。 你不需要显式的提供扩展名。当在一个 +.js+ 文件里时，Sprockets 会假设你加入的是一个 +.js+ 文件。
 
-NOTE. 在 Rails 3.1 里， +jquery-rails+ gem 通过 asset pipline 提供了 +jquery.js+ 和 +jquery_ujs.js+ 文件. 你会在应用程序的目录中看到它们。
+NOTE. 在 Rails 3.1 里， +jquery-rails+ gem 通过 asset pipeline 提供了 +jquery.js+ 和 +jquery_ujs.js+ 文件. 你会在应用程序的目录中看到它们。
 
 +require_tree+ 指令告诉 Sprockets 递归地去包含在指定目录下_所有_ 的 JavaScript 文件到输出里。 这些路径必须在资源清单文件中有相关的指定。 有也可以使用 +require_directory+ 指令，它会将在某个特定目录下所有的 JavaScript 文件包含进去，但不递归。
 
@@ -528,7 +528,7 @@ group :production do
 end
 </plain>
 
-h3. 自定义 Pipline
+h3. 自定义 Pipeline
 
 h4. CSS 压缩器
 
